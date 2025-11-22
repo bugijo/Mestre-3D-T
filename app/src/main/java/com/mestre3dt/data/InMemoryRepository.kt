@@ -19,44 +19,6 @@ class InMemoryRepository {
     private val _sessionNotes = MutableStateFlow(sampleNotes)
     val sessionNotes: StateFlow<List<SessionNote>> = _sessionNotes
 
-    fun addEnemy(enemy: Enemy) {
-        _enemies.value = listOf(enemy) + _enemies.value
-    }
-
-    fun updateEnemy(index: Int, enemy: Enemy) {
-        _enemies.value = _enemies.value.mapIndexed { currentIndex, current ->
-            if (currentIndex == index) enemy else current
-        }
-    }
-
-    fun removeEnemy(index: Int) {
-        _enemies.value = _enemies.value.filterIndexed { currentIndex, _ -> currentIndex != index }
-    }
-
-    fun addPowerToEnemy(enemyIndex: Int, power: Power) {
-        _enemies.value = _enemies.value.mapIndexed { index, enemy ->
-            if (index != enemyIndex) return@mapIndexed enemy
-            enemy.copy(powers = enemy.powers + power)
-        }
-    }
-
-    fun updatePower(enemyIndex: Int, powerIndex: Int, power: Power) {
-        _enemies.value = _enemies.value.mapIndexed { index, enemy ->
-            if (index != enemyIndex) return@mapIndexed enemy
-            val updatedPowers = enemy.powers.mapIndexed { idx, current ->
-                if (idx != powerIndex) current else power
-            }
-            enemy.copy(powers = updatedPowers)
-        }
-    }
-
-    fun removePower(enemyIndex: Int, powerIndex: Int) {
-        _enemies.value = _enemies.value.mapIndexed { index, enemy ->
-            if (index != enemyIndex) return@mapIndexed enemy
-            enemy.copy(powers = enemy.powers.filterIndexed { idx, _ -> idx != powerIndex })
-        }
-    }
-
     fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
         _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
             if (cIndex != campaignIndex) return@mapIndexed campaign
@@ -65,30 +27,6 @@ class InMemoryRepository {
                 val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
                     if (sIndex != sceneIndex) return@mapIndexed scene
                     scene.copy(triggers = scene.triggers + trigger)
-                }
-                arc.copy(scenes = updatedScenes)
-            }
-            campaign.copy(arcs = updatedArcs)
-        }
-    }
-
-    fun updateTriggerInScene(
-        campaignIndex: Int,
-        arcIndex: Int,
-        sceneIndex: Int,
-        triggerIndex: Int,
-        trigger: RollTrigger
-    ) {
-        _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
-            if (cIndex != campaignIndex) return@mapIndexed campaign
-            val updatedArcs = campaign.arcs.mapIndexed { aIndex, arc ->
-                if (aIndex != arcIndex) return@mapIndexed arc
-                val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
-                    if (sIndex != sceneIndex) return@mapIndexed scene
-                    val updatedTriggers = scene.triggers.mapIndexed { tIndex, current ->
-                        if (tIndex != triggerIndex) current else trigger
-                    }
-                    scene.copy(triggers = updatedTriggers)
                 }
                 arc.copy(scenes = updatedScenes)
             }
@@ -165,16 +103,6 @@ class InMemoryRepository {
         _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
             if (npcIndex != index) return@mapIndexed npc
             npc.copy(triggers = npc.triggers + trigger)
-        }
-    }
-
-    fun updateTriggerInNpc(index: Int, triggerIndex: Int, trigger: RollTrigger) {
-        _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
-            if (npcIndex != index) return@mapIndexed npc
-            val updated = npc.triggers.mapIndexed { tIndex, current ->
-                if (tIndex != triggerIndex) current else trigger
-            }
-            npc.copy(triggers = updated)
         }
     }
 

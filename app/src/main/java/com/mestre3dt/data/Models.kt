@@ -123,30 +123,10 @@ data class SessionNote(
 @Serializable
 @Immutable
 data class SessionSummary(
-    val sessionName: String?,
-    val startedAt: Long?,
-    val endedAt: Long?,
     val campaignTitle: String?,
     val arcTitle: String?,
     val sceneName: String?,
     val importantNotes: List<String>,
     val defeatedEnemies: List<String>,
     val timestamp: Long
-)
-
-@Serializable
-@Immutable
-data class ActiveSession(
-    val name: String,
-    val startedAt: Long,
-    val scenesVisited: List<String> = emptyList(),
-    val resumedFrom: Long? = null
-)
-
-@Serializable
-@Immutable
-data class SoundPreferences(
-    val backgroundVolume: Float = 0.8f,
-    val effectsVolume: Float = 1f,
-    val duckOnFocusLoss: Boolean = true
 )

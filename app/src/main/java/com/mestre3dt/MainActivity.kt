@@ -29,12 +29,7 @@ import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,10 +38,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -64,17 +57,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.common.C
 import com.mestre3dt.data.Arc
 import com.mestre3dt.data.Campaign
 import com.mestre3dt.data.EncounterEnemyState
@@ -85,14 +72,6 @@ import com.mestre3dt.ui.AppUiState
 import com.mestre3dt.ui.MestreViewModel
 import com.mestre3dt.ui.SyncStatus
 import com.mestre3dt.data.SoundScene
-import com.mestre3dt.data.SoundPreferences
-import com.mestre3dt.data.SessionNote
-import com.mestre3dt.data.SessionSummary
-import com.mestre3dt.data.ActiveSession
-import com.mestre3dt.data.sampleCampaigns
-import com.mestre3dt.data.sampleEnemies
-import com.mestre3dt.data.sampleNpcs
-import com.mestre3dt.data.sampleSoundScenes
 import com.mestre3dt.ui.theme.Mestre3DTTheme
 
 class MainActivity : ComponentActivity() {
@@ -136,12 +115,12 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                         label = { Text(tab.label) },
                         icon = {
                             when (tab) {
-                                MestreTab.Dashboard -> Icon(Icons.Default.ListAlt, contentDescription = "Dashboard")
-                                MestreTab.Session -> Icon(Icons.Default.ListAlt, contentDescription = "Sessão")
-                                MestreTab.Campaigns -> Icon(Icons.Default.Campaign, contentDescription = "Campanhas")
-                                MestreTab.Npcs -> Icon(Icons.Default.People, contentDescription = "NPCs")
-                                MestreTab.Enemies -> Icon(Icons.Default.Shield, contentDescription = "Combate")
-                                MestreTab.Sound -> Icon(Icons.Default.MusicNote, contentDescription = "Som")
+                                MestreTab.Dashboard -> Icon(Icons.Default.ListAlt, contentDescription = null)
+                                MestreTab.Session -> Icon(Icons.Default.ListAlt, contentDescription = null)
+                                MestreTab.Campaigns -> Icon(Icons.Default.Campaign, contentDescription = null)
+                                MestreTab.Npcs -> Icon(Icons.Default.People, contentDescription = null)
+                                MestreTab.Enemies -> Icon(Icons.Default.Shield, contentDescription = null)
+                                MestreTab.Sound -> Icon(Icons.Default.MusicNote, contentDescription = null)
                             }
                         }
                     )
@@ -154,12 +133,6 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (uiState.isLoading) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-            uiState.errorMessage?.let {
-                ErrorBanner(message = it)
-            }
             when (selectedTab) {
                 MestreTab.Dashboard -> DashboardScreen(
                     uiState = uiState,
@@ -174,11 +147,8 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onRemoveEnemy = viewModel::removeEnemyInstance,
                     onAddNote = viewModel::addNote,
                     onAddTrigger = viewModel::addTriggerToScene,
-                    onUpdateTrigger = viewModel::updateTriggerInScene,
                     onRemoveTrigger = viewModel::removeTriggerFromScene,
-                    onStartSession = viewModel::startSession,
-                    onEndSession = viewModel::endSessionWithSummary,
-                    onResetEncounter = viewModel::resetEncounter
+                    onEndSession = viewModel::endSessionWithSummary
                 )
                 MestreTab.Campaigns -> CampaignsScreen(
                     uiState = uiState,
@@ -192,17 +162,10 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 MestreTab.Npcs -> NpcsScreen(
                     npcs = uiState.npcs,
                     onAddTrigger = viewModel::addTriggerToNpc,
-                    onUpdateTrigger = viewModel::updateTriggerInNpc,
                     onRemoveTrigger = viewModel::removeTriggerFromNpc
                 )
                 MestreTab.Enemies -> EnemiesScreen(
                     enemies = uiState.enemies,
-                    onAddEnemy = viewModel::addEnemy,
-                    onUpdateEnemy = viewModel::updateEnemy,
-                    onRemoveEnemy = viewModel::removeEnemy,
-                    onAddPower = viewModel::addPowerToEnemy,
-                    onUpdatePower = viewModel::updatePower,
-                    onRemovePower = viewModel::removePower,
                     onAddInstance = viewModel::addEnemyInstance,
                     onReset = viewModel::resetEncounter
                 )
@@ -210,12 +173,10 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     soundScenes = uiState.soundScenes,
                     activeIndex = uiState.activeSoundSceneIndex,
                     isPlaying = uiState.isSoundPlaying,
-                    preferences = uiState.soundPreferences,
                     onSelect = viewModel::selectSoundScene,
                     onTogglePlay = viewModel::toggleSoundPlayback,
                     onSetBackground = viewModel::setSoundBackground,
-                    onAddEffect = viewModel::addSoundEffect,
-                    onPreferencesChanged = viewModel::setSoundPreferences
+                    onAddEffect = viewModel::addSoundEffect
                 )
             }
         }
@@ -307,16 +268,12 @@ private fun SessionScreen(
     onRemoveEnemy: (Int) -> Unit,
     onAddNote: (String, Boolean) -> Unit,
     onAddTrigger: (Int, Int, Int, RollTrigger) -> Unit,
-    onUpdateTrigger: (Int, Int, Int, Int, RollTrigger) -> Unit,
     onRemoveTrigger: (Int, Int, Int, Int) -> Unit,
-    onStartSession: (String) -> Unit,
-    onEndSession: () -> Unit,
-    onResetEncounter: () -> Unit
+    onEndSession: () -> Unit
 ) {
     val activeCampaign = uiState.campaigns.getOrNull(uiState.activeCampaignIndex)
     val activeArc = activeCampaign?.arcs?.getOrNull(uiState.activeArcIndex)
     val activeScene = activeArc?.scenes?.getOrNull(uiState.activeSceneIndex)
-    var sessionName by remember { mutableStateOf(uiState.activeSession?.name.orEmpty()) }
     var noteText by remember { mutableStateOf("") }
     var important by remember { mutableStateOf(false) }
     var triggerSituation by remember { mutableStateOf("") }
@@ -344,56 +301,12 @@ private fun SessionScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                QuickActionsRow(
-                    isSessionActive = uiState.activeSession != null,
-                    sessionName = sessionName.ifBlank { "Sessão atual" },
-                    onStart = { onStartSession(sessionName.ifBlank { "Sessão atual" }) },
-                    onEnd = onEndSession,
-                    onResetEncounter = onResetEncounter,
-                    encounterAvailable = uiState.encounter.isNotEmpty()
-                )
             } else {
                 Text(
                     text = "Selecione uma campanha/cena na aba Campanhas.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error
                 )
-            }
-        }
-
-        item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SectionTitle("Sessão em andamento")
-                    if (uiState.activeSession != null) {
-                        val active = uiState.activeSession
-                        Text("Nome: ${active.name}", style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            "Iniciada em: ${java.text.DateFormat.getDateTimeInstance().format(java.util.Date(active.startedAt))}",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        if (active.scenesVisited.isNotEmpty()) {
-                            Text("Cenas visitadas: ${active.scenesVisited.joinToString()}", style = MaterialTheme.typography.bodySmall)
-                        }
-                        if (active.resumedFrom != null) {
-                            Text("Retomada de sessão iniciada em ${java.text.DateFormat.getDateTimeInstance().format(java.util.Date(active.resumedFrom))}", style = MaterialTheme.typography.labelSmall)
-                        }
-                        OutlinedButton(onClick = onEndSession) {
-                            Text("Encerrar sessão e gerar resumo")
-                        }
-                    } else {
-                        Text("Nenhuma sessão ativa. Inicie para registrar notas e resumo.", style = MaterialTheme.typography.bodySmall)
-                        OutlinedTextField(
-                            value = sessionName,
-                            onValueChange = { sessionName = it },
-                            label = { Text("Nome da sessão") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                            Button(onClick = { onStartSession(sessionName) }) { Text("Iniciar sessão") }
-                        }
-                    }
-                }
             }
         }
 
@@ -417,26 +330,14 @@ private fun SessionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("Gatilhos de rolagem:", style = MaterialTheme.typography.labelLarge)
                             scene.triggers.forEachIndexed { triggerIndex, trigger ->
-                                RollTriggerCard(
-                                    trigger,
-                                    onRemove = {
-                                        onRemoveTrigger(
-                                            uiState.activeCampaignIndex,
-                                            uiState.activeArcIndex,
-                                            uiState.activeSceneIndex,
-                                            triggerIndex
-                                        )
-                                    },
-                                    onUpdate = { updated ->
-                                        onUpdateTrigger(
-                                            uiState.activeCampaignIndex,
-                                            uiState.activeArcIndex,
-                                            uiState.activeSceneIndex,
-                                            triggerIndex,
-                                            updated
-                                        )
-                                    }
-                                )
+                                RollTriggerCard(trigger, onRemove = {
+                                    onRemoveTrigger(
+                                        uiState.activeCampaignIndex,
+                                        uiState.activeArcIndex,
+                                        uiState.activeSceneIndex,
+                                        triggerIndex
+                                    )
+                                })
                             }
                         }
                     }
@@ -521,7 +422,7 @@ private fun SessionScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         SectionTitle("NPCs na cena")
                         uiState.npcs.forEach { npc ->
-                            NpcCard(npc = npc, onAddTrigger = {}, onUpdateTrigger = { _, _ -> }, onRemoveTrigger = {})
+                            NpcCard(npc = npc, onAddTrigger = {}, onRemoveTrigger = {})
                         }
                     }
                 }
@@ -553,11 +454,11 @@ private fun SessionScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     SectionTitle("Notas rápidas da sessão")
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = noteText,
-                        onValueChange = { noteText = it },
-                        label = { Text("Anotação") },
-                        modifier = Modifier.weight(1f)
+                        OutlinedTextField(
+                            value = noteText,
+                            onValueChange = { noteText = it },
+                            label = { Text("Anotação") },
+                            modifier = Modifier.weight(1f)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -615,13 +516,6 @@ private fun SessionScreen(
                         SectionTitle("Resumos anteriores")
                         uiState.sessionSummaries.forEach { summary ->
                             Column(modifier = Modifier.padding(vertical = 6.dp)) {
-                                summary.sessionName?.let {
-                                    Text(
-                                        it,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
                                 Text(
                                     summary.sceneName ?: "Cena não definida",
                                     style = MaterialTheme.typography.titleSmall,
@@ -631,20 +525,6 @@ private fun SessionScreen(
                                     "Campanha: ${summary.campaignTitle ?: "-"} | Arco: ${summary.arcTitle ?: "-"}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
-                                val started = summary.startedAt?.let { java.util.Date(it) }
-                                val ended = summary.endedAt?.let { java.util.Date(it) }
-                                if (started != null) {
-                                    Text(
-                                        "Início: ${java.text.DateFormat.getDateTimeInstance().format(started)}",
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                }
-                                if (ended != null) {
-                                    Text(
-                                        "Fim: ${java.text.DateFormat.getDateTimeInstance().format(ended)}",
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                }
                                 if (summary.importantNotes.isNotEmpty()) {
                                     Text("Notas importantes:", style = MaterialTheme.typography.labelLarge)
                                     summary.importantNotes.forEach { note -> Text("• $note", style = MaterialTheme.typography.bodySmall) }
@@ -663,20 +543,8 @@ private fun SessionScreen(
 }
 
 @Composable
-private fun RollTriggerCard(
-    trigger: RollTrigger,
-    onRemove: (() -> Unit)? = null,
-    onUpdate: ((RollTrigger) -> Unit)? = null
-) {
+private fun RollTriggerCard(trigger: RollTrigger, onRemove: (() -> Unit)? = null) {
     var expanded by remember { mutableStateOf(false) }
-    var editing by remember { mutableStateOf(false) }
-    var situation by remember { mutableStateOf(trigger.situation) }
-    var type by remember { mutableStateOf(trigger.testType) }
-    var attribute by remember { mutableStateOf(trigger.attribute) }
-    var difficulty by remember { mutableStateOf(trigger.difficulty) }
-    var success by remember { mutableStateOf(trigger.onSuccess) }
-    var failure by remember { mutableStateOf(trigger.onFailure) }
-
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -692,9 +560,6 @@ private fun RollTriggerCard(
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    if (onUpdate != null) {
-                        TextButton(onClick = { editing = true }) { Text("Editar") }
-                    }
                     onRemove?.let {
                         TextButton(onClick = it) { Text("Remover") }
                     }
@@ -710,35 +575,6 @@ private fun RollTriggerCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text("Falha:", style = MaterialTheme.typography.labelLarge)
                 Text(trigger.onFailure, style = MaterialTheme.typography.bodySmall)
-            }
-            if (editing) {
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(value = situation, onValueChange = { situation = it }, label = { Text("Situação") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = type, onValueChange = { type = it }, label = { Text("Tipo de teste") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = attribute, onValueChange = { attribute = it }, label = { Text("Atributo") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = difficulty, onValueChange = { difficulty = it }, label = { Text("Dificuldade") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = success, onValueChange = { success = it }, label = { Text("Resultado em sucesso") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = failure, onValueChange = { failure = it }, label = { Text("Resultado em falha") }, modifier = Modifier.fillMaxWidth())
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = { editing = false }) { Text("Cancelar") }
-                    onUpdate?.let { update ->
-                        TextButton(onClick = {
-                            update(
-                                RollTrigger(
-                                    situation = situation,
-                                    testType = type,
-                                    attribute = attribute,
-                                    difficulty = difficulty,
-                                    onSuccess = success,
-                                    onFailure = failure
-                                )
-                            )
-                            editing = false
-                        }) {
-                            Text("Salvar")
-                        }
-                    }
-                }
             }
         }
     }
@@ -808,7 +644,6 @@ private fun EncounterEnemyRow(
 private fun NpcCard(
     npc: Npc,
     onAddTrigger: (RollTrigger) -> Unit,
-    onUpdateTrigger: (Int, RollTrigger) -> Unit,
     onRemoveTrigger: (Int) -> Unit
 ) {
     var situation by remember { mutableStateOf("") }
@@ -840,11 +675,7 @@ private fun NpcCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text("Gatilhos do NPC:", style = MaterialTheme.typography.labelLarge)
                 npc.triggers.forEachIndexed { index, trigger ->
-                    RollTriggerCard(
-                        trigger,
-                        onRemove = { onRemoveTrigger(index) },
-                        onUpdate = { updated -> onUpdateTrigger(index, updated) }
-                    )
+                    RollTriggerCard(trigger) { onRemoveTrigger(index) }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -968,12 +799,6 @@ private fun CampaignsScreen(
             }
         }
 
-        if (uiState.campaigns.isEmpty()) {
-            item {
-                EmptyStateCard(text = "Nenhuma campanha cadastrada. Crie uma para habilitar cenas e gatilhos na sessão.")
-            }
-        }
-
         items(uiState.campaigns.size) { index ->
             val campaign = uiState.campaigns[index]
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -1077,7 +902,6 @@ private fun CampaignsScreen(
 private fun NpcsScreen(
     npcs: List<Npc>,
     onAddTrigger: (Int, RollTrigger) -> Unit,
-    onUpdateTrigger: (Int, Int, RollTrigger) -> Unit,
     onRemoveTrigger: (Int, Int) -> Unit
 ) {
     LazyColumn(
@@ -1087,14 +911,10 @@ private fun NpcsScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item { Text("NPCs", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
-        if (npcs.isEmpty()) {
-            item { EmptyStateCard(text = "Nenhum NPC cadastrado. Use gatilhos da cena ativa ou cadastre um NPC aqui.") }
-        }
         itemsIndexed(npcs) { index, npc ->
             NpcCard(
                 npc = npc,
                 onAddTrigger = { trigger -> onAddTrigger(index, trigger) },
-                onUpdateTrigger = { triggerIndex, trigger -> onUpdateTrigger(index, triggerIndex, trigger) },
                 onRemoveTrigger = { triggerIndex -> onRemoveTrigger(index, triggerIndex) }
             )
         }
@@ -1104,31 +924,15 @@ private fun NpcsScreen(
 @Composable
 private fun EnemiesScreen(
     enemies: List<com.mestre3dt.data.Enemy>,
-    onAddEnemy: (com.mestre3dt.data.Enemy) -> Unit,
-    onUpdateEnemy: (Int, com.mestre3dt.data.Enemy) -> Unit,
-    onRemoveEnemy: (Int) -> Unit,
-    onAddPower: (Int, com.mestre3dt.data.Power) -> Unit,
-    onUpdatePower: (Int, Int, com.mestre3dt.data.Power) -> Unit,
-    onRemovePower: (Int, Int) -> Unit,
     onAddInstance: (com.mestre3dt.data.Enemy, Int) -> Unit,
     onReset: () -> Unit
 ) {
     val quantities = remember { mutableStateMapOf<String, String>() }
-    var createName by remember { mutableStateOf("") }
-    var createTags by remember { mutableStateOf("") }
-    var createF by remember { mutableStateOf("1") }
-    var createH by remember { mutableStateOf("1") }
-    var createR by remember { mutableStateOf("1") }
-    var createA by remember { mutableStateOf("0") }
-    var createP by remember { mutableStateOf("0") }
-    var createHp by remember { mutableStateOf("5") }
-    var createMp by remember { mutableStateOf("0") }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1136,112 +940,11 @@ private fun EnemiesScreen(
                 OutlinedButton(onClick = onReset) { Text("Reset encontro") }
             }
         }
-
-        item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SectionTitle("Cadastrar inimigo rápido")
-                    OutlinedTextField(value = createName, onValueChange = { createName = it }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(value = createTags, onValueChange = { createTags = it }, label = { Text("Tags (separadas por vírgula)") }, modifier = Modifier.fillMaxWidth())
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = createF, onValueChange = { createF = it.filter { ch -> ch.isDigit() } }, label = { Text("F") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = createH, onValueChange = { createH = it.filter { ch -> ch.isDigit() } }, label = { Text("H") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = createR, onValueChange = { createR = it.filter { ch -> ch.isDigit() } }, label = { Text("R") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = createA, onValueChange = { createA = it.filter { ch -> ch.isDigit() } }, label = { Text("A") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = createP, onValueChange = { createP = it.filter { ch -> ch.isDigit() } }, label = { Text("PdF") }, modifier = Modifier.weight(1f))
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = createHp, onValueChange = { createHp = it.filter { ch -> ch.isDigit() } }, label = { Text("PV Máx") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = createMp, onValueChange = { createMp = it.filter { ch -> ch.isDigit() } }, label = { Text("PM Máx (opcional)") }, modifier = Modifier.weight(1f))
-                    }
-                    OutlinedButton(onClick = {
-                        val name = createName.trim()
-                        val hp = createHp.toIntOrNull() ?: 0
-                        val mp = createMp.toIntOrNull()
-                        if (name.isNotBlank() && hp > 0) {
-                            onAddEnemy(
-                                com.mestre3dt.data.Enemy(
-                                    name = name,
-                                    tags = createTags.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                                    attributes = com.mestre3dt.data.EnemyAttributes(
-                                        strength = createF.toIntOrNull() ?: 0,
-                                        skill = createH.toIntOrNull() ?: 0,
-                                        resistance = createR.toIntOrNull() ?: 0,
-                                        armor = createA.toIntOrNull() ?: 0,
-                                        firepower = createP.toIntOrNull() ?: 0
-                                    ),
-                                    maxHp = hp,
-                                    currentHp = hp,
-                                    maxMp = mp,
-                                    currentMp = mp,
-                                    powers = emptyList()
-                                )
-                            )
-                            createName = ""
-                            createTags = ""
-                            createF = "1"
-                            createH = "1"
-                            createR = "1"
-                            createA = "0"
-                            createP = "0"
-                            createHp = "5"
-                            createMp = "0"
-                        }
-                    }) { Text("Salvar inimigo") }
-                }
-            }
-        }
-
-        if (enemies.isEmpty()) {
-            item {
-                EmptyStateCard(text = "Nenhum inimigo cadastrado. Crie um novo acima para popular a lista e usar no encontro.")
-            }
-        }
-
-        itemsIndexed(enemies) { index, enemy ->
-            EnemyCard(
-                enemy = enemy,
-                defaultQty = quantities[enemy.name] ?: "1",
-                onQtyChanged = { new -> quantities[enemy.name] = new },
-                onAddInstance = { qty -> onAddInstance(enemy, qty) },
-                onUpdateEnemy = { onUpdateEnemy(index, it) },
-                onRemoveEnemy = { onRemoveEnemy(index) },
-                onAddPower = { onAddPower(index, it) },
-                onUpdatePower = { powerIndex, power -> onUpdatePower(index, powerIndex, power) },
-                onRemovePower = { powerIndex -> onRemovePower(index, powerIndex) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun EnemyCard(
-    enemy: com.mestre3dt.data.Enemy,
-    defaultQty: String,
-    onQtyChanged: (String) -> Unit,
-    onAddInstance: (Int) -> Unit,
-    onUpdateEnemy: (com.mestre3dt.data.Enemy) -> Unit,
-    onRemoveEnemy: () -> Unit,
-    onAddPower: (com.mestre3dt.data.Power) -> Unit,
-    onUpdatePower: (Int, com.mestre3dt.data.Power) -> Unit,
-    onRemovePower: (Int) -> Unit,
-) {
-    var editing by remember { mutableStateOf(false) }
-    var confirmingRemoval by remember { mutableStateOf(false) }
-    var name by remember { mutableStateOf(enemy.name) }
-    var tags by remember { mutableStateOf(enemy.tags.joinToString(", ")) }
-    var f by remember { mutableStateOf(enemy.attributes.strength.toString()) }
-    var h by remember { mutableStateOf(enemy.attributes.skill.toString()) }
-    var r by remember { mutableStateOf(enemy.attributes.resistance.toString()) }
-    var a by remember { mutableStateOf(enemy.attributes.armor.toString()) }
-    var pdf by remember { mutableStateOf(enemy.attributes.firepower.toString()) }
-    var hp by remember { mutableStateOf(enemy.maxHp.toString()) }
-    var mp by remember { mutableStateOf(enemy.maxMp?.toString() ?: "") }
-
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(modifier = Modifier.weight(1f)) {
+        items(enemies) { enemy ->
+            val key = enemy.name
+            val qtyText = quantities[key] ?: "1"
+            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp)) {
                     Text(enemy.name, style = MaterialTheme.typography.titleSmall)
                     Text(enemy.tags.joinToString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                     Text(
@@ -1249,198 +952,30 @@ private fun EnemyCard(
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text("PV ${enemy.currentHp}/${enemy.maxHp} | PM ${enemy.currentMp ?: 0}/${enemy.maxMp ?: 0}", style = MaterialTheme.typography.bodySmall)
-                }
-                TextButton(onClick = { editing = !editing }) { Text(if (editing) "Fechar edição" else "Editar") }
-            }
-
-            if (enemy.powers.isNotEmpty()) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Poderes", style = MaterialTheme.typography.labelLarge)
-                    enemy.powers.forEachIndexed { powerIndex, power ->
-                        PowerEditor(
-                            power = power,
-                            onUpdate = { onUpdatePower(powerIndex, it) },
-                            onRemove = { onRemovePower(powerIndex) }
+                    if (enemy.powers.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        enemy.powers.forEach { power ->
+                            Text(power.name, fontWeight = FontWeight.SemiBold)
+                            Text(power.description, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = qtyText,
+                            onValueChange = { new -> quantities[key] = new.filter { it.isDigit() }.ifBlank { "" } },
+                            label = { Text("Qtd no encontro") },
+                            modifier = Modifier.weight(1f)
                         )
+                        OutlinedButton(onClick = {
+                            val qty = qtyText.toIntOrNull() ?: 0
+                            onAddInstance(enemy, qty)
+                        }) {
+                            Text("Adicionar")
+                        }
                     }
                 }
             }
-
-            PowerCreator(onAddPower = onAddPower)
-
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = defaultQty,
-                    onValueChange = { new -> onQtyChanged(new.filter { it.isDigit() }.ifBlank { "" }) },
-                    label = { Text("Qtd no encontro") },
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedButton(onClick = { onAddInstance(defaultQty.toIntOrNull() ?: 0) }) {
-                    Text("Adicionar")
-                }
-            }
-
-            if (editing) {
-                Divider(modifier = Modifier.padding(vertical = 4.dp))
-                Text("Edição completa", style = MaterialTheme.typography.labelLarge)
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = tags, onValueChange = { tags = it }, label = { Text("Tags, separadas por vírgula") }, modifier = Modifier.fillMaxWidth())
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(value = f, onValueChange = { f = it.filter { ch -> ch.isDigit() } }, label = { Text("F") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = h, onValueChange = { h = it.filter { ch -> ch.isDigit() } }, label = { Text("H") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = r, onValueChange = { r = it.filter { ch -> ch.isDigit() } }, label = { Text("R") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = a, onValueChange = { a = it.filter { ch -> ch.isDigit() } }, label = { Text("A") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = pdf, onValueChange = { pdf = it.filter { ch -> ch.isDigit() } }, label = { Text("PdF") }, modifier = Modifier.weight(1f))
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(value = hp, onValueChange = { hp = it.filter { ch -> ch.isDigit() } }, label = { Text("PV Máx") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = mp, onValueChange = { mp = it.filter { ch -> ch.isDigit() } }, label = { Text("PM Máx") }, modifier = Modifier.weight(1f))
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = {
-                        val parsedHp = hp.toIntOrNull() ?: enemy.maxHp
-                        val parsedMp = mp.toIntOrNull()
-                        onUpdateEnemy(
-                            enemy.copy(
-                                name = name.ifBlank { enemy.name },
-                                tags = tags.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                                attributes = com.mestre3dt.data.EnemyAttributes(
-                                    strength = f.toIntOrNull() ?: 0,
-                                    skill = h.toIntOrNull() ?: 0,
-                                    resistance = r.toIntOrNull() ?: 0,
-                                    armor = a.toIntOrNull() ?: 0,
-                                    firepower = pdf.toIntOrNull() ?: 0
-                                ),
-                                maxHp = parsedHp,
-                                currentHp = parsedHp.coerceAtMost(enemy.currentHp),
-                                maxMp = parsedMp,
-                                currentMp = parsedMp?.coerceAtMost(enemy.currentMp ?: parsedMp ?: 0),
-                            )
-                        )
-                        editing = false
-                    }, modifier = Modifier.weight(1f)) { Text("Salvar alterações") }
-
-                    OutlinedButton(
-                        onClick = {
-                            confirmingRemoval = !confirmingRemoval
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(if (confirmingRemoval) "Confirmar exclusão" else "Excluir inimigo")
-                    }
-                }
-                if (confirmingRemoval) {
-                    Text("Esta ação remove o inimigo e suas instâncias do encontro.", style = MaterialTheme.typography.bodySmall)
-                    OutlinedButton(onClick = onRemoveEnemy, modifier = Modifier.fillMaxWidth()) { Text("Remover agora") }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun PowerCreator(onAddPower: (com.mestre3dt.data.Power) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var mpCost by remember { mutableStateOf("") }
-    var target by remember { mutableStateOf("Alvo único") }
-    var testReminder by remember { mutableStateOf("") }
-    var onSuccess by remember { mutableStateOf("") }
-    var onFailure by remember { mutableStateOf("") }
-
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Adicionar poder", style = MaterialTheme.typography.labelLarge)
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrição") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = mpCost, onValueChange = { mpCost = it.filter { ch -> ch.isDigit() } }, label = { Text("Custo em PM") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = target, onValueChange = { target = it }, label = { Text("Alvo") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = testReminder, onValueChange = { testReminder = it }, label = { Text("Lembrete de teste") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = onSuccess, onValueChange = { onSuccess = it }, label = { Text("Efeito em sucesso") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = onFailure, onValueChange = { onFailure = it }, label = { Text("Efeito em falha") }, modifier = Modifier.fillMaxWidth())
-        OutlinedButton(onClick = {
-            val powerName = name.trim()
-            if (powerName.isNotEmpty()) {
-                onAddPower(
-                    com.mestre3dt.data.Power(
-                        name = powerName,
-                        description = description.ifBlank { "Efeito rápido" },
-                        mpCost = mpCost.toIntOrNull(),
-                        target = target.ifBlank { "Alvo" },
-                        testReminder = testReminder.ifBlank { null },
-                        onSuccess = onSuccess.ifBlank { null },
-                        onFailure = onFailure.ifBlank { null }
-                    )
-                )
-                name = ""
-                description = ""
-                mpCost = ""
-                target = "Alvo único"
-                testReminder = ""
-                onSuccess = ""
-                onFailure = ""
-            }
-        }) { Text("Salvar poder") }
-    }
-}
-
-@Composable
-private fun PowerEditor(
-    power: com.mestre3dt.data.Power,
-    onUpdate: (com.mestre3dt.data.Power) -> Unit,
-    onRemove: () -> Unit,
-) {
-    var name by remember { mutableStateOf(power.name) }
-    var description by remember { mutableStateOf(power.description) }
-    var mpCost by remember { mutableStateOf(power.mpCost?.toString() ?: "") }
-    var target by remember { mutableStateOf(power.target) }
-    var testReminder by remember { mutableStateOf(power.testReminder.orEmpty()) }
-    var onSuccess by remember { mutableStateOf(power.onSuccess.orEmpty()) }
-    var onFailure by remember { mutableStateOf(power.onFailure.orEmpty()) }
-    var confirmRemoval by remember { mutableStateOf(false) }
-
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(power.name, style = MaterialTheme.typography.titleSmall)
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrição") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = mpCost, onValueChange = { mpCost = it.filter { ch -> ch.isDigit() } }, label = { Text("PM") }, modifier = Modifier.weight(1f))
-                OutlinedTextField(value = target, onValueChange = { target = it }, label = { Text("Alvo") }, modifier = Modifier.weight(1f))
-            }
-            OutlinedTextField(value = testReminder, onValueChange = { testReminder = it }, label = { Text("Lembrete") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = onSuccess, onValueChange = { onSuccess = it }, label = { Text("Sucesso") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = onFailure, onValueChange = { onFailure = it }, label = { Text("Falha") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = {
-                    onUpdate(
-                        com.mestre3dt.data.Power(
-                            name = name.ifBlank { power.name },
-                            description = description.ifBlank { power.description },
-                            mpCost = mpCost.toIntOrNull(),
-                            target = target.ifBlank { power.target },
-                            testReminder = testReminder.ifBlank { null },
-                            onSuccess = onSuccess.ifBlank { null },
-                            onFailure = onFailure.ifBlank { null }
-                        )
-                    )
-                }, modifier = Modifier.weight(1f)) { Text("Atualizar poder") }
-
-                OutlinedButton(onClick = { confirmRemoval = !confirmRemoval }, modifier = Modifier.weight(1f)) {
-                    Text(if (confirmRemoval) "Confirmar remoção" else "Remover")
-                }
-            }
-            if (confirmRemoval) {
-                OutlinedButton(onClick = onRemove, modifier = Modifier.fillMaxWidth()) { Text("Remover poder agora") }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateCard(text: String) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -1450,12 +985,10 @@ private fun SoundScreen(
     soundScenes: List<SoundScene>,
     activeIndex: Int,
     isPlaying: Boolean,
-    preferences: com.mestre3dt.data.SoundPreferences,
     onSelect: (Int) -> Unit,
     onTogglePlay: () -> Unit,
     onSetBackground: (Int, com.mestre3dt.data.SoundAsset) -> Unit,
-    onAddEffect: (Int, com.mestre3dt.data.SoundEffect) -> Unit,
-    onPreferencesChanged: (Float, Float, Boolean) -> Unit
+    onAddEffect: (Int, com.mestre3dt.data.SoundEffect) -> Unit
 ) {
     val context = LocalContext.current
     val backgroundPlayer = remember { ExoPlayer.Builder(context).build() }
@@ -1466,7 +999,6 @@ private fun SoundScreen(
     val effectPlayer: (Uri) -> Unit = remember {
         { uri ->
             MediaPlayer.create(context, uri)?.apply {
-                setVolume(preferences.effectsVolume, preferences.effectsVolume)
                 setOnCompletionListener { release() }
                 start()
             }
@@ -1479,20 +1011,10 @@ private fun SoundScreen(
         if (bgUri != null) {
             backgroundPlayer.setMediaItem(MediaItem.fromUri(bgUri))
             backgroundPlayer.prepare()
-            backgroundPlayer.volume = preferences.backgroundVolume
             if (isPlaying) backgroundPlayer.play() else backgroundPlayer.pause()
         } else {
             backgroundPlayer.stop()
         }
-    }
-
-    LaunchedEffect(preferences.backgroundVolume, preferences.duckOnFocusLoss) {
-        backgroundPlayer.volume = preferences.backgroundVolume
-        backgroundPlayer.audioAttributes = backgroundPlayer.audioAttributes.buildUpon()
-            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-            .setUsage(C.USAGE_MEDIA)
-            .build()
-        backgroundPlayer.playWhenReady = isPlaying
     }
 
     LazyColumn(
@@ -1503,32 +1025,6 @@ private fun SoundScreen(
     ) {
         item {
             Text("Painel de som local", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        }
-        item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SectionTitle("Preferências de áudio")
-                    Text("Volume da trilha")
-                    Slider(
-                        value = preferences.backgroundVolume,
-                        onValueChange = { onPreferencesChanged(it, preferences.effectsVolume, preferences.duckOnFocusLoss) },
-                        valueRange = 0f..1f
-                    )
-                    Text("Volume dos efeitos")
-                    Slider(
-                        value = preferences.effectsVolume,
-                        onValueChange = { onPreferencesChanged(preferences.backgroundVolume, it, preferences.duckOnFocusLoss) },
-                        valueRange = 0f..1f
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Checkbox(
-                            checked = preferences.duckOnFocusLoss,
-                            onCheckedChange = { onPreferencesChanged(preferences.backgroundVolume, preferences.effectsVolume, it) }
-                        )
-                        Text("Reduzir volume quando outro app tocar áudio")
-                    }
-                }
-            }
         }
         items(soundScenes.size) { index ->
             val scene = soundScenes[index]
@@ -1612,156 +1108,5 @@ private fun SoundScreen(
 
 @Composable
 private fun SectionTitle(title: String) {
-    Text(
-        title,
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.semantics { heading() }
-    )
-}
-
-@Composable
-private fun ErrorBanner(message: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text("Algo deu errado", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer)
-            Text(message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
-        }
-    }
-}
-
-@Composable
-private fun QuickActionsRow(
-    isSessionActive: Boolean,
-    sessionName: String,
-    onStart: () -> Unit,
-    onEnd: () -> Unit,
-    onResetEncounter: () -> Unit,
-    encounterAvailable: Boolean
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
-        AssistChip(
-            onClick = onStart,
-            enabled = !isSessionActive,
-            label = { Text("Iniciar sessão") },
-            leadingIcon = {
-                Icon(Icons.Default.ListAlt, contentDescription = "Iniciar ${sessionName}")
-            }
-        )
-        AssistChip(
-            onClick = onEnd,
-            enabled = isSessionActive,
-            label = { Text("Encerrar sessão") },
-            leadingIcon = {
-                Icon(Icons.Default.Shield, contentDescription = "Encerrar ${sessionName}")
-            }
-        )
-        AssistChip(
-            onClick = onResetEncounter,
-            enabled = encounterAvailable,
-            label = { Text("Reset encontro") },
-            leadingIcon = {
-                Icon(Icons.Default.People, contentDescription = "Reiniciar encontro")
-            },
-            colors = AssistChipDefaults.assistChipColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                labelColor = MaterialTheme.colorScheme.onSurface
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DashboardPreview() {
-    Mestre3DTTheme {
-        DashboardScreen(uiState = previewUiState(), onPushSync = {}, onPullSync = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SessionPreview() {
-    Mestre3DTTheme {
-        SessionScreen(
-            uiState = previewUiState(),
-            onAdjustHp = { _, _ -> },
-            onAdjustMp = { _, _ -> },
-            onToggleDown = {},
-            onRemoveEnemy = {},
-            onAddNote = { _, _ -> },
-            onAddTrigger = { _, _, _, _ -> },
-            onUpdateTrigger = { _, _, _, _, _ -> },
-            onRemoveTrigger = { _, _, _, _ -> },
-            onStartSession = {},
-            onEndSession = {},
-            onResetEncounter = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CampaignsPreview() {
-    Mestre3DTTheme {
-        CampaignsScreen(
-            uiState = previewUiState(),
-            onAddCampaign = {},
-            onAddArc = { _, _ -> },
-            onAddScene = { _, _, _ -> },
-            onSetActiveCampaign = {},
-            onSetActiveArc = {},
-            onSetActiveScene = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun NpcsPreview() {
-    Mestre3DTTheme {
-        NpcsScreen(npcs = previewUiState().npcs, onAddTrigger = { _, _ -> }, onUpdateTrigger = { _, _, _ -> }, onRemoveTrigger = { _, _ -> })
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EnemiesPreview() {
-    Mestre3DTTheme {
-        EnemiesScreen(
-            enemies = previewUiState().enemies,
-            onAddEnemy = {},
-            onUpdateEnemy = { _, _ -> },
-            onRemoveEnemy = {},
-            onAddPower = { _, _ -> },
-            onUpdatePower = { _, _, _ -> },
-            onRemovePower = { _, _ -> },
-            onAddInstance = { _, _ -> },
-            onReset = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SoundPreview() {
-    Mestre3DTTheme {
-        SoundScreen(
-            soundScenes = previewUiState().soundScenes,
-            activeIndex = 0,
-            isPlaying = false,
-            preferences = SoundPreferences(),
-            onSelect = {},
-            onTogglePlay = {},
-            onSetBackground = { _, _ -> },
-            onAddEffect = { _, _ -> },
-            onPreferencesChanged = {}
-        )
-    }
+    Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
 }
