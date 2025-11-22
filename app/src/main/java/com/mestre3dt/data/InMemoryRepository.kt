@@ -34,6 +34,21 @@ class InMemoryRepository {
         }
     }
 
+    fun removeTriggerFromScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, triggerIndex: Int) {
+        _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
+            if (cIndex != campaignIndex) return@mapIndexed campaign
+            val updatedArcs = campaign.arcs.mapIndexed { aIndex, arc ->
+                if (aIndex != arcIndex) return@mapIndexed arc
+                val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
+                    if (sIndex != sceneIndex) return@mapIndexed scene
+                    scene.copy(triggers = scene.triggers.filterIndexed { index, _ -> index != triggerIndex })
+                }
+                arc.copy(scenes = updatedScenes)
+            }
+            campaign.copy(arcs = updatedArcs)
+        }
+    }
+
     fun addCampaign(campaign: Campaign) {
         _campaigns.value = listOf(campaign) + _campaigns.value
     }
@@ -82,6 +97,20 @@ class InMemoryRepository {
 
     fun setNpcs(items: List<Npc>) {
         _npcs.value = items
+    }
+
+    fun addTriggerToNpc(index: Int, trigger: RollTrigger) {
+        _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
+            if (npcIndex != index) return@mapIndexed npc
+            npc.copy(triggers = npc.triggers + trigger)
+        }
+    }
+
+    fun removeTriggerFromNpc(index: Int, triggerIndex: Int) {
+        _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
+            if (npcIndex != index) return@mapIndexed npc
+            npc.copy(triggers = npc.triggers.filterIndexed { idx, _ -> idx != triggerIndex })
+        }
     }
 
     fun setEnemies(items: List<Enemy>) {

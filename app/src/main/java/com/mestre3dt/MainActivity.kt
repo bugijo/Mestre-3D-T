@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ListAlt
@@ -141,9 +142,12 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 MestreTab.Session -> SessionScreen(
                     uiState = uiState,
                     onAdjustHp = viewModel::adjustEnemyHp,
+                    onAdjustMp = viewModel::adjustEnemyMp,
                     onToggleDown = viewModel::toggleEnemyDown,
+                    onRemoveEnemy = viewModel::removeEnemyInstance,
                     onAddNote = viewModel::addNote,
                     onAddTrigger = viewModel::addTriggerToScene,
+                    onRemoveTrigger = viewModel::removeTriggerFromScene,
                     onEndSession = viewModel::endSessionWithSummary
                 )
                 MestreTab.Campaigns -> CampaignsScreen(
@@ -155,7 +159,11 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onSetActiveArc = viewModel::setActiveArc,
                     onSetActiveScene = viewModel::setActiveScene
                 )
-                MestreTab.Npcs -> NpcsScreen(uiState.npcs)
+                MestreTab.Npcs -> NpcsScreen(
+                    npcs = uiState.npcs,
+                    onAddTrigger = viewModel::addTriggerToNpc,
+                    onRemoveTrigger = viewModel::removeTriggerFromNpc
+                )
                 MestreTab.Enemies -> EnemiesScreen(
                     enemies = uiState.enemies,
                     onAddInstance = viewModel::addEnemyInstance,
@@ -255,9 +263,12 @@ private fun DashboardScreen(
 private fun SessionScreen(
     uiState: AppUiState,
     onAdjustHp: (Int, Int) -> Unit,
+    onAdjustMp: (Int, Int) -> Unit,
     onToggleDown: (Int) -> Unit,
+    onRemoveEnemy: (Int) -> Unit,
     onAddNote: (String, Boolean) -> Unit,
     onAddTrigger: (Int, Int, Int, RollTrigger) -> Unit,
+    onRemoveTrigger: (Int, Int, Int, Int) -> Unit,
     onEndSession: () -> Unit
 ) {
     val activeCampaign = uiState.campaigns.getOrNull(uiState.activeCampaignIndex)
@@ -318,8 +329,15 @@ private fun SessionScreen(
                         if (scene.triggers.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("Gatilhos de rolagem:", style = MaterialTheme.typography.labelLarge)
-                            scene.triggers.forEach { trigger ->
-                                RollTriggerCard(trigger)
+                            scene.triggers.forEachIndexed { triggerIndex, trigger ->
+                                RollTriggerCard(trigger, onRemove = {
+                                    onRemoveTrigger(
+                                        uiState.activeCampaignIndex,
+                                        uiState.activeArcIndex,
+                                        uiState.activeSceneIndex,
+                                        triggerIndex
+                                    )
+                                })
                             }
                         }
                     }
@@ -404,7 +422,7 @@ private fun SessionScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         SectionTitle("NPCs na cena")
                         uiState.npcs.forEach { npc ->
-                            NpcCard(npc)
+                            NpcCard(npc = npc, onAddTrigger = {}, onRemoveTrigger = {})
                         }
                     }
                 }
@@ -420,7 +438,9 @@ private fun SessionScreen(
                             EncounterEnemyRow(
                                 state = state,
                                 onAdjustHp = { delta -> onAdjustHp(index, delta) },
-                                onToggleDown = { onToggleDown(index) }
+                                onAdjustMp = { delta -> onAdjustMp(index, delta) },
+                                onToggleDown = { onToggleDown(index) },
+                                onRemove = { onRemoveEnemy(index) }
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -523,7 +543,7 @@ private fun SessionScreen(
 }
 
 @Composable
-private fun RollTriggerCard(trigger: RollTrigger) {
+private fun RollTriggerCard(trigger: RollTrigger, onRemove: (() -> Unit)? = null) {
     var expanded by remember { mutableStateOf(false) }
     OutlinedCard(
         modifier = Modifier
@@ -539,8 +559,13 @@ private fun RollTriggerCard(trigger: RollTrigger) {
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                TextButton(onClick = { expanded = !expanded }) {
-                    Text(if (expanded) "Ocultar" else "Ver detalhes")
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    onRemove?.let {
+                        TextButton(onClick = it) { Text("Remover") }
+                    }
+                    TextButton(onClick = { expanded = !expanded }) {
+                        Text(if (expanded) "Ocultar" else "Ver detalhes")
+                    }
                 }
             }
             if (expanded) {
@@ -559,7 +584,9 @@ private fun RollTriggerCard(trigger: RollTrigger) {
 private fun EncounterEnemyRow(
     state: EncounterEnemyState,
     onAdjustHp: (Int) -> Unit,
-    onToggleDown: () -> Unit
+    onAdjustMp: (Int) -> Unit,
+    onToggleDown: () -> Unit,
+    onRemove: () -> Unit
 ) {
     val downColor = if (state.isDown) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant
     Column(
@@ -585,6 +612,18 @@ private fun EncounterEnemyRow(
                 Text(if (state.isDown) "Levantar" else "Derrubar")
             }
         }
+        if (state.enemy.maxMp != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(-5, -1, +1, +5).forEach { delta ->
+                    OutlinedButton(onClick = { onAdjustMp(delta) }) {
+                        Text(if (delta > 0) "+$delta PM" else "$delta PM")
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedButton(onClick = onRemove) { Text("Remover do encontro") }
         if (state.enemy.powers.isNotEmpty()) {
             Spacer(modifier = Modifier.height(4.dp))
             Text("Poderes:", style = MaterialTheme.typography.labelLarge)
@@ -602,7 +641,18 @@ private fun EncounterEnemyRow(
 }
 
 @Composable
-private fun NpcCard(npc: Npc) {
+private fun NpcCard(
+    npc: Npc,
+    onAddTrigger: (RollTrigger) -> Unit,
+    onRemoveTrigger: (Int) -> Unit
+) {
+    var situation by remember { mutableStateOf("") }
+    var testType by remember { mutableStateOf("Persuasão") }
+    var attribute by remember { mutableStateOf("Habilidade") }
+    var difficulty by remember { mutableStateOf("10") }
+    var onSuccess by remember { mutableStateOf("") }
+    var onFailure by remember { mutableStateOf("") }
+
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -620,6 +670,76 @@ private fun NpcCard(npc: Npc) {
                 npc.quickPhrases.forEach { phrase ->
                     Text("• $phrase", style = MaterialTheme.typography.bodySmall)
                 }
+            }
+            if (npc.triggers.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Gatilhos do NPC:", style = MaterialTheme.typography.labelLarge)
+                npc.triggers.forEachIndexed { index, trigger ->
+                    RollTriggerCard(trigger) { onRemoveTrigger(index) }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Novo gatilho para o NPC", style = MaterialTheme.typography.titleSmall)
+            OutlinedTextField(
+                value = situation,
+                onValueChange = { situation = it },
+                label = { Text("Situação") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = testType,
+                onValueChange = { testType = it },
+                label = { Text("Tipo de teste") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = attribute,
+                    onValueChange = { attribute = it },
+                    label = { Text("Atributo") },
+                    modifier = Modifier.weight(1f)
+                )
+                OutlinedTextField(
+                    value = difficulty,
+                    onValueChange = { difficulty = it },
+                    label = { Text("Dificuldade") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            OutlinedTextField(
+                value = onSuccess,
+                onValueChange = { onSuccess = it },
+                label = { Text("Sucesso") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = onFailure,
+                onValueChange = { onFailure = it },
+                label = { Text("Falha") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            OutlinedButton(onClick = {
+                if (situation.isNotBlank() && onSuccess.isNotBlank()) {
+                    onAddTrigger(
+                        RollTrigger(
+                            situation = situation,
+                            testType = testType.ifBlank { "Teste" },
+                            attribute = attribute.ifBlank { "Habilidade" },
+                            difficulty = difficulty.ifBlank { "10" },
+                            onSuccess = onSuccess,
+                            onFailure = onFailure.ifBlank { "Não revela nada" }
+                        )
+                    )
+                    situation = ""
+                    testType = "Persuasão"
+                    attribute = "Habilidade"
+                    difficulty = "10"
+                    onSuccess = ""
+                    onFailure = ""
+                }
+            }) {
+                Text("Salvar gatilho do NPC")
             }
         }
     }
@@ -779,7 +899,11 @@ private fun CampaignsScreen(
 }
 
 @Composable
-private fun NpcsScreen(npcs: List<Npc>) {
+private fun NpcsScreen(
+    npcs: List<Npc>,
+    onAddTrigger: (Int, RollTrigger) -> Unit,
+    onRemoveTrigger: (Int, Int) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -787,7 +911,13 @@ private fun NpcsScreen(npcs: List<Npc>) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item { Text("NPCs", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
-        items(npcs) { npc -> NpcCard(npc) }
+        itemsIndexed(npcs) { index, npc ->
+            NpcCard(
+                npc = npc,
+                onAddTrigger = { trigger -> onAddTrigger(index, trigger) },
+                onRemoveTrigger = { triggerIndex -> onRemoveTrigger(index, triggerIndex) }
+            )
+        }
     }
 }
 

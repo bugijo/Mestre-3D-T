@@ -122,15 +122,18 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         activeCampaignIndex.value = index
         activeArcIndex.value = 0
         activeSceneIndex.value = 0
+        persistLocalSnapshot()
     }
 
     fun setActiveArc(index: Int) {
         activeArcIndex.value = index
         activeSceneIndex.value = 0
+        persistLocalSnapshot()
     }
 
     fun setActiveScene(index: Int) {
         activeSceneIndex.value = index
+        persistLocalSnapshot()
     }
 
     fun addCampaign(campaign: Campaign) {
@@ -152,6 +155,21 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
 
     fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
         repository.addTriggerToScene(campaignIndex, arcIndex, sceneIndex, trigger)
+        persistLocalSnapshot()
+    }
+
+    fun removeTriggerFromScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, triggerIndex: Int) {
+        repository.removeTriggerFromScene(campaignIndex, arcIndex, sceneIndex, triggerIndex)
+        persistLocalSnapshot()
+    }
+
+    fun addTriggerToNpc(index: Int, trigger: RollTrigger) {
+        repository.addTriggerToNpc(index, trigger)
+        persistLocalSnapshot()
+    }
+
+    fun removeTriggerFromNpc(index: Int, triggerIndex: Int) {
+        repository.removeTriggerFromNpc(index, triggerIndex)
         persistLocalSnapshot()
     }
 
@@ -203,6 +221,26 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         persistLocalSnapshot()
     }
 
+    fun adjustEnemyMp(index: Int, delta: Int) {
+        encounterState.update { current ->
+            current.mapIndexed { idx, state ->
+                if (idx != index) return@mapIndexed state
+                val currentMp = state.currentMp ?: 0
+                val maxMp = state.enemy.maxMp ?: 0
+                val newMp = (currentMp + delta).coerceIn(0, maxMp)
+                state.copy(currentMp = newMp)
+            }
+        }
+        persistLocalSnapshot()
+    }
+
+    fun removeEnemyInstance(index: Int) {
+        encounterState.update { current ->
+            current.filterIndexed { idx, _ -> idx != index }
+        }
+        persistLocalSnapshot()
+    }
+
     fun resetEncounter() {
         encounterState.value = buildEncounter(repository.enemies.value)
         persistLocalSnapshot()
@@ -210,10 +248,12 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
 
     fun selectSoundScene(index: Int) {
         activeSoundSceneIndex.value = index
+        persistLocalSnapshot()
     }
 
     fun toggleSoundPlayback() {
         isSoundPlaying.value = !isSoundPlaying.value
+        persistLocalSnapshot()
     }
 
     fun setSoundBackground(sceneIndex: Int, background: SoundAsset) {
@@ -250,7 +290,13 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         enemies = repository.enemies.value,
         soundScenes = repository.soundScenes.value,
         sessionNotes = repository.sessionNotes.value,
-        sessionSummaries = sessionSummaries.value
+        sessionSummaries = sessionSummaries.value,
+        encounter = encounterState.value,
+        activeCampaignIndex = activeCampaignIndex.value,
+        activeArcIndex = activeArcIndex.value,
+        activeSceneIndex = activeSceneIndex.value,
+        activeSoundSceneIndex = activeSoundSceneIndex.value,
+        isSoundPlaying = isSoundPlaying.value
     )
 
     private fun persistLocalSnapshot() {
@@ -305,10 +351,12 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         repository.setSoundScenes(snapshot.soundScenes)
         repository.setNotes(snapshot.sessionNotes)
         sessionSummaries.value = snapshot.sessionSummaries
-        activeCampaignIndex.value = 0
-        activeArcIndex.value = 0
-        activeSceneIndex.value = 0
-        encounterState.value = buildEncounter(snapshot.enemies)
+        activeCampaignIndex.value = snapshot.activeCampaignIndex
+        activeArcIndex.value = snapshot.activeArcIndex
+        activeSceneIndex.value = snapshot.activeSceneIndex
+        encounterState.value = snapshot.encounter.ifEmpty { buildEncounter(snapshot.enemies) }
+        activeSoundSceneIndex.value = snapshot.activeSoundSceneIndex
+        isSoundPlaying.value = snapshot.isSoundPlaying
         if (persistLocal) {
             persistLocalSnapshot()
         }
