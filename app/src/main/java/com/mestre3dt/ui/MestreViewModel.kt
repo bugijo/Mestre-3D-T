@@ -1,12 +1,14 @@
 package com.mestre3dt.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.mestre3dt.data.Arc
 import com.mestre3dt.data.Campaign
 import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Enemy
 import com.mestre3dt.data.InMemoryRepository
+import com.mestre3dt.data.LocalSnapshotRepository
 import com.mestre3dt.data.RemoteSnapshot
 import com.mestre3dt.data.RemoteSyncRepository
 import com.mestre3dt.data.Scene
@@ -17,6 +19,7 @@ import com.mestre3dt.data.SoundAsset
 import com.mestre3dt.data.SoundEffect
 import java.util.UUID
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -48,9 +51,10 @@ data class AppUiState(
     val isRemoteConfigured: Boolean = false
 )
 
-class MestreViewModel : ViewModel() {
+class MestreViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = InMemoryRepository()
     private val remoteSyncRepository = RemoteSyncRepository()
+    private val localSnapshotRepository = LocalSnapshotRepository(application)
 
     private val activeCampaignIndex = MutableStateFlow(0)
     private val activeArcIndex = MutableStateFlow(0)
@@ -63,6 +67,17 @@ class MestreViewModel : ViewModel() {
     private val encounterState = MutableStateFlow<List<EncounterEnemyState>>(emptyList())
     private val syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
     private var ongoingSync: Job? = null
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val localSnapshot = localSnapshotRepository.loadSnapshot()
+            if (localSnapshot != null) {
+                applySnapshot(localSnapshot, persistLocal = false)
+            } else {
+                encounterState.value = buildEncounter(repository.enemies.value)
+            }
+        }
+    }
 
     val uiState: StateFlow<AppUiState> = combine(
         repository.campaigns,
@@ -118,24 +133,31 @@ class MestreViewModel : ViewModel() {
         activeSceneIndex.value = index
     }
 
-    fun addCampaign(campaign: Campaign) = repository.addCampaign(campaign)
+    fun addCampaign(campaign: Campaign) {
+        repository.addCampaign(campaign)
+        persistLocalSnapshot()
+    }
 
     fun addArc(campaignIndex: Int, arc: Arc) {
         repository.addArc(campaignIndex, arc)
         setActiveArc(index = repository.campaigns.value[campaignIndex].arcs.size - 1)
+        persistLocalSnapshot()
     }
 
     fun addScene(campaignIndex: Int, arcIndex: Int, scene: Scene) {
         repository.addScene(campaignIndex, arcIndex, scene)
         activeSceneIndex.value = repository.campaigns.value[campaignIndex].arcs[arcIndex].scenes.size - 1
+        persistLocalSnapshot()
     }
 
     fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
         repository.addTriggerToScene(campaignIndex, arcIndex, sceneIndex, trigger)
+        persistLocalSnapshot()
     }
 
     fun addNote(text: String, important: Boolean) {
         repository.addNote(SessionNote(text, important))
+        persistLocalSnapshot()
     }
 
     fun endSessionWithSummary() {
@@ -157,6 +179,7 @@ class MestreViewModel : ViewModel() {
             ) + current
         }
         encounterState.value = buildEncounter(repository.enemies.value)
+        persistLocalSnapshot()
     }
 
     fun adjustEnemyHp(index: Int, delta: Int) {
@@ -167,6 +190,7 @@ class MestreViewModel : ViewModel() {
                 state.copy(currentHp = newHp, isDown = newHp <= 0 || state.isDown)
             }
         }
+        persistLocalSnapshot()
     }
 
     fun toggleEnemyDown(index: Int) {
@@ -176,10 +200,12 @@ class MestreViewModel : ViewModel() {
                 state.copy(isDown = !state.isDown, currentHp = if (!state.isDown) 0 else state.currentHp)
             }
         }
+        persistLocalSnapshot()
     }
 
     fun resetEncounter() {
         encounterState.value = buildEncounter(repository.enemies.value)
+        persistLocalSnapshot()
     }
 
     fun selectSoundScene(index: Int) {
@@ -193,10 +219,12 @@ class MestreViewModel : ViewModel() {
     fun setSoundBackground(sceneIndex: Int, background: SoundAsset) {
         repository.setSoundBackground(sceneIndex, background)
         activeSoundSceneIndex.value = sceneIndex
+        persistLocalSnapshot()
     }
 
     fun addSoundEffect(sceneIndex: Int, effect: SoundEffect) {
         repository.addSoundEffect(sceneIndex, effect)
+        persistLocalSnapshot()
     }
 
     fun addEnemyInstance(enemy: Enemy, quantity: Int) {
@@ -213,6 +241,22 @@ class MestreViewModel : ViewModel() {
                 )
             }
         }
+        persistLocalSnapshot()
+    }
+
+    private fun currentSnapshot(): RemoteSnapshot = RemoteSnapshot(
+        campaigns = repository.campaigns.value,
+        npcs = repository.npcs.value,
+        enemies = repository.enemies.value,
+        soundScenes = repository.soundScenes.value,
+        sessionNotes = repository.sessionNotes.value,
+        sessionSummaries = sessionSummaries.value
+    )
+
+    private fun persistLocalSnapshot() {
+        viewModelScope.launch(Dispatchers.IO) {
+            localSnapshotRepository.saveSnapshot(currentSnapshot())
+        }
     }
 
     fun pushSnapshotToCloud() {
@@ -223,15 +267,7 @@ class MestreViewModel : ViewModel() {
         ongoingSync?.cancel()
         ongoingSync = viewModelScope.launch {
             syncStatus.value = SyncStatus.Syncing("Enviando backup…")
-            val snapshot = RemoteSnapshot(
-                campaigns = repository.campaigns.value,
-                npcs = repository.npcs.value,
-                enemies = repository.enemies.value,
-                soundScenes = repository.soundScenes.value,
-                sessionNotes = repository.sessionNotes.value,
-                sessionSummaries = sessionSummaries.value
-            )
-            val result = remoteSyncRepository.pushSnapshot(snapshot)
+            val result = remoteSyncRepository.pushSnapshot(currentSnapshot())
             syncStatus.value = result.fold(
                 onSuccess = { SyncStatus.Success("Backup enviado para Supabase.") },
                 onFailure = { SyncStatus.Error(it.message ?: "Falha ao enviar backup.") }
@@ -262,7 +298,7 @@ class MestreViewModel : ViewModel() {
         }
     }
 
-    private fun applySnapshot(snapshot: RemoteSnapshot) {
+    private fun applySnapshot(snapshot: RemoteSnapshot, persistLocal: Boolean = true) {
         repository.setCampaigns(snapshot.campaigns)
         repository.setNpcs(snapshot.npcs)
         repository.setEnemies(snapshot.enemies)
@@ -273,6 +309,9 @@ class MestreViewModel : ViewModel() {
         activeArcIndex.value = 0
         activeSceneIndex.value = 0
         encounterState.value = buildEncounter(snapshot.enemies)
+        if (persistLocal) {
+            persistLocalSnapshot()
+        }
     }
 
     private fun buildEncounter(enemies: List<Enemy>): List<EncounterEnemyState> =

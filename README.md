@@ -15,6 +15,7 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 - Sincronização manual com Supabase (backup/restauração em um banco gratuito) a partir do dashboard.
 
 ### Atualizações mais recentes
+- Persistência local via Room salvando snapshots completos e restaurando na inicialização, mantendo o app utilizável offline.
 - Inclusão de gatilhos rápidos de cena diretamente na aba **Sessão**.
 - Resumo automático de sessão (cena, notas importantes, inimigos derrubados) com histórico na mesma tela.
 - Painel de som com seleção de trilha/efeitos locais (picker de arquivos + ExoPlayer) e botões de disparo rápido.
@@ -68,10 +69,10 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 
 ## Roadmap e marcos
 Veja o plano completo em [`docs/PLANO.md`](docs/PLANO.md). Resumo das próximas entregas:
-1. Persistir dados com Room (campanhas/arcos/cenas/NPCs) mantendo seed em memória para pré-visualização.
-2. CRUD completo de gatilhos de cena e NPCs, conectando com Sessão.
-3. Ajustar encontros para permitir múltiplas instâncias e PM por inimigo.
-4. Painel de som local com ExoPlayer e seleção de arquivos do dispositivo.
+1. CRUD completo de gatilhos de cena e NPCs, conectando com Sessão.
+2. Ajustar encontros para permitir múltiplas instâncias e PM por inimigo.
+3. Tela de volume/foco de áudio e persistência de preferências do player.
+4. Fluxo de sessões persistentes (criar/encerrar) com resumo automático armazenado.
 5. Empacotar APK de teste e checklist de acessibilidade.
 
 Para uma visão resumida do que falta, consulte [`docs/STATUS.md`](docs/STATUS.md).
