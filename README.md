@@ -1,7 +1,6 @@
 # Mestre 3D&T – Painel do Mestre (Android)
 
-Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, encontros e som local em poucos toques. A base usa
- Kotlin + Jetpack Compose + Material 3 e foi pensada para funcionar offline, com mídia local e persistência em banco interno.
+Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, encontros e som local em poucos toques. A base usa Kotlin + Jetpack Compose + Material 3 e foi pensada para funcionar offline, com mídia local e persistência em banco interno, mas já traz sincronização manual opcional com Supabase (banco PostgreSQL gratuito).
 
 ## O que já existe
 - Projeto Android configurado (Compose, Material 3, minSdk 26, targetSdk 34).
@@ -13,6 +12,7 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 - Tema customizado claro/escuro com cores em clima de RPG.
 - Plano de execução detalhado em [`docs/PLANO.md`](docs/PLANO.md).
 - Status atualizado do MVP em [`docs/STATUS.md`](docs/STATUS.md).
+- Sincronização manual com Supabase (backup/restauração em um banco gratuito) a partir do dashboard.
 
 ### Atualizações mais recentes
 - Inclusão de gatilhos rápidos de cena diretamente na aba **Sessão**.
@@ -28,6 +28,28 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 3. Instalar no dispositivo (USB ou emulador): `./gradlew installDebug`
 4. Gerar APK de release (assinar com seu keystore local): `./gradlew assembleRelease`
 
+### Habilitar sincronização gratuita com Supabase
+1. Crie um projeto gratuito em [Supabase](https://supabase.com) e habilite a REST API padrão.
+2. No SQL editor, crie a tabela `mestre_snapshots` com colunas jsonb:
+   ```sql
+   create table public.mestre_snapshots (
+     campaigns jsonb,
+     npcs jsonb,
+     enemies jsonb,
+     soundScenes jsonb,
+     sessionNotes jsonb,
+     sessionSummaries jsonb,
+     createdAt bigint default extract(epoch from now())*1000
+   );
+   ```
+3. Em `local.properties` (não versionado), adicione:
+   ```properties
+   SUPABASE_URL=https://<sua-instancia>.supabase.co
+   SUPABASE_KEY=<chave_anon_publica>
+   SUPABASE_TABLE=mestre_snapshots
+   ```
+4. Rode `./gradlew assembleDebug` normalmente. No dashboard do app, use os botões **Enviar backup** / **Baixar backup**.
+
 ## Principais fluxos do MVP
 - **Campanhas → Arcos → Cenas**: CRUD completo, com gatilhos de rolagem (sucesso/falha) exibidos em modo sessão.
 - **NPCs**: personalidade (palavras-chave, jeito de falar, trejeitos), segredos por nível, frases prontas e gatilhos próprios.
@@ -35,6 +57,7 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 - **Sessões e Log**: notas rápidas marcadas como importante/flavor e resumo automático ao encerrar.
 - **Som Local**: cenas de som com trilha de fundo e efeitos locais (sem streaming), selecionados do dispositivo e tocados com ExoPlayer.
 - **Mesa do Mestre**: cabeçalho com campanha/sessão/cena atual, área da cena, NPCs ativos, encontro atual e painel compacto de som.
+- **Backup em nuvem (opcional)**: envia/baixa snapshot de campanhas, NPCs, encontros, cenas de som, notas e resumos via Supabase grátis.
 
 ## Arquitetura recomendada
 - **Apresentação**: Jetpack Compose + Navigation; telas desacopladas com ViewModels.

@@ -75,4 +75,24 @@ class InMemoryRepository {
     fun updateEnemies(updater: (List<Enemy>) -> List<Enemy>) {
         _enemies.value = updater(_enemies.value)
     }
+
+    fun setCampaigns(items: List<Campaign>) {
+        _campaigns.value = items
+    }
+
+    fun setNpcs(items: List<Npc>) {
+        _npcs.value = items
+    }
+
+    fun setEnemies(items: List<Enemy>) {
+        _enemies.value = items
+    }
+
+    fun setSoundScenes(items: List<SoundScene>) {
+        _soundScenes.value = items
+    }
+
+    fun setNotes(items: List<SessionNote>) {
+        _sessionNotes.value = items
+    }
 }

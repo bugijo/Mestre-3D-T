@@ -1,7 +1,9 @@
 package com.mestre3dt.data
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 data class RollTrigger(
     val situation: String,
@@ -12,6 +14,7 @@ data class RollTrigger(
     val onFailure: String
 )
 
+@Serializable
 @Immutable
 data class Scene(
     val name: String,
@@ -22,12 +25,14 @@ data class Scene(
     val triggers: List<RollTrigger>
 )
 
+@Serializable
 @Immutable
 data class Arc(
     val title: String,
     val scenes: List<Scene>
 )
 
+@Serializable
 @Immutable
 data class Campaign(
     val title: String,
@@ -37,6 +42,7 @@ data class Campaign(
     val arcs: List<Arc>
 )
 
+@Serializable
 @Immutable
 data class Npc(
     val name: String,
@@ -50,6 +56,7 @@ data class Npc(
     val triggers: List<RollTrigger>
 )
 
+@Serializable
 @Immutable
 data class Power(
     val name: String,
@@ -61,6 +68,7 @@ data class Power(
     val onFailure: String?
 )
 
+@Serializable
 @Immutable
 data class Enemy(
     val name: String,
@@ -73,6 +81,7 @@ data class Enemy(
     val powers: List<Power>
 )
 
+@Serializable
 @Immutable
 data class EnemyAttributes(
     val strength: Int,
@@ -82,18 +91,21 @@ data class EnemyAttributes(
     val firepower: Int
 )
 
+@Serializable
 @Immutable
 data class SoundEffect(
     val name: String,
     val uri: String?
 )
 
+@Serializable
 @Immutable
 data class SoundAsset(
     val name: String,
     val uri: String?
 )
 
+@Serializable
 @Immutable
 data class SoundScene(
     val name: String,
@@ -101,12 +113,14 @@ data class SoundScene(
     val effects: List<SoundEffect>
 )
 
+@Serializable
 @Immutable
 data class SessionNote(
     val text: String,
     val important: Boolean
 )
 
+@Serializable
 @Immutable
 data class SessionSummary(
     val campaignTitle: String?,

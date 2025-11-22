@@ -5,6 +5,7 @@
 - Modelos imutáveis e repositório em memória exposto via ViewModel, com dados de exemplo para campanhas/arcos/cenas, NPCs, encontros e painel de som.
 - UI funcional para visualizar e manipular estado em memória: ativar cenas na aba Sessão, ajustar PV/estado do encontro, registrar notas rápidas e editar campanhas/arcos/cenas em CRUD básico.
 - Tema claro/escuro customizado e ícones adaptativos prontos para build.
+- Sincronização manual via Supabase (gratuito) para enviar/baixar snapshots completos de dados diretamente do dashboard.
 
 ## O que ainda falta para um app completo
 - **Persistência local**: substituir o repositório em memória por Room (campanhas, arcos, cenas, gatilhos, NPCs, encontros, notas, configurações rápidas via DataStore).

@@ -69,6 +69,7 @@ import com.mestre3dt.data.RollTrigger
 import com.mestre3dt.data.Scene
 import com.mestre3dt.ui.AppUiState
 import com.mestre3dt.ui.MestreViewModel
+import com.mestre3dt.ui.SyncStatus
 import com.mestre3dt.data.SoundScene
 import com.mestre3dt.ui.theme.Mestre3DTTheme
 
@@ -132,7 +133,11 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                MestreTab.Dashboard -> DashboardScreen(uiState)
+                MestreTab.Dashboard -> DashboardScreen(
+                    uiState = uiState,
+                    onPushSync = viewModel::pushSnapshotToCloud,
+                    onPullSync = viewModel::pullSnapshotFromCloud
+                )
                 MestreTab.Session -> SessionScreen(
                     uiState = uiState,
                     onAdjustHp = viewModel::adjustEnemyHp,
@@ -171,7 +176,11 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
 }
 
 @Composable
-private fun DashboardScreen(uiState: AppUiState) {
+private fun DashboardScreen(
+    uiState: AppUiState,
+    onPushSync: () -> Unit,
+    onPullSync: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -189,6 +198,33 @@ private fun DashboardScreen(uiState: AppUiState) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
+        }
+        item {
+            val statusText = when (val status = uiState.syncStatus) {
+                is SyncStatus.Idle -> "Pronto para sincronizar com Supabase (gratuito)."
+                is SyncStatus.Syncing -> status.message
+                is SyncStatus.Success -> status.message
+                is SyncStatus.Error -> status.message
+            }
+            val isSyncing = uiState.syncStatus is SyncStatus.Syncing
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Backup em nuvem", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = if (uiState.isRemoteConfigured) statusText else "Configure SUPABASE_URL/SUPABASE_KEY em local.properties para usar o banco gratuito.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (uiState.syncStatus is SyncStatus.Error || !uiState.isRemoteConfigured) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Button(onClick = onPushSync, enabled = uiState.isRemoteConfigured && !isSyncing) {
+                            Text("Enviar backup")
+                        }
+                        OutlinedButton(onClick = onPullSync, enabled = uiState.isRemoteConfigured && !isSyncing) {
+                            Text("Baixar backup")
+                        }
+                    }
+                }
+            }
         }
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
