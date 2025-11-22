@@ -187,19 +187,19 @@ val sampleEnemies = listOf(
 val sampleSoundScenes = listOf(
     SoundScene(
         name = "Taverna Viva",
-        backgroundFile = "taverna_fundo.mp3",
+        background = SoundAsset(name = "Trilha de fundo da taverna", uri = null),
         effects = listOf(
-            SoundEffect("Copos", "copos.mp3"),
-            SoundEffect("Porta Rangendo", "porta.mp3"),
-            SoundEffect("Risos", "risos.mp3")
+            SoundEffect("Copos", uri = null),
+            SoundEffect("Porta Rangendo", uri = null),
+            SoundEffect("Risos", uri = null)
         )
     ),
     SoundScene(
         name = "Floresta Noturna",
-        backgroundFile = "floresta_noite.mp3",
+        background = SoundAsset(name = "Vento e folhas", uri = null),
         effects = listOf(
-            SoundEffect("Coruja", "coruja.mp3"),
-            SoundEffect("Passos na folha", "folhas.mp3")
+            SoundEffect("Coruja", uri = null),
+            SoundEffect("Passos na folha", uri = null)
         )
     )
 )

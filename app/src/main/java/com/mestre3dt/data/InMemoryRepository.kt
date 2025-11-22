@@ -58,6 +58,20 @@ class InMemoryRepository {
         _sessionNotes.value = listOf(note) + _sessionNotes.value
     }
 
+    fun setSoundBackground(sceneIndex: Int, background: SoundAsset) {
+        _soundScenes.value = _soundScenes.value.mapIndexed { index, scene ->
+            if (index != sceneIndex) return@mapIndexed scene
+            scene.copy(background = background)
+        }
+    }
+
+    fun addSoundEffect(sceneIndex: Int, effect: SoundEffect) {
+        _soundScenes.value = _soundScenes.value.mapIndexed { index, scene ->
+            if (index != sceneIndex) return@mapIndexed scene
+            scene.copy(effects = scene.effects + effect)
+        }
+    }
+
     fun updateEnemies(updater: (List<Enemy>) -> List<Enemy>) {
         _enemies.value = updater(_enemies.value)
     }

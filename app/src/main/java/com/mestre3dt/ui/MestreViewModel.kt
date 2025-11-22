@@ -11,6 +11,9 @@ import com.mestre3dt.data.Scene
 import com.mestre3dt.data.SessionSummary
 import com.mestre3dt.data.RollTrigger
 import com.mestre3dt.data.SessionNote
+import com.mestre3dt.data.SoundAsset
+import com.mestre3dt.data.SoundEffect
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -121,7 +124,7 @@ class MestreViewModel : ViewModel() {
         val activeCampaign = campaigns.getOrNull(activeCampaignIndex.value)
         val activeArc = activeCampaign?.arcs?.getOrNull(activeArcIndex.value)
         val activeScene = activeArc?.scenes?.getOrNull(activeSceneIndex.value)
-        val defeated = encounterState.value.filter { it.isDown || it.currentHp <= 0 }.map { it.enemy.name }
+        val defeated = encounterState.value.filter { it.isDown || it.currentHp <= 0 }.map { it.label }
         sessionSummaries.update { current ->
             listOf(
                 SessionSummary(
@@ -168,9 +171,36 @@ class MestreViewModel : ViewModel() {
         isSoundPlaying.value = !isSoundPlaying.value
     }
 
+    fun setSoundBackground(sceneIndex: Int, background: SoundAsset) {
+        repository.setSoundBackground(sceneIndex, background)
+        activeSoundSceneIndex.value = sceneIndex
+    }
+
+    fun addSoundEffect(sceneIndex: Int, effect: SoundEffect) {
+        repository.addSoundEffect(sceneIndex, effect)
+    }
+
+    fun addEnemyInstance(enemy: Enemy, quantity: Int) {
+        if (quantity <= 0) return
+        encounterState.update { current ->
+            current + List(quantity) { idx ->
+                EncounterEnemyState(
+                    id = UUID.randomUUID().toString(),
+                    label = "${enemy.name} #${current.count { it.enemy.name == enemy.name } + idx + 1}",
+                    enemy = enemy,
+                    currentHp = enemy.currentHp,
+                    currentMp = enemy.currentMp,
+                    isDown = enemy.currentHp <= 0
+                )
+            }
+        }
+    }
+
     private fun buildEncounter(enemies: List<Enemy>): List<EncounterEnemyState> =
-        enemies.map { enemy ->
+        enemies.mapIndexed { index, enemy ->
             EncounterEnemyState(
+                id = UUID.randomUUID().toString(),
+                label = "${enemy.name} #${index + 1}",
                 enemy = enemy,
                 currentHp = enemy.currentHp,
                 currentMp = enemy.currentMp,

@@ -17,6 +17,8 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 ### Atualizações mais recentes
 - Inclusão de gatilhos rápidos de cena diretamente na aba **Sessão**.
 - Resumo automático de sessão (cena, notas importantes, inimigos derrubados) com histórico na mesma tela.
+- Painel de som com seleção de trilha/efeitos locais (picker de arquivos + ExoPlayer) e botões de disparo rápido.
+- Encontros permitem múltiplas instâncias do mesmo inimigo, mantendo PV/estado por instância.
 
 ## Como rodar e gerar APK
 > Requer Android Studio Iguana ou superior, ou Gradle 8.3+ com JDK 17.
@@ -31,7 +33,7 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 - **NPCs**: personalidade (palavras-chave, jeito de falar, trejeitos), segredos por nível, frases prontas e gatilhos próprios.
 - **Vilões/Inimigos**: atributos F/H/R/A/PdF, PV/PM, poderes e tags; encontros com múltiplas instâncias e controles rápidos de PV.
 - **Sessões e Log**: notas rápidas marcadas como importante/flavor e resumo automático ao encerrar.
-- **Som Local**: cenas de som com trilha de fundo e efeitos locais (sem streaming).
+- **Som Local**: cenas de som com trilha de fundo e efeitos locais (sem streaming), selecionados do dispositivo e tocados com ExoPlayer.
 - **Mesa do Mestre**: cabeçalho com campanha/sessão/cena atual, área da cena, NPCs ativos, encontro atual e painel compacto de som.
 
 ## Arquitetura recomendada

@@ -1,9 +1,15 @@
 package com.mestre3dt
 
+import android.content.Context
+import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.viewModels
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +45,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,9 +55,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.mestre3dt.data.Arc
 import com.mestre3dt.data.Campaign
 import com.mestre3dt.data.EncounterEnemyState
@@ -140,13 +151,19 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onSetActiveScene = viewModel::setActiveScene
                 )
                 MestreTab.Npcs -> NpcsScreen(uiState.npcs)
-                MestreTab.Enemies -> EnemiesScreen(uiState.enemies, viewModel::resetEncounter)
+                MestreTab.Enemies -> EnemiesScreen(
+                    enemies = uiState.enemies,
+                    onAddInstance = viewModel::addEnemyInstance,
+                    onReset = viewModel::resetEncounter
+                )
                 MestreTab.Sound -> SoundScreen(
                     soundScenes = uiState.soundScenes,
                     activeIndex = uiState.activeSoundSceneIndex,
                     isPlaying = uiState.isSoundPlaying,
                     onSelect = viewModel::selectSoundScene,
-                    onTogglePlay = viewModel::toggleSoundPlayback
+                    onTogglePlay = viewModel::toggleSoundPlayback,
+                    onSetBackground = viewModel::setSoundBackground,
+                    onAddEffect = viewModel::addSoundEffect
                 )
             }
         }
@@ -515,7 +532,7 @@ private fun EncounterEnemyRow(
             .background(downColor)
             .padding(12.dp)
     ) {
-        Text(state.enemy.name, style = MaterialTheme.typography.titleSmall)
+        Text(state.label, style = MaterialTheme.typography.titleSmall)
         Text(state.enemy.tags.joinToString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
         Text(
             "PV ${state.currentHp}/${state.enemy.maxHp} | PM ${state.currentMp ?: 0}/${state.enemy.maxMp ?: 0}",
@@ -739,7 +756,12 @@ private fun NpcsScreen(npcs: List<Npc>) {
 }
 
 @Composable
-private fun EnemiesScreen(enemies: List<com.mestre3dt.data.Enemy>, onReset: () -> Unit) {
+private fun EnemiesScreen(
+    enemies: List<com.mestre3dt.data.Enemy>,
+    onAddInstance: (com.mestre3dt.data.Enemy, Int) -> Unit,
+    onReset: () -> Unit
+) {
+    val quantities = remember { mutableStateMapOf<String, String>() }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -753,6 +775,8 @@ private fun EnemiesScreen(enemies: List<com.mestre3dt.data.Enemy>, onReset: () -
             }
         }
         items(enemies) { enemy ->
+            val key = enemy.name
+            val qtyText = quantities[key] ?: "1"
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(enemy.name, style = MaterialTheme.typography.titleSmall)
@@ -769,6 +793,21 @@ private fun EnemiesScreen(enemies: List<com.mestre3dt.data.Enemy>, onReset: () -
                             Text(power.description, style = MaterialTheme.typography.bodySmall)
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = qtyText,
+                            onValueChange = { new -> quantities[key] = new.filter { it.isDigit() }.ifBlank { "" } },
+                            label = { Text("Qtd no encontro") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        OutlinedButton(onClick = {
+                            val qty = qtyText.toIntOrNull() ?: 0
+                            onAddInstance(enemy, qty)
+                        }) {
+                            Text("Adicionar")
+                        }
+                    }
                 }
             }
         }
@@ -781,8 +820,37 @@ private fun SoundScreen(
     activeIndex: Int,
     isPlaying: Boolean,
     onSelect: (Int) -> Unit,
-    onTogglePlay: () -> Unit
+    onTogglePlay: () -> Unit,
+    onSetBackground: (Int, com.mestre3dt.data.SoundAsset) -> Unit,
+    onAddEffect: (Int, com.mestre3dt.data.SoundEffect) -> Unit
 ) {
+    val context = LocalContext.current
+    val backgroundPlayer = remember { ExoPlayer.Builder(context).build() }
+    DisposableEffect(backgroundPlayer) {
+        onDispose { backgroundPlayer.release() }
+    }
+
+    val effectPlayer: (Uri) -> Unit = remember {
+        { uri ->
+            MediaPlayer.create(context, uri)?.apply {
+                setOnCompletionListener { release() }
+                start()
+            }
+        }
+    }
+
+    LaunchedEffect(activeIndex, soundScenes, isPlaying) {
+        val scene = soundScenes.getOrNull(activeIndex)
+        val bgUri = scene?.background?.uri
+        if (bgUri != null) {
+            backgroundPlayer.setMediaItem(MediaItem.fromUri(bgUri))
+            backgroundPlayer.prepare()
+            if (isPlaying) backgroundPlayer.play() else backgroundPlayer.pause()
+        } else {
+            backgroundPlayer.stop()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -794,26 +862,77 @@ private fun SoundScreen(
         }
         items(soundScenes.size) { index ->
             val scene = soundScenes[index]
+            val backgroundPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri != null) {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    onSetBackground(index, com.mestre3dt.data.SoundAsset(name = scene.name, uri = uri.toString()))
+                }
+            }
+
+            val effectPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri != null) {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    onAddEffect(index, com.mestre3dt.data.SoundEffect(name = "SFX ${scene.effects.size + 1}", uri = uri.toString()))
+                }
+            }
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(scene.name, style = MaterialTheme.typography.titleSmall)
-                            Text("Trilha: ${scene.backgroundFile}", style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                "Trilha: ${scene.background?.name ?: "selecione um arquivo"}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                         OutlinedButton(onClick = { onSelect(index) }) {
                             Text(if (activeIndex == index) "Ativa" else "Ativar")
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(onClick = { backgroundPicker.launch(arrayOf("audio/*")) }) {
+                            Text("Escolher trilha")
+                        }
+                        OutlinedButton(onClick = { effectPicker.launch(arrayOf("audio/*")) }) {
+                            Text("Adicionar SFX")
+                        }
+                    }
                     if (scene.effects.isNotEmpty()) {
                         Text("Efeitos:", style = MaterialTheme.typography.labelLarge)
                         scene.effects.forEach { effect ->
-                            Text("• ${effect.name} (${effect.fileName})", style = MaterialTheme.typography.bodySmall)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    "• ${effect.name} ${if (effect.uri == null) "(selecionar arquivo)" else ""}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedButton(onClick = {
+                                    effect.uri?.let { effectPlayer(Uri.parse(it)) }
+                                }, enabled = effect.uri != null) {
+                                    Text("Tocar")
+                                }
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedButton(onClick = onTogglePlay) {
-                        Text(if (isPlaying && activeIndex == index) "Pausar" else "Tocar")
+                    OutlinedButton(onClick = onTogglePlay, enabled = scene.background?.uri != null) {
+                        Text(
+                            when {
+                                scene.background?.uri == null -> "Selecione uma trilha"
+                                isPlaying && activeIndex == index -> "Pausar trilha"
+                                else -> "Tocar trilha"
+                            }
+                        )
                     }
                 }
             }

@@ -85,13 +85,19 @@ data class EnemyAttributes(
 @Immutable
 data class SoundEffect(
     val name: String,
-    val fileName: String
+    val uri: String?
+)
+
+@Immutable
+data class SoundAsset(
+    val name: String,
+    val uri: String?
 )
 
 @Immutable
 data class SoundScene(
     val name: String,
-    val backgroundFile: String,
+    val background: SoundAsset?,
     val effects: List<SoundEffect>
 )
 

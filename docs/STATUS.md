@@ -8,8 +8,8 @@
 
 ## O que ainda falta para um app completo
 - **Persistência local**: substituir o repositório em memória por Room (campanhas, arcos, cenas, gatilhos, NPCs, encontros, notas, configurações rápidas via DataStore).
-- **CRUD completo**: incluir criação/edição/exclusão de gatilhos de cena e gatilhos específicos de NPC; gestão de poderes e instâncias múltiplas de inimigos por encontro (PV/PM separados por instância).
-- **Áudio local**: integrar ExoPlayer para trilha de fundo e efeitos sonoros, com seletor de arquivos locais, controle de volume e tratamento de foco de áudio.
+- **CRUD completo**: incluir criação/edição/exclusão de gatilhos de cena e gatilhos específicos de NPC; gestão de poderes e PM consumido por instância de inimigo; remoção/edição de instâncias do encontro.
+- **Áudio local**: já há picker e reprodução com ExoPlayer/MediaPlayer; falta tela dedicada de volume, tratamento de foco de áudio e persistência das escolhas.
 - **Sessões**: fluxo de criação/encerramento de sessão com resumo automático (cenas usadas, NPCs relevantes, inimigos derrotados, notas importantes) e log persistido.
 - **UX refinada**: estados de loading/erro, empty states, confirmações destrutivas, acessibilidade (talkback, contraste), e atalhos de uso frequente na Mesa do Mestre.
 - **Empacotamento**: configurar assinatura de release, flavors se necessário e checklist de privacidade/armazenamento de mídia antes de publicar ou distribuir APK.
