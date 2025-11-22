@@ -1,0 +1,711 @@
+package com.mestre3dt
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mestre3dt.data.Arc
+import com.mestre3dt.data.Campaign
+import com.mestre3dt.data.EncounterEnemyState
+import com.mestre3dt.data.Npc
+import com.mestre3dt.data.RollTrigger
+import com.mestre3dt.data.Scene
+import com.mestre3dt.ui.AppUiState
+import com.mestre3dt.ui.MestreViewModel
+import com.mestre3dt.data.SoundScene
+import com.mestre3dt.ui.theme.Mestre3DTTheme
+
+class MainActivity : ComponentActivity() {
+    private val viewModel: MestreViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            Mestre3DTTheme {
+                MestreApp(viewModel)
+            }
+        }
+    }
+}
+
+private enum class MestreTab(val label: String) {
+    Dashboard("Dashboard"),
+    Session("Sessão"),
+    Campaigns("Campanhas"),
+    Npcs("NPCs"),
+    Enemies("Combate"),
+    Sound("Som")
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MestreApp(viewModel: MestreViewModel = viewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
+    var selectedTab by remember { mutableStateOf(MestreTab.Dashboard) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Mesa do Mestre 3D&T") })
+        },
+        bottomBar = {
+            NavigationBar {
+                MestreTab.values().forEach { tab ->
+                    NavigationBarItem(
+                        selected = tab == selectedTab,
+                        onClick = { selectedTab = tab },
+                        label = { Text(tab.label) },
+                        icon = {
+                            when (tab) {
+                                MestreTab.Dashboard -> Icon(Icons.Default.ListAlt, contentDescription = null)
+                                MestreTab.Session -> Icon(Icons.Default.ListAlt, contentDescription = null)
+                                MestreTab.Campaigns -> Icon(Icons.Default.Campaign, contentDescription = null)
+                                MestreTab.Npcs -> Icon(Icons.Default.People, contentDescription = null)
+                                MestreTab.Enemies -> Icon(Icons.Default.Shield, contentDescription = null)
+                                MestreTab.Sound -> Icon(Icons.Default.MusicNote, contentDescription = null)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when (selectedTab) {
+                MestreTab.Dashboard -> DashboardScreen(uiState)
+                MestreTab.Session -> SessionScreen(
+                    uiState = uiState,
+                    onAdjustHp = viewModel::adjustEnemyHp,
+                    onToggleDown = viewModel::toggleEnemyDown,
+                    onAddNote = viewModel::addNote
+                )
+                MestreTab.Campaigns -> CampaignsScreen(
+                    uiState = uiState,
+                    onAddCampaign = viewModel::addCampaign,
+                    onAddArc = viewModel::addArc,
+                    onAddScene = viewModel::addScene,
+                    onSetActiveCampaign = viewModel::setActiveCampaign,
+                    onSetActiveArc = viewModel::setActiveArc,
+                    onSetActiveScene = viewModel::setActiveScene
+                )
+                MestreTab.Npcs -> NpcsScreen(uiState.npcs)
+                MestreTab.Enemies -> EnemiesScreen(uiState.enemies, viewModel::resetEncounter)
+                MestreTab.Sound -> SoundScreen(
+                    soundScenes = uiState.soundScenes,
+                    activeIndex = uiState.activeSoundSceneIndex,
+                    isPlaying = uiState.isSoundPlaying,
+                    onSelect = viewModel::selectSoundScene,
+                    onTogglePlay = viewModel::toggleSoundPlayback
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DashboardScreen(uiState: AppUiState) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = "Painel do Mestre — visão geral",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Campanhas: ${uiState.campaigns.size} | NPCs: ${uiState.npcs.size} | Encontros: ${uiState.enemies.size}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Próximos passos do MVP", style = MaterialTheme.typography.titleMedium)
+                    Text("- CRUD de campanhas com cenas e gatilhos", style = MaterialTheme.typography.bodySmall)
+                    Text("- Seleção de cena ativa em sessão", style = MaterialTheme.typography.bodySmall)
+                    Text("- Controle de encontro e log de sessão", style = MaterialTheme.typography.bodySmall)
+                    Text("- Painel de som local", style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Dica de uso", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "Use a aba Campanhas para ativar a cena em andamento e já puxar gatilhos e NPCs na aba Sessão.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SessionScreen(
+    uiState: AppUiState,
+    onAdjustHp: (Int, Int) -> Unit,
+    onToggleDown: (Int) -> Unit,
+    onAddNote: (String, Boolean) -> Unit
+) {
+    val activeCampaign = uiState.campaigns.getOrNull(uiState.activeCampaignIndex)
+    val activeArc = activeCampaign?.arcs?.getOrNull(uiState.activeArcIndex)
+    val activeScene = activeArc?.scenes?.getOrNull(uiState.activeSceneIndex)
+    var noteText by remember { mutableStateOf("") }
+    var important by remember { mutableStateOf(false) }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = "Painel rápido da sessão",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            if (activeCampaign != null && activeScene != null) {
+                Text(
+                    text = "Campanha: ${activeCampaign.title} — Cena: ${activeScene.name}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Text(
+                    text = "Selecione uma campanha/cena na aba Campanhas.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
+        activeScene?.let { scene ->
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Cena em andamento", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("Objetivo: ${scene.objective}", style = MaterialTheme.typography.bodyMedium)
+                        Text("Clima: ${scene.mood}", style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text("Texto de abertura:", style = MaterialTheme.typography.labelLarge)
+                        Text(scene.opening, style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text("Ganchos:", style = MaterialTheme.typography.labelLarge)
+                        scene.hooks.forEach { hook ->
+                            Text("• $hook", style = MaterialTheme.typography.bodySmall)
+                        }
+                        if (scene.triggers.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Gatilhos de rolagem:", style = MaterialTheme.typography.labelLarge)
+                            scene.triggers.forEach { trigger ->
+                                RollTriggerCard(trigger)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (uiState.npcs.isNotEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionTitle("NPCs na cena")
+                        uiState.npcs.forEach { npc ->
+                            NpcCard(npc)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (uiState.encounter.isNotEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionTitle("Encontro atual")
+                        uiState.encounter.forEachIndexed { index, state ->
+                            EncounterEnemyRow(
+                                state = state,
+                                onAdjustHp = { delta -> onAdjustHp(index, delta) },
+                                onToggleDown = { onToggleDown(index) }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SectionTitle("Notas rápidas da sessão")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            value = noteText,
+                            onValueChange = { noteText = it },
+                            label = { Text("Anotação") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Importante", style = MaterialTheme.typography.labelSmall)
+                            SingleChoiceSegmentedButtonRow {
+                                SegmentedButton(
+                                    checked = !important,
+                                    onCheckedChange = { important = false },
+                                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                                ) { Text("Não") }
+                                SegmentedButton(
+                                    checked = important,
+                                    onCheckedChange = { important = true },
+                                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                                ) { Text("Sim") }
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        OutlinedButton(onClick = {
+                            if (noteText.isNotBlank()) {
+                                onAddNote(noteText, important)
+                                noteText = ""
+                                important = false
+                            }
+                        }) {
+                            Text("Salvar")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    uiState.sessionNotes.forEach { note ->
+                        val bg = if (note.important) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant
+                        val fg = if (note.important) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                        Text(
+                            note.text,
+                            modifier = Modifier
+                                .padding(vertical = 2.dp)
+                                .background(bg)
+                                .padding(8.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = fg
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RollTriggerCard(trigger: RollTrigger) {
+    var expanded by remember { mutableStateOf(false) }
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(trigger.situation, style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        "${trigger.testType} (${trigger.attribute}) | Dif.: ${trigger.difficulty}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                TextButton(onClick = { expanded = !expanded }) {
+                    Text(if (expanded) "Ocultar" else "Ver detalhes")
+                }
+            }
+            if (expanded) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Sucesso:", style = MaterialTheme.typography.labelLarge)
+                Text(trigger.onSuccess, style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Falha:", style = MaterialTheme.typography.labelLarge)
+                Text(trigger.onFailure, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EncounterEnemyRow(
+    state: EncounterEnemyState,
+    onAdjustHp: (Int) -> Unit,
+    onToggleDown: () -> Unit
+) {
+    val downColor = if (state.isDown) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(downColor)
+            .padding(12.dp)
+    ) {
+        Text(state.enemy.name, style = MaterialTheme.typography.titleSmall)
+        Text(state.enemy.tags.joinToString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+        Text(
+            "PV ${state.currentHp}/${state.enemy.maxHp} | PM ${state.currentMp ?: 0}/${state.enemy.maxMp ?: 0}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(-5, -1, +1, +5).forEach { delta ->
+                OutlinedButton(onClick = { onAdjustHp(delta) }) {
+                    Text(if (delta > 0) "+$delta PV" else "$delta PV")
+                }
+            }
+            OutlinedButton(onClick = onToggleDown) {
+                Text(if (state.isDown) "Levantar" else "Derrubar")
+            }
+        }
+        if (state.enemy.powers.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("Poderes:", style = MaterialTheme.typography.labelLarge)
+            state.enemy.powers.forEach { power ->
+                Text(power.name, fontWeight = FontWeight.SemiBold)
+                Text(power.description, style = MaterialTheme.typography.bodySmall)
+                Text("Custo PM: ${power.mpCost?.toString() ?: "0"} | Alvo: ${power.target}", style = MaterialTheme.typography.bodySmall)
+                power.testReminder?.let { Text("Teste: $it", style = MaterialTheme.typography.bodySmall) }
+                power.onSuccess?.let { Text("Sucesso: $it", style = MaterialTheme.typography.bodySmall) }
+                power.onFailure?.let { Text("Falha: $it", style = MaterialTheme.typography.bodySmall) }
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun NpcCard(npc: Npc) {
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(npc.name, style = MaterialTheme.typography.titleSmall)
+            Text(npc.role, style = MaterialTheme.typography.bodySmall)
+            Text("Personalidade: ${npc.personality.joinToString()} ", style = MaterialTheme.typography.bodySmall)
+            Text("Jeito de falar: ${npc.speechStyle}", style = MaterialTheme.typography.bodySmall)
+            Text("Trejeitos: ${npc.mannerisms.joinToString()} ", style = MaterialTheme.typography.bodySmall)
+            if (npc.quickPhrases.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Frases prontas:", style = MaterialTheme.typography.labelLarge)
+                npc.quickPhrases.forEach { phrase ->
+                    Text("• $phrase", style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CampaignsScreen(
+    uiState: AppUiState,
+    onAddCampaign: (Campaign) -> Unit,
+    onAddArc: (Int, Arc) -> Unit,
+    onAddScene: (Int, Int, Scene) -> Unit,
+    onSetActiveCampaign: (Int) -> Unit,
+    onSetActiveArc: (Int) -> Unit,
+    onSetActiveScene: (Int) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var synopsis by remember { mutableStateOf("") }
+    var genre by remember { mutableStateOf("") }
+    val arcTitles = remember { mutableStateMapOf<Int, String>() }
+    val sceneNames = remember { mutableStateMapOf<Pair<Int, Int>, String>() }
+    val sceneObjectives = remember { mutableStateMapOf<Pair<Int, Int>, String>() }
+    val sceneMoods = remember { mutableStateMapOf<Pair<Int, Int>, String>() }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text("Campanhas e cenas", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Criar campanha rápida", style = MaterialTheme.typography.titleSmall)
+                    OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Título") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(value = synopsis, onValueChange = { synopsis = it }, label = { Text("Sinopse") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(value = genre, onValueChange = { genre = it }, label = { Text("Gênero") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(onClick = {
+                        if (title.isNotBlank()) {
+                            onAddCampaign(
+                                Campaign(
+                                    title = title,
+                                    synopsis = synopsis.ifBlank { "Sinopse rápida" },
+                                    genre = genre.ifBlank { "Fantasia" },
+                                    arcs = emptyList()
+                                )
+                            )
+                            title = ""
+                            synopsis = ""
+                            genre = ""
+                        }
+                    }) {
+                        Text("Salvar campanha")
+                    }
+                }
+            }
+        }
+
+        items(uiState.campaigns.size) { index ->
+            val campaign = uiState.campaigns[index]
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(campaign.title, style = MaterialTheme.typography.titleMedium)
+                            Text(campaign.synopsis, style = MaterialTheme.typography.bodySmall)
+                            Text("Gênero: ${campaign.genre}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        }
+                        OutlinedButton(onClick = { onSetActiveCampaign(index) }) {
+                            Text(if (uiState.activeCampaignIndex == index) "Ativa" else "Ativar")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Arcos", style = MaterialTheme.typography.labelLarge)
+                    campaign.arcs.forEachIndexed { arcIndex, arc ->
+                        Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(arc.title, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                TextButton(onClick = { onSetActiveArc(arcIndex) }) { Text(if (uiState.activeArcIndex == arcIndex && uiState.activeCampaignIndex == index) "Ativo" else "Usar") }
+                            }
+                            arc.scenes.forEachIndexed { sceneIndex, scene ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("• ${scene.name} (${scene.mood})", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+                                    TextButton(onClick = { onSetActiveScene(sceneIndex) }) {
+                                        Text(if (uiState.activeSceneIndex == sceneIndex && uiState.activeCampaignIndex == index) "Cena ativa" else "Ativar cena")
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            val sceneKey = index to arcIndex
+                            OutlinedTextField(
+                                value = sceneNames[sceneKey] ?: "",
+                                onValueChange = { sceneNames[sceneKey] = it },
+                                label = { Text("Nome da cena") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = sceneObjectives[sceneKey] ?: "",
+                                onValueChange = { sceneObjectives[sceneKey] = it },
+                                label = { Text("Objetivo") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = sceneMoods[sceneKey] ?: "",
+                                onValueChange = { sceneMoods[sceneKey] = it },
+                                label = { Text("Clima") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            OutlinedButton(onClick = {
+                                val name = sceneNames[sceneKey].orEmpty()
+                                if (name.isNotBlank()) {
+                                    onAddScene(
+                                        index,
+                                        arcIndex,
+                                        Scene(
+                                            name = name,
+                                            objective = sceneObjectives[sceneKey].orEmpty().ifBlank { "Objetivo a definir" },
+                                            mood = sceneMoods[sceneKey].orEmpty().ifBlank { "neutro" },
+                                            opening = "Descrição a adicionar",
+                                            hooks = emptyList(),
+                                            triggers = emptyList()
+                                        )
+                                    )
+                                    sceneNames[sceneKey] = ""
+                                    sceneObjectives[sceneKey] = ""
+                                    sceneMoods[sceneKey] = ""
+                                }
+                            }) {
+                                Text("Adicionar cena")
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = arcTitles[index] ?: "",
+                        onValueChange = { arcTitles[index] = it },
+                        label = { Text("Novo arco") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedButton(onClick = {
+                        val arcTitle = arcTitles[index].orEmpty()
+                        if (arcTitle.isNotBlank()) {
+                            onAddArc(index, Arc(title = arcTitle, scenes = emptyList()))
+                            arcTitles[index] = ""
+                        }
+                    }) {
+                        Text("Adicionar arco")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NpcsScreen(npcs: List<Npc>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item { Text("NPCs", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
+        items(npcs) { npc -> NpcCard(npc) }
+    }
+}
+
+@Composable
+private fun EnemiesScreen(enemies: List<com.mestre3dt.data.Enemy>, onReset: () -> Unit) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Inimigos e encontros", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                OutlinedButton(onClick = onReset) { Text("Reset encontro") }
+            }
+        }
+        items(enemies) { enemy ->
+            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(enemy.name, style = MaterialTheme.typography.titleSmall)
+                    Text(enemy.tags.joinToString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        "F/H/R/A/PdF ${enemy.attributes.strength}/${enemy.attributes.skill}/${enemy.attributes.resistance}/${enemy.attributes.armor}/${enemy.attributes.firepower}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text("PV ${enemy.currentHp}/${enemy.maxHp} | PM ${enemy.currentMp ?: 0}/${enemy.maxMp ?: 0}", style = MaterialTheme.typography.bodySmall)
+                    if (enemy.powers.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        enemy.powers.forEach { power ->
+                            Text(power.name, fontWeight = FontWeight.SemiBold)
+                            Text(power.description, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SoundScreen(
+    soundScenes: List<SoundScene>,
+    activeIndex: Int,
+    isPlaying: Boolean,
+    onSelect: (Int) -> Unit,
+    onTogglePlay: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text("Painel de som local", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+        items(soundScenes.size) { index ->
+            val scene = soundScenes[index]
+            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(scene.name, style = MaterialTheme.typography.titleSmall)
+                            Text("Trilha: ${scene.backgroundFile}", style = MaterialTheme.typography.bodySmall)
+                        }
+                        OutlinedButton(onClick = { onSelect(index) }) {
+                            Text(if (activeIndex == index) "Ativa" else "Ativar")
+                        }
+                    }
+                    if (scene.effects.isNotEmpty()) {
+                        Text("Efeitos:", style = MaterialTheme.typography.labelLarge)
+                        scene.effects.forEach { effect ->
+                            Text("• ${effect.name} (${effect.fileName})", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedButton(onClick = onTogglePlay) {
+                        Text(if (isPlaying && activeIndex == index) "Pausar" else "Tocar")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+}

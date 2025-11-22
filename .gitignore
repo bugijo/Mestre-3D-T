@@ -1,0 +1,13 @@
+# Gradle
+/.gradle/
+build/
+*/build/
+local.properties
+.gradle/
+
+# Android Studio
+.idea/
+*.iml
+
+# Generated
+.DS_Store
