@@ -19,6 +19,21 @@ class InMemoryRepository {
     private val _sessionNotes = MutableStateFlow(sampleNotes)
     val sessionNotes: StateFlow<List<SessionNote>> = _sessionNotes
 
+    fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
+        _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
+            if (cIndex != campaignIndex) return@mapIndexed campaign
+            val updatedArcs = campaign.arcs.mapIndexed { aIndex, arc ->
+                if (aIndex != arcIndex) return@mapIndexed arc
+                val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
+                    if (sIndex != sceneIndex) return@mapIndexed scene
+                    scene.copy(triggers = scene.triggers + trigger)
+                }
+                arc.copy(scenes = updatedScenes)
+            }
+            campaign.copy(arcs = updatedArcs)
+        }
+    }
+
     fun addCampaign(campaign: Campaign) {
         _campaigns.value = listOf(campaign) + _campaigns.value
     }

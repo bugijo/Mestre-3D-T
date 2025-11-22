@@ -126,7 +126,9 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     uiState = uiState,
                     onAdjustHp = viewModel::adjustEnemyHp,
                     onToggleDown = viewModel::toggleEnemyDown,
-                    onAddNote = viewModel::addNote
+                    onAddNote = viewModel::addNote,
+                    onAddTrigger = viewModel::addTriggerToScene,
+                    onEndSession = viewModel::endSessionWithSummary
                 )
                 MestreTab.Campaigns -> CampaignsScreen(
                     uiState = uiState,
@@ -201,13 +203,21 @@ private fun SessionScreen(
     uiState: AppUiState,
     onAdjustHp: (Int, Int) -> Unit,
     onToggleDown: (Int) -> Unit,
-    onAddNote: (String, Boolean) -> Unit
+    onAddNote: (String, Boolean) -> Unit,
+    onAddTrigger: (Int, Int, Int, RollTrigger) -> Unit,
+    onEndSession: () -> Unit
 ) {
     val activeCampaign = uiState.campaigns.getOrNull(uiState.activeCampaignIndex)
     val activeArc = activeCampaign?.arcs?.getOrNull(uiState.activeArcIndex)
     val activeScene = activeArc?.scenes?.getOrNull(uiState.activeSceneIndex)
     var noteText by remember { mutableStateOf("") }
     var important by remember { mutableStateOf(false) }
+    var triggerSituation by remember { mutableStateOf("") }
+    var triggerType by remember { mutableStateOf("Persuasão") }
+    var triggerAttribute by remember { mutableStateOf("Habilidade") }
+    var triggerDifficulty by remember { mutableStateOf("10") }
+    var triggerSuccess by remember { mutableStateOf("") }
+    var triggerFailure by remember { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier
@@ -259,6 +269,77 @@ private fun SessionScreen(
                                 RollTriggerCard(trigger)
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionTitle("Novo gatilho rápido para a cena")
+                        OutlinedTextField(
+                            value = triggerSituation,
+                            onValueChange = { triggerSituation = it },
+                            label = { Text("Situação") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = triggerType,
+                            onValueChange = { triggerType = it },
+                            label = { Text("Tipo de teste") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = triggerAttribute,
+                            onValueChange = { triggerAttribute = it },
+                            label = { Text("Atributo") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            OutlinedTextField(
+                                value = triggerDifficulty,
+                                onValueChange = { triggerDifficulty = it },
+                                label = { Text("Dificuldade") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedButton(onClick = {
+                                if (triggerSituation.isNotBlank() && triggerSuccess.isNotBlank()) {
+                                    onAddTrigger(
+                                        uiState.activeCampaignIndex,
+                                        uiState.activeArcIndex,
+                                        uiState.activeSceneIndex,
+                                        RollTrigger(
+                                            situation = triggerSituation,
+                                            testType = triggerType.ifBlank { "Teste" },
+                                            attribute = triggerAttribute.ifBlank { "Habilidade" },
+                                            difficulty = triggerDifficulty.ifBlank { "10" },
+                                            onSuccess = triggerSuccess.ifBlank { "Revele a pista" },
+                                            onFailure = triggerFailure.ifBlank { "Nada acontece" }
+                                        )
+                                    )
+                                    triggerSituation = ""
+                                    triggerType = "Persuasão"
+                                    triggerAttribute = "Habilidade"
+                                    triggerDifficulty = "10"
+                                    triggerSuccess = ""
+                                    triggerFailure = ""
+                                }
+                            }) {
+                                Text("Salvar gatilho")
+                            }
+                        }
+                        OutlinedTextField(
+                            value = triggerSuccess,
+                            onValueChange = { triggerSuccess = it },
+                            label = { Text("Resultado em sucesso") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = triggerFailure,
+                            onValueChange = { triggerFailure = it },
+                            label = { Text("Resultado em falha") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
@@ -346,6 +427,41 @@ private fun SessionScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = fg
                         )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedButton(onClick = onEndSession) {
+                        Text("Encerrar sessão e gerar resumo")
+                    }
+                }
+            }
+        }
+
+        if (uiState.sessionSummaries.isNotEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionTitle("Resumos anteriores")
+                        uiState.sessionSummaries.forEach { summary ->
+                            Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                                Text(
+                                    summary.sceneName ?: "Cena não definida",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    "Campanha: ${summary.campaignTitle ?: "-"} | Arco: ${summary.arcTitle ?: "-"}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                if (summary.importantNotes.isNotEmpty()) {
+                                    Text("Notas importantes:", style = MaterialTheme.typography.labelLarge)
+                                    summary.importantNotes.forEach { note -> Text("• $note", style = MaterialTheme.typography.bodySmall) }
+                                }
+                                if (summary.defeatedEnemies.isNotEmpty()) {
+                                    Text("Inimigos derrotados:", style = MaterialTheme.typography.labelLarge)
+                                    Text(summary.defeatedEnemies.joinToString(), style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
                     }
                 }
             }

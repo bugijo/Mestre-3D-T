@@ -14,6 +14,10 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 - Plano de execução detalhado em [`docs/PLANO.md`](docs/PLANO.md).
 - Status atualizado do MVP em [`docs/STATUS.md`](docs/STATUS.md).
 
+### Atualizações mais recentes
+- Inclusão de gatilhos rápidos de cena diretamente na aba **Sessão**.
+- Resumo automático de sessão (cena, notas importantes, inimigos derrubados) com histórico na mesma tela.
+
 ## Como rodar e gerar APK
 > Requer Android Studio Iguana ou superior, ou Gradle 8.3+ com JDK 17.
 

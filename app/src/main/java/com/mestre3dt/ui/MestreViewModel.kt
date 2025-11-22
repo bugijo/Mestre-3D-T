@@ -8,6 +8,8 @@ import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Enemy
 import com.mestre3dt.data.InMemoryRepository
 import com.mestre3dt.data.Scene
+import com.mestre3dt.data.SessionSummary
+import com.mestre3dt.data.RollTrigger
 import com.mestre3dt.data.SessionNote
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +23,7 @@ data class AppUiState(
     val enemies: List<Enemy> = emptyList(),
     val soundScenes: List<com.mestre3dt.data.SoundScene> = emptyList(),
     val sessionNotes: List<SessionNote> = emptyList(),
+    val sessionSummaries: List<SessionSummary> = emptyList(),
     val activeCampaignIndex: Int = 0,
     val activeArcIndex: Int = 0,
     val activeSceneIndex: Int = 0,
@@ -38,6 +41,8 @@ class MestreViewModel : ViewModel() {
     private val activeSoundSceneIndex = MutableStateFlow(0)
     private val isSoundPlaying = MutableStateFlow(false)
 
+    private val sessionSummaries = MutableStateFlow<List<SessionSummary>>(emptyList())
+
     private val encounterState = MutableStateFlow<List<EncounterEnemyState>>(emptyList())
 
     val uiState: StateFlow<AppUiState> = combine(
@@ -51,8 +56,9 @@ class MestreViewModel : ViewModel() {
         activeSceneIndex,
         encounterState,
         activeSoundSceneIndex,
-        isSoundPlaying
-    ) { campaigns, npcs, enemies, soundScenes, notes, campIdx, arcIdx, sceneIdx, encounter, soundIdx, playing ->
+        isSoundPlaying,
+        sessionSummaries
+    ) { campaigns, npcs, enemies, soundScenes, notes, campIdx, arcIdx, sceneIdx, encounter, soundIdx, playing, summaries ->
         val safeCampaignIdx = campIdx.coerceIn(0, (campaigns.size - 1).coerceAtLeast(0))
         val selectedCampaign = campaigns.getOrNull(safeCampaignIdx)
         val safeArcIdx = arcIdx.coerceIn(0, (selectedCampaign?.arcs?.size?.minus(1) ?: 0).coerceAtLeast(0))
@@ -65,6 +71,7 @@ class MestreViewModel : ViewModel() {
             enemies = enemies,
             soundScenes = soundScenes,
             sessionNotes = notes,
+            sessionSummaries = summaries,
             activeCampaignIndex = safeCampaignIdx,
             activeArcIndex = safeArcIdx,
             activeSceneIndex = safeSceneIdx,
@@ -101,8 +108,33 @@ class MestreViewModel : ViewModel() {
         activeSceneIndex.value = repository.campaigns.value[campaignIndex].arcs[arcIndex].scenes.size - 1
     }
 
+    fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
+        repository.addTriggerToScene(campaignIndex, arcIndex, sceneIndex, trigger)
+    }
+
     fun addNote(text: String, important: Boolean) {
         repository.addNote(SessionNote(text, important))
+    }
+
+    fun endSessionWithSummary() {
+        val campaigns = repository.campaigns.value
+        val activeCampaign = campaigns.getOrNull(activeCampaignIndex.value)
+        val activeArc = activeCampaign?.arcs?.getOrNull(activeArcIndex.value)
+        val activeScene = activeArc?.scenes?.getOrNull(activeSceneIndex.value)
+        val defeated = encounterState.value.filter { it.isDown || it.currentHp <= 0 }.map { it.enemy.name }
+        sessionSummaries.update { current ->
+            listOf(
+                SessionSummary(
+                    campaignTitle = activeCampaign?.title,
+                    arcTitle = activeArc?.title,
+                    sceneName = activeScene?.name,
+                    importantNotes = repository.sessionNotes.value.filter { it.important }.map { it.text },
+                    defeatedEnemies = defeated,
+                    timestamp = System.currentTimeMillis()
+                )
+            ) + current
+        }
+        encounterState.value = buildEncounter(repository.enemies.value)
     }
 
     fun adjustEnemyHp(index: Int, delta: Int) {

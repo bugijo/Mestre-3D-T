@@ -100,3 +100,13 @@ data class SessionNote(
     val text: String,
     val important: Boolean
 )
+
+@Immutable
+data class SessionSummary(
+    val campaignTitle: String?,
+    val arcTitle: String?,
+    val sceneName: String?,
+    val importantNotes: List<String>,
+    val defeatedEnemies: List<String>,
+    val timestamp: Long
+)
