@@ -16,12 +16,10 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 
 ### Atualizações mais recentes
 - Persistência local via Room salvando snapshots completos (incluindo encontro, índices ativos e estado do player) e restaurando na inicialização.
-- Inclusão/remoção/edição inline de gatilhos rápidos de cena diretamente na aba **Sessão** e gatilhos de NPCs na aba **NPCs**.
-- Fluxo de sessão com início/encerramento, registro de cenas visitadas, notas importantes e resumo com horários e inimigos derrubados.
-- Painel de som com seleção de trilha/efeitos locais (picker de arquivos + ExoPlayer), botões de disparo rápido e controle de volume/ducking persistente.
+- Inclusão/remoção de gatilhos rápidos de cena diretamente na aba **Sessão** e edição de gatilhos próprios dos NPCs na aba **NPCs**.
+- Resumo automático de sessão (cena, notas importantes, inimigos derrubados) com histórico na mesma tela.
+- Painel de som com seleção de trilha/efeitos locais (picker de arquivos + ExoPlayer) e botões de disparo rápido.
 - Encontros permitem múltiplas instâncias do mesmo inimigo, ajuste de PV/PM por instância e remoção individual.
-- CRUD completo de inimigos/poderes com formulários e confirmações, incluindo estados vazios/guia visual para listas críticas.
-- Estado global agora mostra loading/erro, atalhos rápidos na Mesa do Mestre e previews Compose de todas as abas para revisão visual sem build.
 
 ## Como rodar e gerar APK
 > Requer Android Studio Iguana ou superior, ou Gradle 8.3+ com JDK 17.
@@ -30,23 +28,6 @@ Aplicativo Android para mestres de 3D&T que desejam organizar campanha, NPCs, en
 2. Build debug: `./gradlew assembleDebug`
 3. Instalar no dispositivo (USB ou emulador): `./gradlew installDebug`
 4. Gerar APK de release (assinar com seu keystore local): `./gradlew assembleRelease`
-
-Checklist rápido para release assinada:
-- Gere um keystore local (uma vez): `keytool -genkeypair -v -storetype PKCS12 -keystore mestre3dt.keystore -alias mestre -keyalg RSA -keysize 2048 -validity 10000`
-- Se quiser automatizar, crie um `keystore.properties` (fora do controle de versão) com `storeFile`, `storePassword`, `keyAlias` e `keyPassword`. O Gradle já usa automaticamente se existir; se não existir, o build continua funcionando com a config padrão.
-- Confirme permissões declaradas (leitura de mídia local) e preencha a ficha de privacidade antes de publicar.
-
-### Testes
-- Unitários (repositório em memória): `./gradlew test`
-- Instrumentados (Compose/UI): `./gradlew connectedAndroidTest`
-- Previews estáticos via Paparazzi (gera PNGs das telas principais em `app/src/test/snapshots/images`): `./gradlew app:recordPaparazzi`
-- Checklist de QA/acessibilidade para executar em dispositivo real: consulte [`docs/QA_CHECKLIST.md`](docs/QA_CHECKLIST.md).
-- Guia rápido de build, instalação e testes passo a passo: [`docs/TESTING_GUIDE.md`](docs/TESTING_GUIDE.md).
-
-### Previews rápidos (offline)
-- Enquanto o ambiente não baixa as dependências do Android Gradle Plugin, consulte os SVGs ilustrativos em `docs/previews/`:
-  - `dashboard.svg`, `sessao.svg`, `campanhas.svg`, `npcs.svg`, `combate.svg`, `som.svg`.
-- Em um ambiente com acesso às dependências (Google Maven), rode o comando do Paparazzi acima para gerar PNGs reais das telas.
 
 ### Habilitar sincronização gratuita com Supabase
 1. Crie um projeto gratuito em [Supabase](https://supabase.com) e habilite a REST API padrão.
@@ -59,15 +40,13 @@ Checklist rápido para release assinada:
      soundScenes jsonb,
      sessionNotes jsonb,
      sessionSummaries jsonb,
-      activeSession jsonb,
-      encounter jsonb,
-      activeCampaignIndex int,
-      activeArcIndex int,
-      activeSceneIndex int,
-      activeSoundSceneIndex int,
-      isSoundPlaying boolean,
-      soundPreferences jsonb,
-      createdAt bigint default extract(epoch from now())*1000
+     encounter jsonb,
+     activeCampaignIndex int,
+     activeArcIndex int,
+     activeSceneIndex int,
+     activeSoundSceneIndex int,
+     isSoundPlaying boolean,
+     createdAt bigint default extract(epoch from now())*1000
    );
    ```
 3. Em `local.properties` (não versionado), adicione:
@@ -79,8 +58,8 @@ Checklist rápido para release assinada:
 4. Rode `./gradlew assembleDebug` normalmente. No dashboard do app, use os botões **Enviar backup** / **Baixar backup**.
 
 ## Principais fluxos do MVP
-- **Campanhas → Arcos → Cenas**: CRUD completo, com gatilhos de rolagem (sucesso/falha) exibidos, editáveis e removíveis em modo sessão.
-- **NPCs**: personalidade (palavras-chave, jeito de falar, trejeitos), segredos por nível, frases prontas e gatilhos próprios editáveis (adição/edição/remoção).
+- **Campanhas → Arcos → Cenas**: CRUD completo, com gatilhos de rolagem (sucesso/falha) exibidos e removidos em modo sessão.
+- **NPCs**: personalidade (palavras-chave, jeito de falar, trejeitos), segredos por nível, frases prontas e gatilhos próprios editáveis (adição/remoção).
 - **Vilões/Inimigos**: atributos F/H/R/A/PdF, PV/PM, poderes e tags; encontros com múltiplas instâncias, ajuste de PV/PM e remoção individual.
 - **Sessões e Log**: notas rápidas marcadas como importante/flavor e resumo automático ao encerrar.
 - **Som Local**: cenas de som com trilha de fundo e efeitos locais (sem streaming), selecionados do dispositivo e tocados com ExoPlayer.
@@ -96,9 +75,10 @@ Checklist rápido para release assinada:
 
 ## Roadmap e marcos
 Veja o plano completo em [`docs/PLANO.md`](docs/PLANO.md). Resumo das próximas entregas:
-1. UX aprimorada: estados de loading/erro, talkback/labels e contraste revisado.
-2. Empacotar APK de teste (keystore local) e checklist de privacidade/acessibilidade.
-3. Testes instrumentados para fluxo de sessão, encontro e painel de som.
+1. CRUD refinado (edição) de gatilhos de cena/NPC e poderes/inimigos.
+2. Tela de volume/foco de áudio e persistência de preferências do player.
+3. Fluxo de sessões persistentes (criar/encerrar) com resumo automático armazenado.
+4. Empacotar APK de teste e checklist de acessibilidade.
 
 Para uma visão resumida do que falta, consulte [`docs/STATUS.md`](docs/STATUS.md).
 
