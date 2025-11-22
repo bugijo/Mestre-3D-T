@@ -1,0 +1,32 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1920' viewBox='0 0 1080 1920'>
+<rect width='1080' height='1920' fill='#0f172a' rx='32'/>
+<text x='40' y='70' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='42' font-weight='700'>Dashboard - Panorama do Mestre</text>
+<rect x='40' y='110' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='160' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Sessão atual</text>
+<text x='90' y='200' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Campanha: Alvorada Carmesim</text>
+<text x='90' y='236' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Sessão: Noite 3</text>
+<text x='90' y='272' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Cena: Confronto na ponte</text>
+<rect x='40' y='360' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='410' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Campanhas</text>
+<text x='90' y='450' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Arcos: 3</text>
+<text x='90' y='486' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Cenas: 12</text>
+<text x='90' y='522' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Atalhos para abrir e ativar</text>
+<rect x='40' y='610' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='660' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>NPCs</text>
+<text x='90' y='700' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• 10 cadastrados</text>
+<text x='90' y='736' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Gatilhos customizados</text>
+<text x='90' y='772' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Segredos por nível</text>
+<rect x='40' y='860' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='910' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Combate</text>
+<text x='90' y='950' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Encontro atual com 5 inimigos</text>
+<text x='90' y='986' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• PV/PM rápidos</text>
+<text x='90' y='1022' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Resumo de queda</text>
+<rect x='40' y='1110' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='1160' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Som</text>
+<text x='90' y='1200' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Cena ativa: Floresta</text>
+<text x='90' y='1236' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Trilha + 4 SFX</text>
+<rect x='40' y='1360' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='1410' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Backup em nuvem</text>
+<text x='90' y='1450' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Supabase pronto</text>
+<text x='90' y='1486' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Enviar / Baixar snapshots</text>
+</svg>

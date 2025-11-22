@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1920' viewBox='0 0 1080 1920'>
+<rect width='1080' height='1920' fill='#0f172a' rx='32'/>
+<text x='40' y='70' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='42' font-weight='700'>Campanhas / Arcos / Cenas</text>
+<rect x='40' y='110' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='160' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Campanha</text>
+<text x='90' y='200' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Título, sinopse, gênero, sistema</text>
+<rect x='40' y='360' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='410' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Arcos</text>
+<text x='90' y='450' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Introdução</text>
+<text x='90' y='486' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Cidade em Perigo</text>
+<text x='90' y='522' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Confronto Final</text>
+<rect x='40' y='610' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='660' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Cenas</text>
+<text x='90' y='700' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Nome + objetivo + clima</text>
+<text x='90' y='736' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Texto de abertura e ganchos</text>
+<text x='90' y='772' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Gatilhos configuráveis</text>
+<rect x='40' y='860' width='1000' height='220' rx='28' fill='#1e293b' stroke='#7c3aed' stroke-width='2'/>
+<text x='70' y='910' fill='#e2e8f0' font-family='Inter,Roboto,Arial' font-size='32' font-weight='700'>Ações rápidas</text>
+<text x='90' y='950' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Ativar cena na sessão</text>
+<text x='90' y='986' fill='#cbd5e1' font-family='Inter,Roboto,Arial' font-size='26'>• Editar / remover / adicionar</text>
+</svg>
