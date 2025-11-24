@@ -19,6 +19,40 @@ class InMemoryRepository {
     private val _sessionNotes = MutableStateFlow(sampleNotes)
     val sessionNotes: StateFlow<List<SessionNote>> = _sessionNotes
 
+    private val _activeSession = MutableStateFlow<SessionLog?>(null)
+    val activeSession: StateFlow<SessionLog?> = _activeSession
+
+    private val _sessionLogs = MutableStateFlow<List<SessionLog>>(emptyList())
+    val sessionLogs: StateFlow<List<SessionLog>> = _sessionLogs
+
+    fun startSession(campaignTitle: String) {
+        if (_activeSession.value == null) {
+            _activeSession.value = SessionLog(
+                id = java.util.UUID.randomUUID().toString(),
+                startTime = System.currentTimeMillis(),
+                endTime = null,
+                campaignTitle = campaignTitle,
+                summaries = emptyList()
+            )
+        }
+    }
+
+    fun endSession() {
+        val current = _activeSession.value
+        if (current != null) {
+            val ended = current.copy(endTime = System.currentTimeMillis())
+            _sessionLogs.value = listOf(ended) + _sessionLogs.value
+            _activeSession.value = null
+        }
+    }
+
+    fun addSummaryToSession(summary: SessionSummary) {
+        val current = _activeSession.value
+        if (current != null) {
+            _activeSession.value = current.copy(summaries = current.summaries + summary)
+        }
+    }
+
     fun addTriggerToScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, trigger: RollTrigger) {
         _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
             if (cIndex != campaignIndex) return@mapIndexed campaign
@@ -27,6 +61,24 @@ class InMemoryRepository {
                 val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
                     if (sIndex != sceneIndex) return@mapIndexed scene
                     scene.copy(triggers = scene.triggers + trigger)
+                }
+                arc.copy(scenes = updatedScenes)
+            }
+            campaign.copy(arcs = updatedArcs)
+        }
+    }
+
+    fun editTriggerInScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, triggerIndex: Int, trigger: RollTrigger) {
+        _campaigns.value = _campaigns.value.mapIndexed { cIndex, campaign ->
+            if (cIndex != campaignIndex) return@mapIndexed campaign
+            val updatedArcs = campaign.arcs.mapIndexed { aIndex, arc ->
+                if (aIndex != arcIndex) return@mapIndexed arc
+                val updatedScenes = arc.scenes.mapIndexed { sIndex, scene ->
+                    if (sIndex != sceneIndex) return@mapIndexed scene
+                    val updatedTriggers = scene.triggers.mapIndexed { tIndex, t ->
+                        if (tIndex == triggerIndex) trigger else t
+                    }
+                    scene.copy(triggers = updatedTriggers)
                 }
                 arc.copy(scenes = updatedScenes)
             }
@@ -106,22 +158,29 @@ class InMemoryRepository {
         }
     }
 
-    fun removeTriggerFromNpc(index: Int, triggerIndex: Int) {
+    fun editTriggerInNpc(index: Int, triggerIndex: Int, trigger: RollTrigger) {
         _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
             if (npcIndex != index) return@mapIndexed npc
-            npc.copy(triggers = npc.triggers.filterIndexed { idx, _ -> idx != triggerIndex })
+            val updatedTriggers = npc.triggers.mapIndexed { tIndex, t ->
+                if (tIndex == triggerIndex) trigger else t
+            }
+            npc.copy(triggers = updatedTriggers)
         }
     }
 
-    fun setEnemies(items: List<Enemy>) {
-        _enemies.value = items
+    fun removeTriggerFromNpc(index: Int, triggerIndex: Int) {
+
+    private val _musicVolume = MutableStateFlow(1.0f)
+    val musicVolume: StateFlow<Float> = _musicVolume
+
+    private val _sfxVolume = MutableStateFlow(1.0f)
+    val sfxVolume: StateFlow<Float> = _sfxVolume
+
+    fun setMusicVolume(volume: Float) {
+        _musicVolume.value = volume.coerceIn(0f, 1f)
     }
 
-    fun setSoundScenes(items: List<SoundScene>) {
-        _soundScenes.value = items
-    }
-
-    fun setNotes(items: List<SessionNote>) {
-        _sessionNotes.value = items
+    fun setSfxVolume(volume: Float) {
+        _sfxVolume.value = volume.coerceIn(0f, 1f)
     }
 }

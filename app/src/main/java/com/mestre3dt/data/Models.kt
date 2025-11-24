@@ -130,3 +130,13 @@ data class SessionSummary(
     val defeatedEnemies: List<String>,
     val timestamp: Long
 )
+
+@Serializable
+@Immutable
+data class SessionLog(
+    val id: String,
+    val startTime: Long,
+    val endTime: Long?,
+    val campaignTitle: String,
+    val summaries: List<SessionSummary>
+)

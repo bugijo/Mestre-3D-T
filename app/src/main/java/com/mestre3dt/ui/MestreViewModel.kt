@@ -48,7 +48,11 @@ data class AppUiState(
     val activeSoundSceneIndex: Int = 0,
     val isSoundPlaying: Boolean = false,
     val syncStatus: SyncStatus = SyncStatus.Idle,
-    val isRemoteConfigured: Boolean = false
+    val isRemoteConfigured: Boolean = false,
+    val activeSession: com.mestre3dt.data.SessionLog? = null,
+    val sessionLogs: List<com.mestre3dt.data.SessionLog> = emptyList(),
+    val musicVolume: Float = 1.0f,
+    val sfxVolume: Float = 1.0f
 )
 
 class MestreViewModel(application: Application) : AndroidViewModel(application) {
@@ -92,8 +96,12 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         activeSoundSceneIndex,
         isSoundPlaying,
         sessionSummaries,
-        syncStatus
-    ) { campaigns, npcs, enemies, soundScenes, notes, campIdx, arcIdx, sceneIdx, encounter, soundIdx, playing, summaries, sync ->
+        syncStatus,
+        repository.activeSession,
+        repository.sessionLogs,
+        repository.musicVolume,
+        repository.sfxVolume
+    ) { campaigns, npcs, enemies, soundScenes, notes, campIdx, arcIdx, sceneIdx, encounter, soundIdx, playing, summaries, sync, activeSess, logs, mVol, sVol ->
         val safeCampaignIdx = campIdx.coerceIn(0, (campaigns.size - 1).coerceAtLeast(0))
         val selectedCampaign = campaigns.getOrNull(safeCampaignIdx)
         val safeArcIdx = arcIdx.coerceIn(0, (selectedCampaign?.arcs?.size?.minus(1) ?: 0).coerceAtLeast(0))
@@ -114,7 +122,11 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
             activeSoundSceneIndex = soundIdx.coerceIn(0, (soundScenes.size - 1).coerceAtLeast(0)),
             isSoundPlaying = playing,
             syncStatus = sync,
-            isRemoteConfigured = remoteSyncRepository.isConfigured
+            isRemoteConfigured = remoteSyncRepository.isConfigured,
+            activeSession = activeSess,
+            sessionLogs = logs,
+            musicVolume = mVol,
+            sfxVolume = sVol
         )
     }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000), AppUiState())
 
@@ -158,6 +170,11 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         persistLocalSnapshot()
     }
 
+    fun editTriggerInScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, triggerIndex: Int, trigger: RollTrigger) {
+        repository.editTriggerInScene(campaignIndex, arcIndex, sceneIndex, triggerIndex, trigger)
+        persistLocalSnapshot()
+    }
+
     fun removeTriggerFromScene(campaignIndex: Int, arcIndex: Int, sceneIndex: Int, triggerIndex: Int) {
         repository.removeTriggerFromScene(campaignIndex, arcIndex, sceneIndex, triggerIndex)
         persistLocalSnapshot()
@@ -165,6 +182,11 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
 
     fun addTriggerToNpc(index: Int, trigger: RollTrigger) {
         repository.addTriggerToNpc(index, trigger)
+        persistLocalSnapshot()
+    }
+
+    fun editTriggerInNpc(index: Int, triggerIndex: Int, trigger: RollTrigger) {
+        repository.editTriggerInNpc(index, triggerIndex, trigger)
         persistLocalSnapshot()
     }
 
@@ -178,24 +200,33 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         persistLocalSnapshot()
     }
 
+    fun startSession(campaignTitle: String) {
+        repository.startSession(campaignTitle)
+        persistLocalSnapshot()
+    }
+
     fun endSessionWithSummary() {
         val campaigns = repository.campaigns.value
         val activeCampaign = campaigns.getOrNull(activeCampaignIndex.value)
         val activeArc = activeCampaign?.arcs?.getOrNull(activeArcIndex.value)
         val activeScene = activeArc?.scenes?.getOrNull(activeSceneIndex.value)
         val defeated = encounterState.value.filter { it.isDown || it.currentHp <= 0 }.map { it.label }
-        sessionSummaries.update { current ->
-            listOf(
-                SessionSummary(
-                    campaignTitle = activeCampaign?.title,
-                    arcTitle = activeArc?.title,
-                    sceneName = activeScene?.name,
-                    importantNotes = repository.sessionNotes.value.filter { it.important }.map { it.text },
-                    defeatedEnemies = defeated,
-                    timestamp = System.currentTimeMillis()
-                )
-            ) + current
-        }
+        
+        val summary = SessionSummary(
+            campaignTitle = activeCampaign?.title,
+            arcTitle = activeArc?.title,
+            sceneName = activeScene?.name,
+            importantNotes = repository.sessionNotes.value.filter { it.important }.map { it.text },
+            defeatedEnemies = defeated,
+            timestamp = System.currentTimeMillis()
+        )
+
+        repository.addSummaryToSession(summary)
+        repository.endSession()
+        
+        // Legacy support for simple list
+        sessionSummaries.update { current -> listOf(summary) + current }
+        
         encounterState.value = buildEncounter(repository.enemies.value)
         persistLocalSnapshot()
     }
@@ -257,13 +288,11 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun setSoundBackground(sceneIndex: Int, background: SoundAsset) {
-        repository.setSoundBackground(sceneIndex, background)
-        activeSoundSceneIndex.value = sceneIndex
         persistLocalSnapshot()
     }
 
-    fun addSoundEffect(sceneIndex: Int, effect: SoundEffect) {
-        repository.addSoundEffect(sceneIndex, effect)
+    fun setSfxVolume(volume: Float) {
+        repository.setSfxVolume(volume)
         persistLocalSnapshot()
     }
 
