@@ -25,6 +25,12 @@ class InMemoryRepository {
     private val _sessionLogs = MutableStateFlow<List<SessionLog>>(emptyList())
     val sessionLogs: StateFlow<List<SessionLog>> = _sessionLogs
 
+    private val _musicVolume = MutableStateFlow(1.0f)
+    val musicVolume: StateFlow<Float> = _musicVolume
+
+    private val _sfxVolume = MutableStateFlow(1.0f)
+    val sfxVolume: StateFlow<Float> = _sfxVolume
+
     fun startSession(campaignTitle: String) {
         if (_activeSession.value == null) {
             _activeSession.value = SessionLog(
@@ -169,12 +175,11 @@ class InMemoryRepository {
     }
 
     fun removeTriggerFromNpc(index: Int, triggerIndex: Int) {
-
-    private val _musicVolume = MutableStateFlow(1.0f)
-    val musicVolume: StateFlow<Float> = _musicVolume
-
-    private val _sfxVolume = MutableStateFlow(1.0f)
-    val sfxVolume: StateFlow<Float> = _sfxVolume
+        _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
+            if (npcIndex != index) return@mapIndexed npc
+            npc.copy(triggers = npc.triggers.filterIndexed { tIndex, _ -> tIndex != triggerIndex })
+        }
+    }
 
     fun setMusicVolume(volume: Float) {
         _musicVolume.value = volume.coerceIn(0f, 1f)
@@ -182,5 +187,17 @@ class InMemoryRepository {
 
     fun setSfxVolume(volume: Float) {
         _sfxVolume.value = volume.coerceIn(0f, 1f)
+    }
+
+    fun setEnemies(enemies: List<Enemy>) {
+        _enemies.value = enemies
+    }
+
+    fun setSoundScenes(soundScenes: List<SoundScene>) {
+        _soundScenes.value = soundScenes
+    }
+
+    fun setNotes(sessionNotes: List<SessionNote>) {
+        _sessionNotes.value = sessionNotes
     }
 }

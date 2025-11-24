@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Shield
@@ -78,8 +78,8 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                         label = { Text(tab.label) },
                         icon = {
                             when (tab) {
-                                MestreTab.Dashboard -> Icon(Icons.Default.ListAlt, contentDescription = "Dashboard")
-                                MestreTab.Session -> Icon(Icons.Default.ListAlt, contentDescription = "Sessão")
+                                MestreTab.Dashboard -> Icon(Icons.AutoMirrored.Filled.ListAlt, contentDescription = "Dashboard")
+                                MestreTab.Session -> Icon(Icons.AutoMirrored.Filled.ListAlt, contentDescription = "Sessão")
                                 MestreTab.Campaigns -> Icon(Icons.Default.Campaign, contentDescription = "Campanhas")
                                 MestreTab.Npcs -> Icon(Icons.Default.People, contentDescription = "NPCs")
                                 MestreTab.Enemies -> Icon(Icons.Default.Shield, contentDescription = "Inimigos")
@@ -124,6 +124,15 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onSetActiveArc = viewModel::setActiveArc,
                     onSetActiveScene = viewModel::setActiveScene
                 )
+                MestreTab.Npcs -> NpcsScreen(uiState = uiState)
+                MestreTab.Enemies -> EnemiesScreen(uiState = uiState)
+                MestreTab.Sound -> SoundScreen(
+                    soundScenes = uiState.soundScenes,
+                    activeIndex = uiState.activeSoundSceneIndex,
+                    isPlaying = uiState.isSoundPlaying,
+                    musicVolume = uiState.musicVolume,
+                    sfxVolume = uiState.sfxVolume,
+                    onSelect = viewModel::selectSoundScene,
                     onTogglePlay = viewModel::toggleSoundPlayback,
                     onSetBackground = viewModel::setSoundBackground,
                     onAddEffect = viewModel::addSoundEffect,

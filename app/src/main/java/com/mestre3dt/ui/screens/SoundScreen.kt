@@ -114,6 +114,8 @@ fun SoundScreen(
 
         if (soundScenes.isEmpty()) {
             item {
+                Text("Não há cenas de som para exibir.")
+            }
         }
 
         items(soundScenes.size) { index ->

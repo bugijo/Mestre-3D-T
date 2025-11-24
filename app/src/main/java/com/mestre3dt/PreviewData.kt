@@ -1,3 +1,4 @@
+/*
 package com.mestre3dt
 
 import com.mestre3dt.data.ActiveSession
@@ -51,3 +52,4 @@ fun previewUiState(): AppUiState = AppUiState(
     soundPreferences = SoundPreferences(),
     isLoading = false
 )
+*/
