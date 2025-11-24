@@ -185,7 +185,7 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun addNote(text: String, important: Boolean) {
-        repository.addNote(SessionNote(UUID.randomUUID().toString(), text, important))
+        repository.addNote(SessionNote(text, important))
         persistLocalSnapshot()
     }
 

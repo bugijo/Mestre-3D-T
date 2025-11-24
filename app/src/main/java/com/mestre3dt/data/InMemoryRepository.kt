@@ -149,6 +149,12 @@ class InMemoryRepository {
         _enemies.value = updater(_enemies.value)
     }
 
+    fun updateEnemy(original: Enemy, updated: Enemy) {
+        _enemies.value = _enemies.value.map { enemy ->
+            if (enemy == original) updated else enemy
+        }
+    }
+
     fun setCampaigns(items: List<Campaign>) {
         _campaigns.value = items
     }

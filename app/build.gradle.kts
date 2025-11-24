@@ -32,9 +32,6 @@ android {
 
     signingConfigs {
         create("release") {
-            // Para gerar a keystore, execute:
-            // keytool -genkey -v -keystore mestre3dt-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias mestre3dt
-            
             val keystoreFile = project.findProperty("KEYSTORE_FILE") as? String
             val keystorePassword = project.findProperty("KEYSTORE_PASSWORD") as? String
             val keyAlias = project.findProperty("KEY_ALIAS") as? String
@@ -91,7 +88,6 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
@@ -100,6 +96,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
