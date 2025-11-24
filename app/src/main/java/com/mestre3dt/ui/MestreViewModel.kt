@@ -83,6 +83,7 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
             }
         }
 
+
         combine(
             repository.campaigns,
             repository.npcs,
@@ -92,9 +93,19 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
             repository.activeSession,
             repository.sessionLogs,
             repository.musicVolume,
-            repository.sfxVolume,
-            _uiState
-        ) { campaigns, npcs, enemies, soundScenes, notes, activeSess, logs, mVol, sVol, ui ->
+            repository.sfxVolume
+        ) { flows ->
+            val campaigns = flows[0] as List<Campaign>
+            val npcs = flows[1] as List<Npc>
+            val enemies = flows[2] as List<Enemy>
+            val soundScenes = flows[3] as List<SoundScene>
+            val notes = flows[4] as List<SessionNote>
+            val activeSess = flows[5] as SessionLog?
+            val logs = flows[6] as List<SessionLog>
+            val mVol = flows[7] as Float
+            val sVol = flows[8] as Float
+            val ui = _uiState.value
+            
             val safeCampaignIdx = ui.activeCampaignIndex.coerceIn(0, (campaigns.size - 1).coerceAtLeast(0))
             val selectedCampaign = campaigns.getOrNull(safeCampaignIdx)
             val safeArcIdx = ui.activeArcIndex.coerceIn(0, (selectedCampaign?.arcs?.size?.minus(1) ?: 0).coerceAtLeast(0))
@@ -117,8 +128,8 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
                 musicVolume = mVol,
                 sfxVolume = sVol
             )
-        }.onEach {
-            _uiState.value = it
+        }.onEach { newState ->
+            _uiState.value = newState
         }.launchIn(viewModelScope)
     }
 
