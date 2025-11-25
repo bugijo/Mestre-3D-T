@@ -104,10 +104,10 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 )
                 MestreTab.Session -> SessionScreen(
                     uiState = uiState,
-                    onAdjustHp = viewModel::adjustEnemyHp,
-                    onAdjustMp = viewModel::adjustEnemyMp,
-                    onToggleDown = viewModel::toggleEnemyDown,
-                    onRemoveEnemy = viewModel::removeEnemyInstance,
+                    onAdjustHp = viewModel::adjustEncounterHp,
+                    onAdjustMp = viewModel::adjustEncounterMp,
+                    onToggleDown = viewModel::toggleEncounterDown,
+                    onRemoveEnemy = viewModel::removeFromEncounter,
                     onAddNote = viewModel::addNote,
                     onAddTrigger = viewModel::addTriggerToScene,
                     onEditTrigger = viewModel::editTriggerInScene,
@@ -124,8 +124,20 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onSetActiveArc = viewModel::setActiveArc,
                     onSetActiveScene = viewModel::setActiveScene
                 )
-                MestreTab.Npcs -> NpcsScreen(uiState = uiState)
-                MestreTab.Enemies -> EnemiesScreen(uiState = uiState)
+                MestreTab.Npcs -> NpcsScreen(
+                    uiState = uiState,
+                    onAddNpc = viewModel::addNpc,
+                    onUpdateNpc = viewModel::updateNpc,
+                    onDeleteNpc = viewModel::deleteNpc
+                )
+                MestreTab.Enemies -> EnemiesScreen(
+                    uiState = uiState,
+                    onAddEnemy = viewModel::addEnemy,
+                    onUpdateEnemy = viewModel::updateEnemyById,
+                    onDeleteEnemy = viewModel::deleteEnemy,
+                    onAddToEncounter = viewModel::addToEncounter,
+                    onResetEncounter = viewModel::resetEncounter
+                )
                 MestreTab.Sound -> SoundScreen(
                     soundScenes = uiState.soundScenes,
                     activeIndex = uiState.activeSoundSceneIndex,

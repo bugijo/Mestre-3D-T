@@ -426,4 +426,107 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
                 isDown = enemy.currentHp <= 0
             )
         }
+
+    // NPC Management
+    fun addNpc(npc: Npc) {
+        repository.addNpc(npc)
+        persistLocalSnapshot()
+    }
+
+    fun updateNpc(id: String, npc: Npc) {
+        repository.updateNpc(id, npc)
+        persistLocalSnapshot()
+    }
+
+    fun deleteNpc(id: String) {
+        repository.deleteNpc(id)
+        persistLocalSnapshot()
+    }
+
+    // Enemy Management
+    fun addEnemy(enemy: Enemy) {
+        repository.addEnemy(enemy)
+        persistLocalSnapshot()
+    }
+
+    fun updateEnemyById(id: String, enemy: Enemy) {
+        repository.updateEnemy(
+            repository.enemies.value.find { it.id == id } ?: return,
+            enemy
+        )
+        persistLocalSnapshot()
+    }
+
+    fun deleteEnemy(id: String) {
+        repository.deleteEnemy(id)
+        persistLocalSnapshot()
+    }
+
+    // Encounter Management
+    fun addToEncounter(enemy: Enemy, quantity: Int) {
+        val currentEncounter = _uiState.value.encounter
+        val newEnemies = (1..quantity).map {
+            EncounterEnemyState(
+                id = UUID.randomUUID().toString(),
+                label = "${enemy.name} #${currentEncounter.size + it}",
+                enemy = enemy,
+                currentHp = enemy.maxHp,
+                currentMp = enemy.maxMp,
+                isDown = false
+            )
+        }
+        _uiState.update { it.copy(encounter = currentEncounter + newEnemies) }
+        persistLocalSnapshot()
+    }
+
+    fun resetEncounter() {
+        _uiState.update { it.copy(encounter = emptyList()) }
+        persistLocalSnapshot()
+    }
+
+    fun adjustEncounterHp(index: Int, delta: Int) {
+        _uiState.update { ui ->
+            val updated = ui.encounter.mapIndexed { i, enemy ->
+                if (i == index) {
+                    val newHp = (enemy.currentHp + delta).coerceIn(0, enemy.enemy.maxHp)
+                    enemy.copy(
+                        currentHp = newHp,
+                        isDown = newHp <= 0
+                    )
+                } else enemy
+            }
+            ui.copy(encounter = updated)
+        }
+        persistLocalSnapshot()
+    }
+
+    fun adjustEncounterMp(index: Int, delta: Int) {
+        _uiState.update { ui ->
+            val updated = ui.encounter.mapIndexed { i, enemy ->
+                if (i == index && enemy.enemy.maxMp != null) {
+                    val newMp = ((enemy.currentMp ?: 0) + delta).coerceIn(0, enemy.enemy.maxMp ?: 0)
+                    enemy.copy(currentMp = newMp)
+                } else enemy
+            }
+            ui.copy(encounter = updated)
+        }
+        persistLocalSnapshot()
+    }
+
+    fun toggleEncounterDown(index: Int) {
+        _uiState.update { ui ->
+            val updated = ui.encounter.mapIndexed { i, enemy ->
+                if (i == index) enemy.copy(isDown = !enemy.isDown) else enemy
+            }
+            ui.copy(encounter = updated)
+        }
+        persistLocalSnapshot()
+    }
+
+    fun removeFromEncounter(index: Int) {
+        _uiState.update { ui ->
+            ui.copy(encounter = ui.encounter.filterIndexed { i, _ -> i != index })
+        }
+        persistLocalSnapshot()
+    }
 }

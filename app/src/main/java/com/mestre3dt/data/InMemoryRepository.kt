@@ -163,6 +163,28 @@ class InMemoryRepository {
         _npcs.value = items
     }
 
+    // NPC CRUD
+    fun addNpc(npc: Npc) {
+        _npcs.value = _npcs.value + npc
+    }
+
+    fun updateNpc(id: String, updated: Npc) {
+        _npcs.value = _npcs.value.map { if (it.id == id) updated else it }
+    }
+
+    fun deleteNpc(id: String) {
+        _npcs.value = _npcs.value.filter { it.id != id }
+    }
+
+    // Enemy CRUD
+    fun addEnemy(enemy: Enemy) {
+        _enemies.value = _enemies.value + enemy
+    }
+
+    fun deleteEnemy(id: String) {
+        _enemies.value = _enemies.value.filter { it.id != id }
+    }
+
     fun addTriggerToNpc(index: Int, trigger: RollTrigger) {
         _npcs.value = _npcs.value.mapIndexed { npcIndex, npc ->
             if (npcIndex != index) return@mapIndexed npc
