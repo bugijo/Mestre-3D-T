@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.mestre3dt.data.Attributes
 import com.mestre3dt.data.Enemy
 import com.mestre3dt.ui.AppUiState
@@ -244,10 +245,7 @@ fun AddEditEnemyDialog(
     var maxHp by remember { mutableStateOf(enemy?.maxHp?.toString() ?: (resistance * 5).toString()) }
     var maxMp by remember { mutableStateOf(enemy?.maxMp?.toString() ?: "") }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(if (enemy != null) "Editar Inimigo" else "Novo Inimigo") }
-    ) {
+    Dialog(onDismissRequest = onDismiss) {
         Card {
             Column(
                 modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),

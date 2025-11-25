@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.mestre3dt.data.Attributes
 import com.mestre3dt.data.Npc
 import com.mestre3dt.ui.AppUiState
@@ -181,15 +182,22 @@ fun AddEditNpcDialog(
     val calculatedHp = resistance * 5
     val calculatedMp = resistance * 5
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(if (npc != null) "Editar NPC" else "Novo NPC") }
-    ) {
-        Card {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 600.dp)
+        ) {
             Column(
-                modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Text(
+                    text = if (npc != null) "Editar NPC" else "Novo NPC",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -203,7 +211,7 @@ fun AddEditNpcDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Text("Atributos 3D&T", fontWeight = FontWeight.Bold)
+                Text("Atributos 3D&T", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 
                 AttributeSlider("Força (F)", strength, onValueChange = { strength = it })
                 AttributeSlider("Habilidade (H)", skill, onValueChange = { skill = it })
@@ -211,16 +219,22 @@ fun AddEditNpcDialog(
                 AttributeSlider("Armadura (A)", armor, onValueChange = { armor = it })
                 AttributeSlider("Poder de Fogo (PdF)", firepower, onValueChange = { firepower = it })
 
-                Text(
-                    "PV: $calculatedHp | PM: $calculatedMp",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Text(
+                        "PV: $calculatedHp | PM: $calculatedMp",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
                         Text("Cancelar")
@@ -228,7 +242,7 @@ fun AddEditNpcDialog(
                     Button(
                         onClick = {
                             val newNpc = Npc(
-                                id = npc?.id ?: UUID.randomUUID().toString(),
+                                id = npc?.id ?: java.util.UUID.randomUUID().toString(),
                                 name = name,
                                 role = role,
                                 personality = npc?.personality ?: emptyList(),

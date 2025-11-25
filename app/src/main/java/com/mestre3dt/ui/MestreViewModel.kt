@@ -271,11 +271,6 @@ class MestreViewModel(application: Application) : AndroidViewModel(application) 
         persistLocalSnapshot()
     }
 
-    fun resetEncounter() {
-        _uiState.update { it.copy(encounter = buildEncounter(it.enemies)) }
-        persistLocalSnapshot()
-    }
-
     fun selectSoundScene(index: Int) {
         _uiState.update { it.copy(activeSoundSceneIndex = index) }
         persistLocalSnapshot()

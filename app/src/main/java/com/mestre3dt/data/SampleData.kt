@@ -73,6 +73,7 @@ val sampleCampaigns = listOf(
 
 val sampleNpcs = listOf(
     Npc(
+        id = "npc_haru",
         name = "Mestre Haru",
         role = "Mentor e informante",
         personality = listOf("sereno", "pragmático", "atento"),
@@ -102,6 +103,7 @@ val sampleNpcs = listOf(
         )
     ),
     Npc(
+        id = "npc_rina",
         name = "Rina das Docas",
         role = "Informante de rua",
         personality = listOf("astuta", "desconfiada", "leal"),
@@ -134,9 +136,10 @@ val sampleNpcs = listOf(
 
 val sampleEnemies = listOf(
     Enemy(
+        id = "enemy_tecnomante",
         name = "Tecnomante Chefe",
         tags = listOf("chefe", "humano"),
-        attributes = EnemyAttributes(strength = 1, skill = 4, resistance = 3, armor = 1, firepower = 3),
+        attributes = Attributes(strength = 1, skill = 4, resistance = 3, armor = 1, firepower = 3),
         maxHp = 20,
         currentHp = 18,
         maxMp = 15,
@@ -163,9 +166,10 @@ val sampleEnemies = listOf(
         )
     ),
     Enemy(
+        id = "enemy_capanga",
         name = "Capanga Blindado",
         tags = listOf("capanga", "ciborgue"),
-        attributes = EnemyAttributes(strength = 3, skill = 2, resistance = 4, armor = 2, firepower = 1),
+        attributes = Attributes(strength = 3, skill = 2, resistance = 4, armor = 2, firepower = 1),
         maxHp = 15,
         currentHp = 15,
         maxMp = null,

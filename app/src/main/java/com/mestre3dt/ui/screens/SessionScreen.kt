@@ -5,10 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Note
-import androidx.compose.material.icons.filled.Swords
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -73,9 +69,9 @@ fun SessionScreen(
                     icon = {
                         Icon(
                             when (index) {
-                                0 -> Icons.Default.Swords
-                                1 -> Icons.Default.Map
-                                else -> Icons.Default.Note
+                                0 -> Icons.Default.Shield  // Combat tab
+                                1 -> Icons.Default.Map    // Map tab
+                                else -> Icons.Default.Note // Notes tab
                             },
                             contentDescription = title
                         )
