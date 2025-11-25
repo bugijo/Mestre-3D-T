@@ -22,7 +22,10 @@ data class Scene(
     val mood: String,
     val opening: String,
     val hooks: List<String>,
-    val triggers: List<RollTrigger>
+    val triggers: List<RollTrigger>,
+    val mapImageUri: String? = null,
+    val suggestedMusicUri: String? = null,
+    val enemyIds: List<String> = emptyList()
 )
 
 @Serializable
@@ -45,6 +48,7 @@ data class Campaign(
 @Serializable
 @Immutable
 data class Npc(
+    val id: String,
     val name: String,
     val role: String,
     val personality: List<String>,
@@ -53,7 +57,13 @@ data class Npc(
     val goal: String,
     val secrets: Map<Int, String>,
     val quickPhrases: List<String>,
-    val triggers: List<RollTrigger>
+    val triggers: List<RollTrigger>,
+    val imageUri: String? = null,
+    val attributes: Attributes = Attributes(),
+    val maxHp: Int = 0,
+    val maxMp: Int = 0,
+    val advantages: List<String> = emptyList(),
+    val disadvantages: List<String> = emptyList()
 )
 
 @Serializable
@@ -71,24 +81,26 @@ data class Power(
 @Serializable
 @Immutable
 data class Enemy(
+    val id: String,
     val name: String,
     val tags: List<String>,
-    val attributes: EnemyAttributes,
+    val attributes: Attributes,
     val maxHp: Int,
     val currentHp: Int,
     val maxMp: Int?,
     val currentMp: Int?,
-    val powers: List<Power>
+    val powers: List<Power>,
+    val imageUri: String? = null
 )
 
 @Serializable
 @Immutable
-data class EnemyAttributes(
-    val strength: Int,
-    val skill: Int,
-    val resistance: Int,
-    val armor: Int,
-    val firepower: Int
+data class Attributes(
+    val strength: Int = 0,
+    val skill: Int = 0,
+    val resistance: Int = 0,
+    val armor: Int = 0,
+    val firepower: Int = 0
 )
 
 @Serializable
