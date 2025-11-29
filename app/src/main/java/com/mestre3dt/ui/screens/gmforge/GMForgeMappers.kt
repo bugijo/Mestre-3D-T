@@ -4,13 +4,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import com.mestre3dt.data.Enemy
 import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Npc
 import com.mestre3dt.data.Scene
 import com.mestre3dt.ui.AppUiState
 import com.mestre3dt.ui.theme.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.absoluteValue
 
 /**
  * GM FORGE DATA MAPPERS
@@ -41,37 +41,37 @@ fun AppUiState.toSessionParticipants(): List<SessionParticipant> {
     
     // Convert encounter enemies to participants
     encounter.forEachIndexed { index, enemyState ->
-        val enemy = enemies.find { it.id == enemyState.enemyId }
-        if (enemy != null) {
-            participants.add(
-                SessionParticipant(
-                    id = enemy.id,
-                    name = "${enemy.name} #${index + 1}",
-                    avatarUri = enemy.imageUri,
-                    initiative = 10 + (0..10).random(), // TODO: Implement initiative system
-                    currentHp = enemyState.currentHp,
-                    maxHp = enemyState.maxHp,
-                    isPlayer = false,
-                    isCurrentTurn = false,
-                    isOnline = true,
-                    position = Offset(
-                        100f + (index % 3) * 150f,
-                        100f + (index / 3) * 150f
-                    )
+        val enemy = enemyState.enemy
+        val initiativeSeed = (enemy.id.hashCode() * 31 + index).absoluteValue
+        participants.add(
+            SessionParticipant(
+                id = enemy.id,
+                name = "${enemy.name} #${index + 1}",
+                avatarUri = enemy.imageUri,
+                initiative = 10 + (initiativeSeed % 11),
+                currentHp = enemyState.currentHp,
+                maxHp = enemy.maxHp,
+                isPlayer = false,
+                isCurrentTurn = false,
+                isOnline = true,
+                position = Offset(
+                    100f + (index % 3) * 150f,
+                    100f + (index / 3) * 150f
                 )
             )
-        }
+        )
     }
     
     // TODO: Add player characters when multi-user is implemented
     // For now, add sample players from NPCs
     npcs.take(2).forEachIndexed { index, npc ->
+        val initiativeSeed = (npc.id.hashCode() * 17 + index).absoluteValue
         participants.add(
             SessionParticipant(
                 id = npc.id,
                 name = npc.name,
                 avatarUri = npc.imageUri,
-                initiative = 15 + (0..5).random(),
+                initiative = 15 + (initiativeSeed % 6),
                 currentHp = npc.maxHp,
                 maxHp = npc.maxHp,
                 isPlayer = true,

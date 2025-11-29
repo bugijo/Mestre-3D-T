@@ -2,6 +2,7 @@ package com.mestre3dt.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.pagerTabIndicatorOffset
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -27,9 +31,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.rememberDismissState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.accompanist.pager.*
 import com.mestre3dt.data.models.*
 import com.mestre3dt.ui.theme.*
 import kotlinx.coroutines.launch
@@ -38,7 +44,7 @@ import kotlinx.coroutines.launch
  * SESSION COCKPIT - The DM's Command Center
  * Premium AAA interface with Arcane Dark theme
  */
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SessionCockpitScreen(
     combat: Combat?,
@@ -49,7 +55,11 @@ fun SessionCockpitScreen(
     onNextTurn: () -> Unit,
     onEndCombat: () -> Unit
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f,
+        pageCount = { 4 }
+    )
     val scope = rememberCoroutineScope()
 
     Box(
@@ -112,7 +122,7 @@ fun SessionCockpitScreen(
 
             // Pager Content
             HorizontalPager(
-                count = 4,
+                pageCount = 4,
                 state = pagerState,
                 modifier = Modifier.weight(1f)
             ) { page ->
@@ -182,7 +192,7 @@ fun SessionHeader(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Default.Swords,
+                                Icons.Default.SportsMma,
                                 contentDescription = null,
                                 tint = CriticalRed,
                                 modifier = Modifier.size(20.dp)
@@ -363,7 +373,10 @@ fun CombatTab(
             modifier = Modifier.weight(1f).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(combat.participants) { participant ->
+            items(
+                items = combat.participants,
+                key = { participant -> participant.id }
+            ) { participant ->
                 CombatParticipantCard(
                     participant = participant,
                     isCurrentTurn = combat.participants[combat.currentTurnIndex].id == participant.id,
@@ -384,6 +397,10 @@ fun CombatParticipantCard(
     onAddCondition: (Condition) -> Unit
 ) {
     var showQuickActions by remember { mutableStateOf(false) }
+
+    val hpPercentage by remember(participant.currentHp, participant.maxHp) {
+        derivedStateOf { (participant.currentHp.toFloat() / participant.maxHp).coerceIn(0f, 1f) }
+    }
     
     val dismissState = rememberDismissState(
         confirmValueChange = { dismissValue ->
@@ -477,9 +494,8 @@ fun CombatParticipantCard(
                     }
 
                     // HP Bar
-                    val hpPercentage = participant.currentHp.toFloat() / participant.maxHp
                     val animatedProgress by animateFloatAsState(
-                        targetValue = hpPercentage.coerceIn(0f, 1f),
+                        targetValue = hpPercentage,
                         animationSpec = tween(500)
                     )
 
@@ -510,9 +526,14 @@ fun CombatParticipantCard(
 
                     // MP Bar (if exists)
                     participant.maxMp?.let { maxMp ->
-                        val mpPercentage = (participant.currentMp ?: 0).toFloat() / maxMp
+                        val mpPercentage by remember(participant.currentMp, maxMp) {
+                            derivedStateOf {
+                                ((participant.currentMp ?: 0).toFloat() / maxMp).coerceIn(0f, 1f)
+                            }
+                        }
+
                         val animatedMpProgress by animateFloatAsState(
-                            targetValue = mpPercentage.coerceIn(0f, 1f),
+                            targetValue = mpPercentage,
                             animationSpec = tween(500)
                         )
 

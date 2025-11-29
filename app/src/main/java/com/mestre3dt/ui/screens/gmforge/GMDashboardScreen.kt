@@ -83,10 +83,12 @@ fun NextSessionHeroBanner(
 ) {
     var timeRemaining by remember { mutableStateOf(calculateTimeRemaining(timestamp)) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(timestamp) {
         while (true) {
             delay(1000)
-            timeRemaining = calculateTimeRemaining(timestamp)
+            val updated = calculateTimeRemaining(timestamp)
+            timeRemaining = updated
+            if (updated == TimeRemaining(0, 0, 0, 0)) break
         }
     }
 
@@ -254,7 +256,7 @@ fun CampaignCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.End
+                verticalArrangement = Arrangement.Bottom
             ) {
                 Text(
                     campaign.title.uppercase(),
