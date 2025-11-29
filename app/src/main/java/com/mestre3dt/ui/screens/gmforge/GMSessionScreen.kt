@@ -437,13 +437,13 @@ fun WaveformVisualization(
     isPlaying: Boolean
 ) {
     val barCount = 60
-    val bars = remember { List(barCount) { (0.2f..1f).random() } }
+    val bars = remember { List(barCount) { kotlin.random.Random.nextFloat() * 0.8f + 0.2f } }
     var animatedBars by remember { mutableStateOf(bars) }
 
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             kotlinx.coroutines.delay(100)
-            animatedBars = List(barCount) { (0.2f..1f).random() }
+            animatedBars = List(barCount) { kotlin.random.Random.nextFloat() * 0.8f + 0.2f }
         }
     }
 
@@ -453,7 +453,7 @@ fun WaveformVisualization(
 
         animatedBars.forEachIndexed { index, height ->
             val barHeight = size.height * height
-            val x = index * spacing + (spacing - barWidth) / 2
+            val x = index.toFloat() * spacing + (spacing - barWidth) / 2f
 
             drawRect(
                 color = NeonPurple.copy(alpha = 0.8f),

@@ -2,8 +2,6 @@ package com.mestre3dt.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.mestre3dt.data.Converters
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -28,13 +26,13 @@ data class Scene(
     val soundtrackId: String? = null,
     
     // Content
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val enemyIds: List<String> = emptyList(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val npcIds: List<String> = emptyList(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val hooks: List<String> = emptyList(), // Story hooks
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val triggers: List<RollTrigger> = emptyList(),
     
     // Metadata
@@ -63,7 +61,7 @@ data class Character(
     // Visual
     val imageUri: String? = null,
     val portraitUri: String? = null,
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val tags: List<String> = emptyList(),
     
     // 3D&T Attributes (base values)
@@ -80,28 +78,28 @@ data class Character(
     // Current State (runtime values)
     val currentHp: Int = maxHp,
     val currentMp: Int = maxMp,
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val activeConditions: List<Condition> = emptyList(),
     
     // Character Details
     val personality: String = "",
     val speechStyle: String = "",
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val mannerisms: List<String> = emptyList(),
     val goal: String = "",
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val secrets: Map<Int, String> = emptyMap(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val quickPhrases: List<String> = emptyList(),
     
     // Resources
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val advantages: List<String> = emptyList(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val disadvantages: List<String> = emptyList(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val equipment: List<EquipmentItem> = emptyList(),
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val powers: List<Power> = emptyList(),
     
     // Metadata
@@ -220,7 +218,7 @@ data class Combat(
     val sceneId: String,
     val round: Int = 1,
     val currentTurnIndex: Int = 0,
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val participants: List<CombatParticipant> = emptyList(),
     val isActive: Boolean = true,
     val startedAt: Long = System.currentTimeMillis(),
@@ -243,6 +241,6 @@ data class CombatParticipant(
     val imageUri: String? = null,
     val isPlayer: Boolean = false,
     val isDefeated: Boolean = false,
-    @TypeConverters(Converters::class)
+    // @TypeConverters(Converters::class) // TODO: Implement when Room DB is added
     val activeConditions: List<Condition> = emptyList()
 )

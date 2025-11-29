@@ -47,11 +47,14 @@ fun GMCampaignTimelineScreen(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(40.dp)
             ) {
+                val canvasWidth = constraints.maxWidth.toFloat()
+                val canvasHeight = constraints.maxHeight.toFloat()
+                
                 // Canvas for drawing connections
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     // Draw connections between scenes
@@ -91,7 +94,7 @@ fun GMCampaignTimelineScreen(
 
                 // Scene nodes overlay
                 scenes.forEachIndexed { index, scene ->
-                    val position = calculateNodePosition(index, scenes.size, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+                    val position = calculateNodePosition(index, scenes.size, canvasWidth, canvasHeight)
                     
                     TimelineNode(
                         scene = scene,

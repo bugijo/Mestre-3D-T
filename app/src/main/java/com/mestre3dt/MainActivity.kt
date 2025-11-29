@@ -75,9 +75,11 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
             when (selectedTab) {
                 MestreTab.Dashboard -> GMDashboardScreen(
                     campaigns = uiState.toCampaignCards(),
-                    nextSessionTimestamp = uiState.getNextSessionTimestamp(),
+                    nextSessionTimestamp =uiState.getNextSessionTimestamp(),
                     onCampaignClick = { campaignId ->
-                        viewModel.setActiveCampaign(campaignId)
+                        // Campaign ID is actually the index as string
+                        val index = campaignId.toIntOrNull() ?: 0
+                        viewModel.setActiveCampaign(index)
                         selectedTab = MestreTab.Session
                     },
                     onPrepareSession = {
@@ -87,7 +89,7 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
 
                 MestreTab.Session -> GMSessionScreen(
                     participants = uiState.toSessionParticipants(),
-                    mapUri = uiState.activeScene?.mapImageUri,
+                    mapUri = uiState.getActiveScene()?.mapImageUri,
                     combatLog = uiState.toCombatLog(),
                     onRollDice = { /* TODO: Implement dice roller */ },
                     onTokenMove = { tokenId, position ->
@@ -98,7 +100,9 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                 MestreTab.Campaigns -> GMCampaignTimelineScreen(
                     scenes = uiState.toTimelineScenes(),
                     onSceneClick = { sceneId ->
-                        viewModel.setActiveScene(sceneId)
+                        // Scene ID is the index as string
+                        val index = sceneId.toIntOrNull() ?: 0
+                        viewModel.setActiveScene(index)
                         selectedTab = MestreTab.Session
                     }
                 )

@@ -8,26 +8,26 @@ import com.mestre3dt.data.Enemy
 import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Npc
 import com.mestre3dt.data.Scene
-import com.mestre3dt.ui.MestreUiState
+import com.mestre3dt.ui.AppUiState
 import com.mestre3dt.ui.theme.*
 import java.util.concurrent.TimeUnit
 
 /**
  * GM FORGE DATA MAPPERS
- * Convert existing UiState data to GM Forge data models
+ * Convert existing AppUiState to GM Forge data models
  */
 
 // Campaign Mapping
-fun MestreUiState.toCampaignCards(): List<CampaignCardData> {
-    return campaigns.map { campaign ->
+fun AppUiState.toCampaignCards(): List<CampaignCardData> {
+    return campaigns.mapIndexed { index, campaign ->
         val totalScenes = campaign.arcs.flatMap { it.scenes }.size
-        val completedScenes = campaign.arcs.flatMap { it.scenes }.count { it.isCompleted }
+        val completedScenes = 0 // TODO: Track scene completion in app state
         val progress = if (totalScenes > 0) completedScenes.toFloat() / totalScenes else 0f
         
         CampaignCardData(
-            id = campaign.id,
+            id = index.toString(), // Using index as ID since Campaign doesn't have id field
             title = campaign.title,
-            description = campaign.description,
+            description = campaign.synopsis,
             coverUri = "", // TODO: Add cover image to Campaign model
             progress = progress,
             playerCount = 4 // TODO: Add to Campaign model or track in GameSession
@@ -36,16 +36,16 @@ fun MestreUiState.toCampaignCards(): List<CampaignCardData> {
 }
 
 // Session Participants Mapping
-fun MestreUiState.toSessionParticipants(): List<SessionParticipant> {
+fun AppUiState.toSessionParticipants(): List<SessionParticipant> {
     val participants = mutableListOf<SessionParticipant>()
     
     // Convert encounter enemies to participants
-    encounterEnemies.forEachIndexed { index, enemyState ->
+    encounter.forEachIndexed { index, enemyState ->
         val enemy = enemies.find { it.id == enemyState.enemyId }
         if (enemy != null) {
             participants.add(
                 SessionParticipant(
-                    id = enemyState.id,
+                    id = enemy.id,
                     name = "${enemy.name} #${index + 1}",
                     avatarUri = enemy.imageUri,
                     initiative = 10 + (0..10).random(), // TODO: Implement initiative system
@@ -72,8 +72,8 @@ fun MestreUiState.toSessionParticipants(): List<SessionParticipant> {
                 name = npc.name,
                 avatarUri = npc.imageUri,
                 initiative = 15 + (0..5).random(),
-                currentHp = npc.currentPV,
-                maxHp = npc.maxPV,
+                currentHp = npc.maxHp,
+                maxHp = npc.maxHp,
                 isPlayer = true,
                 isCurrentTurn = index == 0,
                 isOnline = true,
@@ -89,31 +89,40 @@ fun MestreUiState.toSessionParticipants(): List<SessionParticipant> {
 }
 
 // Combat Log Mapping
-fun MestreUiState.toCombatLog(): List<LogEntry> {
+fun AppUiState.toCombatLog(): List<LogEntry> {
     // Convert session notes to combat log
-    return activeScene?.notes?.takeLast(10)?.map { note ->
+    return sessionNotes.takeLast(10).map { note ->
         LogEntry(
             actor = "System",
             message = note.text,
             icon = if (note.important) Icons.Default.Warning else Icons.Default.Info,
             color = if (note.important) Color(0xFFFF9800) else NeonPurple
         )
-    } ?: emptyList()
+    }
 }
 
 // Timeline Scenes Mapping
-fun MestreUiState.toTimelineScenes(): List<TimelineScene> {
-    val activeArc = campaigns.find { it.id == activeCampaignId }?.arcs?.find { it.id == activeArcId }
+fun AppUiState.toTimelineScenes(): List<TimelineScene> {
+    val selectedCampaign = campaigns.getOrNull(activeCampaignIndex)
+    val activeArc = selectedCampaign?.arcs?.getOrNull(activeArcIndex)
+    
     return activeArc?.scenes?.mapIndexed { index, scene ->
         TimelineScene(
-            id = scene.id,
+            id = index.toString(), // Using index as ID
             name = scene.name,
             description = scene.objective,
             type = determineSceneType(scene, index),
-            isCompleted = scene.isCompleted,
-            isActive = scene.id == activeSceneId
+            isCompleted = false, // TODO: Track scene completion
+            isActive = index == activeSceneIndex
         )
     } ?: emptyList()
+}
+
+// Helper to get active scene
+fun AppUiState.getActiveScene(): Scene? {
+    val selectedCampaign = campaigns.getOrNull(activeCampaignIndex) ?: return null
+    val activeArc = selectedCampaign.arcs.getOrNull(activeArcIndex) ?: return null
+    return activeArc.scenes.getOrNull(activeSceneIndex)
 }
 
 private fun determineSceneType(scene: Scene, index: Int): SceneType {
@@ -131,7 +140,7 @@ private fun determineSceneType(scene: Scene, index: Int): SceneType {
 }
 
 // Next Session Timestamp
-fun MestreUiState.getNextSessionTimestamp(): Long {
+fun AppUiState.getNextSessionTimestamp(): Long {
     // TODO: Add to Campaign model or Settings
     // For now, return timestamp for "next Saturday at 7 PM"
     val now = System.currentTimeMillis()
