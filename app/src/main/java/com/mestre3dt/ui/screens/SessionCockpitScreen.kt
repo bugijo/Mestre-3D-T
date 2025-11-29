@@ -373,7 +373,10 @@ fun CombatTab(
             modifier = Modifier.weight(1f).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(combat.participants) { participant ->
+            items(
+                items = combat.participants,
+                key = { participant -> participant.id }
+            ) { participant ->
                 CombatParticipantCard(
                     participant = participant,
                     isCurrentTurn = combat.participants[combat.currentTurnIndex].id == participant.id,
@@ -394,6 +397,10 @@ fun CombatParticipantCard(
     onAddCondition: (Condition) -> Unit
 ) {
     var showQuickActions by remember { mutableStateOf(false) }
+
+    val hpPercentage by remember(participant.currentHp, participant.maxHp) {
+        derivedStateOf { (participant.currentHp.toFloat() / participant.maxHp).coerceIn(0f, 1f) }
+    }
     
     Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -451,9 +458,8 @@ fun CombatParticipantCard(
                     }
 
                     // HP Bar
-                    val hpPercentage = participant.currentHp.toFloat() / participant.maxHp
                     val animatedProgress by animateFloatAsState(
-                        targetValue = hpPercentage.coerceIn(0f, 1f),
+                        targetValue = hpPercentage,
                         animationSpec = tween(500)
                     )
 
@@ -484,9 +490,14 @@ fun CombatParticipantCard(
 
                     // MP Bar (if exists)
                     participant.maxMp?.let { maxMp ->
-                        val mpPercentage = (participant.currentMp ?: 0).toFloat() / maxMp
+                        val mpPercentage by remember(participant.currentMp, maxMp) {
+                            derivedStateOf {
+                                ((participant.currentMp ?: 0).toFloat() / maxMp).coerceIn(0f, 1f)
+                            }
+                        }
+
                         val animatedMpProgress by animateFloatAsState(
-                            targetValue = mpPercentage.coerceIn(0f, 1f),
+                            targetValue = mpPercentage,
                             animationSpec = tween(500)
                         )
 

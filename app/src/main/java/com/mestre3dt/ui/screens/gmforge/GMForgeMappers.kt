@@ -10,6 +10,7 @@ import com.mestre3dt.data.Scene
 import com.mestre3dt.ui.AppUiState
 import com.mestre3dt.ui.theme.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.absoluteValue
 
 /**
  * GM FORGE DATA MAPPERS
@@ -63,12 +64,13 @@ fun AppUiState.toSessionParticipants(): List<SessionParticipant> {
     // TODO: Add player characters when multi-user is implemented
     // For now, add sample players from NPCs
     npcs.take(2).forEachIndexed { index, npc ->
+        val initiativeSeed = (npc.id.hashCode() * 17 + index).absoluteValue
         participants.add(
             SessionParticipant(
                 id = npc.id,
                 name = npc.name,
                 avatarUri = npc.imageUri,
-                initiative = 15 + (0..5).random(),
+                initiative = 15 + (initiativeSeed % 6),
                 currentHp = npc.maxHp,
                 maxHp = npc.maxHp,
                 isPlayer = true,
