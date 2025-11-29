@@ -254,7 +254,7 @@ fun CampaignCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.End
+                verticalArrangement = Arrangement.Bottom
             ) {
                 Text(
                     campaign.title.uppercase(),
