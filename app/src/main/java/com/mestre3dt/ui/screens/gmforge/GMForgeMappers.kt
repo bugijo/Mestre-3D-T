@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import com.mestre3dt.data.Enemy
 import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Npc
 import com.mestre3dt.data.Scene
@@ -41,26 +40,24 @@ fun AppUiState.toSessionParticipants(): List<SessionParticipant> {
     
     // Convert encounter enemies to participants
     encounter.forEachIndexed { index, enemyState ->
-        val enemy = enemies.find { it.id == enemyState.enemyId }
-        if (enemy != null) {
-            participants.add(
-                SessionParticipant(
-                    id = enemy.id,
-                    name = "${enemy.name} #${index + 1}",
-                    avatarUri = enemy.imageUri,
-                    initiative = 10 + (0..10).random(), // TODO: Implement initiative system
-                    currentHp = enemyState.currentHp,
-                    maxHp = enemyState.maxHp,
-                    isPlayer = false,
-                    isCurrentTurn = false,
-                    isOnline = true,
-                    position = Offset(
-                        100f + (index % 3) * 150f,
-                        100f + (index / 3) * 150f
-                    )
+        val enemy = enemyState.enemy
+        participants.add(
+            SessionParticipant(
+                id = enemy.id,
+                name = "${enemy.name} #${index + 1}",
+                avatarUri = enemy.imageUri,
+                initiative = 10 + (0..10).random(), // TODO: Implement initiative system
+                currentHp = enemyState.currentHp,
+                maxHp = enemy.maxHp,
+                isPlayer = false,
+                isCurrentTurn = false,
+                isOnline = true,
+                position = Offset(
+                    100f + (index % 3) * 150f,
+                    100f + (index / 3) * 150f
                 )
             )
-        }
+        )
     }
     
     // TODO: Add player characters when multi-user is implemented
