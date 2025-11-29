@@ -385,43 +385,7 @@ fun CombatParticipantCard(
 ) {
     var showQuickActions by remember { mutableStateOf(false) }
     
-    val dismissState = rememberDismissState(
-        confirmValueChange = { dismissValue ->
-            when (dismissValue) {
-                DismissValue.DismissedToEnd -> {
-                    onAddCondition(
-                        Condition(
-                            type = ConditionType.BURNING,
-                            name = "Queimando",
-                            value = 2,
-                            duration = 3
-                        )
-                    )
-                    false
-                }
-                else -> false
-            }
-        }
-    )
-
-    SwipeToDismiss(
-        state = dismissState,
-        background = {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Burning.copy(alpha = 0.3f))
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Whatshot, "Burn", tint = Burning, modifier = Modifier.size(32.dp))
-                    Text("QUEIMANDO", fontWeight = FontWeight.Bold, color = Burning, fontSize = 18.sp)
-                }
-            }
-        },
-        dismissContent = {
-            Card(
+    Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = if (isCurrentTurn) SurfaceContainerHigh else Surface
@@ -581,7 +545,7 @@ fun CombatParticipantCard(
                 }
             }
         }
-    )
+    }
 }
 
 @Composable
