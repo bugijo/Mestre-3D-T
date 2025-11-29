@@ -42,13 +42,12 @@ fun AppUiState.toSessionParticipants(): List<SessionParticipant> {
     // Convert encounter enemies to participants
     encounter.forEachIndexed { index, enemyState ->
         val enemy = enemyState.enemy
-        val initiativeSeed = (enemy.id.hashCode() * 31 + index).absoluteValue
         participants.add(
             SessionParticipant(
                 id = enemy.id,
                 name = "${enemy.name} #${index + 1}",
                 avatarUri = enemy.imageUri,
-                initiative = 10 + (initiativeSeed % 11),
+                initiative = 10 + (0..10).random(), // TODO: Implement initiative system
                 currentHp = enemyState.currentHp,
                 maxHp = enemy.maxHp,
                 isPlayer = false,
