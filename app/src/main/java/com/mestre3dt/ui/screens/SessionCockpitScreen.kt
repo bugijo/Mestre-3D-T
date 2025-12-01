@@ -1,4 +1,4 @@
-package com.mestre3dt.ui.screens
+﻿package com.mestre3dt.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -10,9 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.pagerTabIndicatorOffset
-import androidx.compose.foundation.pager.rememberPagerState
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -31,9 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.rememberDismissState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mestre3dt.data.models.*
@@ -55,11 +51,7 @@ fun SessionCockpitScreen(
     onNextTurn: () -> Unit,
     onEndCombat: () -> Unit
 ) {
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        initialPageOffsetFraction = 0f,
-        pageCount = { 4 }
-    )
+    val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
 
     Box(
@@ -87,8 +79,8 @@ fun SessionCockpitScreen(
                 containerColor = SurfaceVariant,
                 contentColor = TextPrimary,
                 indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(
-                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier.fillMaxWidth(),
                         color = PrimaryPurple,
                         height = 4.dp
                     )
@@ -122,7 +114,7 @@ fun SessionCockpitScreen(
 
             // Pager Content
             HorizontalPager(
-                pageCount = 4,
+                count = 4,
                 state = pagerState,
                 modifier = Modifier.weight(1f)
             ) { page ->
@@ -403,17 +395,17 @@ fun CombatParticipantCard(
     }
     
     Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isCurrentTurn) SurfaceContainerHigh else Surface
-                ),
-                elevation = CardDefaults.elevatedCardElevation(
-                    if (isCurrentTurn) 12.dp else 4.dp
-                ),
-                shape = RoundedCornerShape(16.dp),
-                border = if (isCurrentTurn) androidx.compose.foundation.BorderStroke(2.dp, PrimaryPurple) else null
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isCurrentTurn) SurfaceContainerHigh else Surface
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            if (isCurrentTurn) 12.dp else 4.dp
+        ),
+        shape = RoundedCornerShape(16.dp),
+        border = if (isCurrentTurn) androidx.compose.foundation.BorderStroke(2.dp, PrimaryPurple) else null
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // Header
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -563,11 +555,9 @@ fun CombatParticipantCard(
                             }
                         }
                     }
-                }
             }
         }
     }
-}
 
 @Composable
 fun ConditionChip(condition: Condition) {
