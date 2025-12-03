@@ -378,6 +378,344 @@ body {
   margin: 32px auto;
 }
 
+/* ==================== Campaigns View ==================== */
+.campaigns-view {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.add-button {
+  background: #00FF9D;
+  border: none;
+  color: #121212;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.add-button:hover {
+  background: #00CC7D;
+  transform: scale(1.05);
+}
+
+.campaign-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.campaign-list-item {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.campaign-list-item:hover {
+  background: rgba(187, 134, 252, 0.1);
+  border-color: rgba(187, 134, 252, 0.5);
+  transform: translateX(8px);
+}
+
+.campaign-list-cover {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.campaign-list-content {
+  flex: 1;
+}
+
+.campaign-list-content h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #BB86FC;
+}
+
+.campaign-list-content p {
+  font-size: 14px;
+  color: #9FA8B0;
+  margin-bottom: 12px;
+}
+
+.campaign-list-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 12px;
+  color: #00FF9D;
+}
+
+.campaign-action-btn {
+  background: #BB86FC;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.campaign-action-btn:hover {
+  background: #7209B7;
+  transform: scale(1.05);
+}
+
+/* ==================== Session View Enhanced ==================== */
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.participant {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.participant:hover {
+  background: rgba(187, 134, 252, 0.1);
+}
+
+.participant-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.participant-initiative {
+  font-size: 11px;
+  color: #00FF9D;
+  margin-bottom: 8px;
+}
+
+.hp-text {
+  font-size: 11px;
+  color: #9FA8B0;
+  margin-top: 4px;
+}
+
+.map-placeholder {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 24px;
+}
+
+.grid-cell {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.grid-cell:hover {
+  background: rgba(0, 255, 157, 0.1);
+  border-color: rgba(0, 255, 157, 0.3);
+}
+
+.map-hint {
+  color: #666;
+  font-style: italic;
+}
+
+.combat-log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.log-entry {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #00FF9D;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tools-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-button {
+  background: rgba(0, 255, 157, 0.1);
+  border: 2px solid #00FF9D;
+  color: #00FF9D;
+  padding: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.action-button:hover {
+  background: #00FF9D;
+  color: #121212;
+  transform: scale(1.02);
+}
+
+/* ==================== Timeline View ==================== */
+.timeline-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 64px 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.timeline-node {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.timeline-node:hover {
+  transform: scale(1.1);
+  border-color: #BB86FC;
+}
+
+.timeline-node.completed {
+  border-color: #00FF9D;
+  background: rgba(0, 255, 157, 0.2);
+}
+
+.timeline-node.active {
+  border-color: #BB86FC;
+  background: rgba(187, 134, 252, 0.3);
+  box-shadow: 0 0 20px rgba(187, 134, 252, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.timeline-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.timeline-label {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.timeline-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  background: #00FF9D;
+  color: #121212;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.timeline-legend {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9FA8B0;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.legend-dot.completed {
+  border-color: #00FF9D;
+  background: rgba(0, 255, 157, 0.2);
+}
+
+.legend-dot.active {
+  border-color: #BB86FC;
+  background: rgba(187, 134, 252, 0.3);
+}
+
 /* ==================== Responsive ==================== */
 @media (max-width: 1200px) {
   .campaign-grid {
