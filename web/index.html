@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mestre 3D&T - GM Companion</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#1E1E2E',
+                        surfaceVariant: '#252535',
+                        surfaceContainer: '#2A2A3E',
+                        surfaceContainerHigh: '#313145',
+
+                        primaryPurple: '#9D4EDD',
+                        primaryBlue: '#5E60CE',
+                        primaryAccent: '#7209B7',
+
+                        strengthRed: '#E53935',
+                        skillBlue: '#42A5F5',
+                        resistanceGreen: '#66BB6A',
+                        armorOrange: '#FF9800',
+                        firepowerPurple: '#AB47BC',
+
+                        healthGreen: '#4CAF50',
+                        manaBlue: '#2196F3',
+                        xpGold: '#FFC107',
+                        criticalRed: '#FF5252',
+
+                        textPrimary: '#E0E0E0',
+                        textSecondary: '#9FA8B0',
+                        textHint: '#5E6772',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="src/styles/globals.css">
+</head>
+
+<body class="min-h-screen bg-[#0D0815] text-textPrimary">
+    <div id="app"></div>
+
+    <script type="module" src="src/main.ts"></script>
+</body>
+
+</html>

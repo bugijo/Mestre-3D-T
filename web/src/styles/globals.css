@@ -1,0 +1,22 @@
+@layer components {
+  .glass-panel {
+    @apply bg-surfaceContainer/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50;
+  }
+
+  .glass-button {
+    @apply glass-panel px-6 py-3 hover:bg-surfaceContainerHigh/90 transition-all duration-200 hover:scale-105 cursor-pointer;
+  }
+
+  .neon-glow {
+    @apply shadow-lg shadow-primaryPurple/50;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primaryPurple to-primaryBlue bg-clip-text text-transparent;
+  }
+}
+
+* {
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
