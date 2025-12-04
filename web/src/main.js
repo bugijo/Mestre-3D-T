@@ -1,6 +1,6 @@
 const app = document.getElementById('app');
 
-// Sample data
+// ==================== DATA ====================
 const campaigns = [
     { id: 1, title: 'The Shadow War', progress: 45, players: 4, cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400', description: 'Uma guerra nas sombras contra forças ocultas' },
     { id: 2, title: 'Dungeon Crawl', progress: 62, players: 5, cover: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400', description: 'Exploração de masmorras perigosas' },
@@ -9,9 +9,16 @@ const campaigns = [
 ];
 
 const participants = [
-    { id: 1, name: 'Alice', avatar: 'A', hp: 80, maxHp: 100, initiative: 18 },
-    { id: 2, name: 'Bob', avatar: 'B', hp: 50, maxHp: 100, initiative: 15 },
-    { id: 3, name: 'Goblin', avatar: 'G', hp: 20, maxHp: 60, initiative: 12 }
+    { id: 1, name: 'Alice', avatar: 'A', hp: 80, maxHp: 100, initiative: 18, strength: 3, skill: 2, resistance: 2, armor: 1, firepower: 0 },
+    { id: 2, name: 'Bob', avatar: 'B', hp: 50, maxHp: 100, initiative: 15, strength: 2, skill: 3, resistance: 1, armor: 0, firepower: 2 },
+    { id: 3, name: 'Goblin', avatar: 'G', hp: 20, maxHp: 60, initiative: 12, strength: 1, skill: 1, resistance: 1, armor: 0, firepower: 0 }
+];
+
+const npcs = [
+    { id: 1, name: 'Elara Moonwhisper', type: 'Aliado', level: 5, avatar: '🧙‍♀️', strength: 1, skill: 4, resistance: 2, armor: 0, firepower: 3, description: 'Maga da Ordem Arcana' },
+    { id: 2, name: 'Thorin Ironforge', type: 'Aliado', level: 7, avatar: '⚔️', strength: 4, skill: 2, resistance: 3, armor: 2, firepower: 0, description: 'Guerreiro Anão' },
+    { id: 3, name: 'Shadow Assassin', type: 'Inimigo', level: 6, avatar: '🗡️', strength: 2, skill: 5, resistance: 1, armor: 1, firepower: 0, description: 'Assassino das Sombras' },
+    { id: 4, name: 'Ancient Wyrm', type: 'Boss', level: 10, avatar: '🐉', strength: 5, skill: 3, resistance: 4, armor: 3, firepower: 5, description: 'Dragão Ancestral' }
 ];
 
 const combatLog = [
@@ -21,9 +28,110 @@ const combatLog = [
 ];
 
 const nextSession = new Date('2025-12-15T19:00:00').getTime();
+const diceTypes = [4, 6, 8, 10, 12, 20, 100];
+
 let currentView = 'dashboard';
 let selectedCampaign = null;
+let diceHistory = [];
+let isRolling = false;
+let musicPlaying = false;
+let waveformBars = Array(60).fill(0).map(() => Math.random());
 
+// ==================== DICE ROLLER ====================
+function rollDice(sides, modifier = 0) {
+    if (isRolling) return;
+    isRolling = true;
+
+    const result = Math.floor(Math.random() * sides) + 1;
+    const total = result + modifier;
+    const isCritical = result === sides;
+    const isFail = result === 1;
+
+    const entry = {
+        dice: `d${sides}`,
+        result,
+        modifier,
+        total,
+        isCritical,
+        isFail,
+        timestamp: new Date().toLocaleTimeString()
+    };
+
+    diceHistory.unshift(entry);
+    if (diceHistory.length > 10) diceHistory.pop();
+
+    // Show animation
+    showDiceAnimation(entry);
+
+    setTimeout(() => {
+        isRolling = false;
+        if (currentView === 'dice') render();
+    }, 1500);
+}
+
+function showDiceAnimation(entry) {
+    const modal = document.createElement('div');
+    modal.className = 'dice-animation-modal';
+    modal.innerHTML = `
+        <div class="dice-result-container ${entry.isCritical ? 'critical' : ''} ${entry.isFail ? 'fail' : ''}">
+            <div class="dice-icon">${entry.dice}</div>
+            <div class="dice-number">${entry.result}</div>
+            ${entry.modifier !== 0 ? `<div class="dice-modifier">${entry.modifier > 0 ? '+' : ''}${entry.modifier}</div>` : ''}
+            <div class="dice-total">= ${entry.total}</div>
+            ${entry.isCritical ? '<div class="dice-label">🎯 CRITICAL!</div>' : ''}
+            ${entry.isFail ? '<div class="dice-label">💥 FAIL!</div>' : ''}
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }, 1200);
+}
+
+// ==================== MEDIA PLAYER ====================
+function toggleMusic() {
+    musicPlaying = !musicPlaying;
+    if (musicPlaying) {
+        animateWaveform();
+    }
+    render();
+}
+
+function animateWaveform() {
+    if (!musicPlaying) return;
+
+    waveformBars = waveformBars.map(() => Math.random());
+
+    const canvas = document.getElementById('waveformCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const barWidth = width / 60;
+
+        ctx.clearRect(0, 0, width, height);
+
+        waveformBars.forEach((height, i) => {
+            const barHeight = height * canvas.height * 0.8;
+            const x = i * barWidth;
+            const y = (canvas.height - barHeight) / 2;
+
+            ctx.fillStyle = '#BB86FC';
+            ctx.fillRect(x, y, barWidth - 2, barHeight);
+        });
+    }
+
+    setTimeout(animateWaveform, 100);
+}
+
+// ==================== COUNTDOWN ====================
 function updateCountdown() {
     const now = new Date().getTime();
     const distance = nextSession - now;
@@ -59,6 +167,7 @@ function updateCountdown() {
     }
 }
 
+// ==================== VIEWS ====================
 function renderDashboard() {
     const campaignCards = campaigns.map(c => `
         <div class="campaign-card" onclick="selectCampaign(${c.id})">
@@ -132,6 +241,91 @@ function renderCampaigns() {
     `;
 }
 
+function renderNPCs() {
+    const npcCards = npcs.map(npc => `
+        <div class="npc-card glass-panel ${npc.type.toLowerCase()}">
+            <div class="npc-avatar">${npc.avatar}</div>
+            <div class="npc-header">
+                <h3>${npc.name}</h3>
+                <span class="npc-level">Nível ${npc.level}</span>
+                <span class="npc-type">${npc.type}</span>
+            </div>
+            <p class="npc-description">${npc.description}</p>
+            <div class="npc-attributes">
+                <div class="attr-item"><span class="attr-label">F:</span> ${npc.strength}</div>
+                <div class="attr-item"><span class="attr-label">H:</span> ${npc.skill}</div>
+                <div class="attr-item"><span class="attr-label">R:</span> ${npc.resistance}</div>
+                <div class="attr-item"><span class="attr-label">A:</span> ${npc.armor}</div>
+                <div class="attr-item"><span class="attr-label">PdF:</span> ${npc.firepower}</div>
+            </div>
+            <div class="npc-stats">
+                <div class="stat">PV: ${5 + npc.resistance * 5}</div>
+                <div class="stat">PM: ${5 + npc.firepower * 5}</div>
+            </div>
+            <button class="npc-action-btn" onclick="addToSession(${npc.id})">
+                + ADD TO SESSION
+            </button>
+        </div>
+    `).join('');
+
+    return `
+        <div class="npcs-view">
+            <div class="page-header">
+                <h2 class="section-title">👥 NPCs & ENEMIES</h2>
+                <button class="add-button" onclick="alert('Criar novo NPC em breve!')">
+                    + NEW NPC
+                </button>
+            </div>
+            <div class="npc-grid">
+                ${npcCards}
+            </div>
+        </div>
+    `;
+}
+
+function renderDiceRoller() {
+    const diceButtons = diceTypes.map(sides => `
+        <button class="dice-button" onclick="rollDice(${sides}, 0)">
+            <div class="dice-face">d${sides}</div>
+        </button>
+    `).join('');
+
+    const historyEntries = diceHistory.map(entry => `
+        <div class="history-entry ${entry.isCritical ? 'critical' : ''} ${entry.isFail ? 'fail' : ''}">
+            <span class="history-dice">${entry.dice}</span>
+            <span class="history-result">${entry.result}</span>
+            ${entry.modifier !== 0 ? `<span class="history-mod">${entry.modifier > 0 ? '+' : ''}${entry.modifier}</span>` : ''}
+            <span class="history-total">= ${entry.total}</span>
+            <span class="history-time">${entry.timestamp}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="dice-roller-view">
+            <div class="dice-section glass-panel">
+                <h2 class="section-title">🎲 DICE ROLLER</h2>
+                <div class="dice-grid">
+                    ${diceButtons}
+                </div>
+                <div class="modifier-controls">
+                    <button class="mod-button" onclick="rollDice(20, -2)">-2</button>
+                    <button class="mod-button" onclick="rollDice(20, -1)">-1</button>
+                    <button class="mod-button highlight" onclick="rollDice(20, 0)">ROLL</button>
+                    <button class="mod-button" onclick="rollDice(20, 1)">+1</button>
+                    <button class="mod-button" onclick="rollDice(20, 2)">+2</button>
+                </div>
+            </div>
+            
+            <div class="history-section glass-panel">
+                <h3>HISTORY</h3>
+                <div class="dice-history">
+                    ${historyEntries.length > 0 ? historyEntries : '<p class="empty-state">Nenhuma rolagem ainda</p>'}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function renderSession() {
     const participantsList = participants.map(p => `
         <div class="participant">
@@ -168,7 +362,7 @@ function renderSession() {
                     <div class="map-grid">
                         ${Array(25).fill(0).map((_, i) => `<div class="grid-cell"></div>`).join('')}
                     </div>
-                    <p class="map-hint">Mapa interativo em desenvolvimento</p>
+                    <p class="map-hint">Click nos quadrados para interagir</p>
                 </div>
             </div>
             
@@ -178,13 +372,30 @@ function renderSession() {
                     ${logEntries}
                 </div>
                 <div class="tools-actions">
-                    <button class="roll-button" onclick="rollDice()">
-                        🎲 ROLL D20
+                    <button class="roll-button" onclick="navigateTo('dice')">
+                        🎲 DICE ROLLER
                     </button>
                     <button class="action-button" onclick="addLogEntry()">
                         ⚡ ADD ACTION
                     </button>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Media Player Footer -->
+        <div class="media-player">
+            <button class="play-button" onclick="toggleMusic()">
+                ${musicPlaying ? '⏸' : '▶'}
+            </button>
+            <div class="track-info">
+                <div class="track-name">Epic Combat Music</div>
+                <div class="track-category">Battle Theme</div>
+            </div>
+            <canvas id="waveformCanvas" width="400" height="60"></canvas>
+            <div class="player-controls">
+                <button class="control-btn">🔀</button>
+                <button class="control-btn">🔁</button>
+                <input type="range" class="volume-slider" min="0" max="100" value="70">
             </div>
         </div>
     `;
@@ -223,12 +434,15 @@ function renderTimeline() {
     `;
 }
 
+// ==================== RENDER ====================
 function render() {
     let content = '';
     switch (currentView) {
         case 'dashboard': content = renderDashboard(); break;
         case 'campaigns': content = renderCampaigns(); break;
+        case 'npcs': content = renderNPCs(); break;
         case 'session': content = renderSession(); break;
+        case 'dice': content = renderDiceRoller(); break;
         case 'timeline': content = renderTimeline(); break;
     }
 
@@ -244,9 +458,17 @@ function render() {
                     <span class="nav-icon">📁</span>
                     <span class="nav-label">Campaigns</span>
                 </a>
+                <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">NPCs</span>
+                </a>
                 <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')">
                     <span class="nav-icon">⚔️</span>
                     <span class="nav-label">Session</span>
+                </a>
+                <a class="nav-item ${currentView === 'dice' ? 'active' : ''}" onclick="navigateTo('dice')">
+                    <span class="nav-icon">🎲</span>
+                    <span class="nav-label">Dice</span>
                 </a>
                 <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')">
                     <span class="nav-icon">🗺️</span>
@@ -264,9 +486,13 @@ function render() {
         updateCountdown();
         setInterval(updateCountdown, 1000);
     }
+
+    if (currentView === 'session' && musicPlaying) {
+        setTimeout(animateWaveform, 100);
+    }
 }
 
-// Global functions
+// ==================== GLOBAL FUNCTIONS ====================
 window.navigateTo = function (view) {
     currentView = view;
     render();
@@ -277,12 +503,8 @@ window.selectCampaign = function (id) {
     navigateTo('campaigns');
 };
 
-window.rollDice = function () {
-    const result = Math.floor(Math.random() * 20) + 1;
-    const critical = result === 20 ? ' 🎯 CRITICAL!' : result === 1 ? ' 💥 FAIL!' : '';
-    alert(`🎲 D20 Roll: ${result}${critical}`);
-    combatLog.unshift({ actor: 'System', action: `rolled ${result}`, color: '#BB86FC' });
-    render();
+window.addToSession = function (npcId) {
+    alert(`NPC adicionado à sessão! (em breve será persistido)`);
 };
 
 window.addLogEntry = function () {
@@ -296,4 +518,4 @@ window.addLogEntry = function () {
 // Initial render
 render();
 
-console.log('%c🎲 GM Forge Web - FUNCIONALIDADES ATIVAS! ', 'background: #BB86FC; color: white; font-size: 16px; padding: 8px;');
+console.log('%c🎲 GM Forge Web - FEATURES PREMIUM! ', 'background: #BB86FC; color: white; font-size: 16px; padding: 8px;');
