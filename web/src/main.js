@@ -21,6 +21,39 @@ const npcs = [
     { id: 4, name: 'Ancient Wyrm', type: 'Boss', level: 10, avatar: '🐉', strength: 5, skill: 3, resistance: 4, armor: 3, firepower: 5, description: 'Dragão Ancestral' }
 ];
 
+const loreEntries = [
+    { id: 1, title: 'A Ordem Arcana', category: 'Faction', icon: '🔮', content: 'Antiga organização de magos dedicada a proteger o equilíbrio mágico do reino.' },
+    { id: 2, title: 'Espada de Thorin', category: 'Item', icon: '⚔️', content: 'Lendária espada forjada nas profundezas das montanhas anãs. +3 Força quando empunhada.' },
+    { id: 3, title: 'Torre Negra', category: 'Location', icon: '🏰', content: 'Fortaleza abandonada onde dizem habitar criaturas das sombras. Entrada pelo norte está bloqueada.' },
+    { id: 4, title: 'Lorde das Sombras', category: 'NPC', icon: '👤', content: 'Misterioso comandante das forças inimigas. Pouco se sabe sobre suas verdadeiras intenções.' }
+];
+
+const quests = [
+    {
+        id: 1, title: 'Recuperar o Artefato', status: 'In Progress', xp: 500, checkpoints: [
+            { text: 'Falar com o sábio', completed: true },
+            { text: 'Explorar as ruínas', completed: true },
+            { text: 'Derrotar o guardião', completed: false },
+            { text: 'Recuperar o artefato', completed: false }
+        ]
+    },
+    {
+        id: 2, title: 'Defesa da Vila', status: 'Completed', xp: 300, checkpoints: [
+            { text: 'Alertar os aldeões', completed: true },
+            { text: 'Construir barricadas', completed: true },
+            { text: 'Repelir o ataque', completed: true }
+        ]
+    },
+    {
+        id: 3, title: 'O Dragão Ancestral', status: 'Not Started', xp: 1000, checkpoints: [
+            { text: 'Reunir informações', completed: false },
+            { text: 'Formar grupo', completed: false },
+            { text: 'Localizar covil', completed: false },
+            { text: 'Confrontar o dragão', completed: false }
+        ]
+    }
+];
+
 const combatLog = [
     { actor: 'Alice', action: 'hits for 8', color: '#00FF9D', timestamp: new Date().toLocaleTimeString() },
     { actor: 'Bob', action: 'casts spell', color: '#BB86FC', timestamp: new Date().toLocaleTimeString() },
@@ -33,11 +66,13 @@ const diceTypes = [4, 6, 8, 10, 12, 20, 100];
 let currentView = 'dashboard';
 let selectedCampaign = null;
 let selectedCharacter = null;
+let selectedLoreCategory = 'All';
 let diceHistory = [];
 let isRolling = false;
 let musicPlaying = false;
 let waveformBars = Array(60).fill(0).map(() => Math.random());
 let draggedToken = null;
+let sessionNotes = '';
 
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
@@ -46,7 +81,6 @@ function showToast(message, type = 'info') {
     toast.textContent = message;
 
     document.body.appendChild(toast);
-
     setTimeout(() => toast.classList.add('show'), 10);
 
     setTimeout(() => {
@@ -54,6 +88,130 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+// ==================== QUEST MODAL ====================
+function showQuestDetails(quest) {
+    const completedCount = quest.checkpoints.filter(c => c.completed).length;
+    const progressPercent = (completedCount / quest.checkpoints.length) * 100;
+
+    const modal = document.createElement('div');
+    modal.className = 'quest-modal';
+    modal.innerHTML = `
+        <div class="quest-details glass-panel">
+            <button class="close-btn" onclick="closeQuestModal()">✕</button>
+            
+            <div class="quest-header">
+                <h2>${quest.title}</h2>
+                <span class="quest-status-badge ${quest.status.toLowerCase().replace(' ', '-')}">${quest.status}</span>
+            </div>
+            
+            <div class="quest-progress-section">
+                <div class="progress-label">Progress: ${completedCount}/${quest.checkpoints.length}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            </div>
+            
+            <div class="checkpoints-section">
+                <h3>📋 Checkpoints</h3>
+                ${quest.checkpoints.map((checkpoint, i) => `
+                    <div class="checkpoint ${checkpoint.completed ? 'completed' : ''}">
+                        <div class="checkpoint-icon">${checkpoint.completed ? '✓' : '○'}</div>
+                        <div class="checkpoint-text">${checkpoint.text}</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="quest-reward">
+                <span class="reward-label">🏆 XP Reward:</span>
+                <span class="reward-value">${quest.xp} XP</span>
+            </div>
+            
+            ${quest.status !== 'Completed' ? `
+                <button class="quest-action-btn" onclick="completeQuest(${quest.id})">
+                    ✓ MARK AS COMPLETE
+                </button>
+            ` : ''}
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+window.closeQuestModal = function () {
+    const modal = document.querySelector('.quest-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.completeQuest = function (questId) {
+    const quest = quests.find(q => q.id === questId);
+    if (quest) {
+        quest.status = 'Completed';
+        quest.checkpoints.forEach(c => c.completed = true);
+        showToast(`Quest completed! +${quest.xp} XP`, 'success');
+        closeQuestModal();
+        render();
+    }
+};
+
+// ==================== LORE MODAL ====================
+function showLoreDetails(entry) {
+    const modal = document.createElement('div');
+    modal.className = 'lore-modal';
+    modal.innerHTML = `
+        <div class="lore-details glass-panel">
+            <button class="close-btn" onclick="closeLoreModal()">✕</button>
+            
+            <div class="lore-header">
+                <div class="lore-icon-large">${entry.icon}</div>
+                <div>
+                    <h2>${entry.title}</h2>
+                    <span class="lore-category-badge">${entry.category}</span>
+                </div>
+            </div>
+            
+            <div class="lore-content-section">
+                <p>${entry.content}</p>
+            </div>
+            
+            <div class="lore-actions">
+                <button class="lore-action-btn" onclick="showToast('Edit feature coming soon!', 'info')">
+                    ✏️ EDIT
+                </button>
+                <button class="lore-action-btn danger" onclick="deleteLoreEntry(${entry.id})">
+                    🗑️ DELETE
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+window.closeLoreModal = function () {
+    const modal = document.querySelector('.lore-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.deleteLoreEntry = function (entryId) {
+    if (confirm('Delete this lore entry?')) {
+        const index = loreEntries.findIndex(e => e.id === entryId);
+        if (index !== -1) {
+            loreEntries.splice(index, 1);
+            showToast('Lore entry deleted', 'error');
+            closeLoreModal();
+            render();
+        }
+    }
+};
 
 // ==================== CHARACTER SHEET MODAL ====================
 function showCharacterSheet(character) {
@@ -479,6 +637,121 @@ function renderNPCs() {
     `;
 }
 
+function renderLore() {
+    const categories = ['All', 'NPC', 'Location', 'Item', 'Faction'];
+    const filteredEntries = selectedLoreCategory === 'All'
+        ? loreEntries
+        : loreEntries.filter(e => e.category === selectedLoreCategory);
+
+    const categoryButtons = categories.map(cat => `
+        <button class="category-btn ${selectedLoreCategory === cat ? 'active' : ''}" 
+                onclick="filterLore('${cat}')">
+            ${cat}
+        </button>
+    `).join('');
+
+    const loreCards = filteredEntries.map(entry => `
+        <div class="lore-card glass-panel" onclick="showLoreDetails(${JSON.stringify(entry).replace(/"/g, '&quot;')})">
+            <div class="lore-card-icon">${entry.icon}</div>
+            <h3>${entry.title}</h3>
+            <span class="lore-card-category">${entry.category}</span>
+            <p>${entry.content.substring(0, 100)}${entry.content.length > 100 ? '...' : ''}</p>
+        </div>
+    `).join('');
+
+    return `
+        <div class="lore-view">
+            <div class="page-header">
+                <h2 class="section-title">📚 LORE LIBRARY</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW ENTRY
+                </button>
+            </div>
+            
+            <div class="category-filters">
+                ${categoryButtons}
+            </div>
+            
+            <div class="lore-grid">
+                ${loreCards.length > 0 ? loreCards : '<p class="empty-state">No lore entries found</p>'}
+            </div>
+        </div>
+    `;
+}
+
+function renderQuests() {
+    const questCards = quests.map(quest => {
+        const completedCount = quest.checkpoints.filter(c => c.completed).length;
+        const progressPercent = (completedCount / quest.checkpoints.length) * 100;
+
+        return `
+            <div class="quest-card glass-panel" onclick="showQuestDetails(${JSON.stringify(quest).replace(/"/g, '&quot;')})">
+                <div class="quest-card-header">
+                    <h3>${quest.title}</h3>
+                    <span class="quest-status-badge ${quest.status.toLowerCase().replace(' ', '-')}">${quest.status}</span>
+                </div>
+                
+                <div class="quest-progress">
+                    <div class="progress-label">${completedCount}/${quest.checkpoints.length} checkpoints</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                
+                <div class="quest-xp">
+                    🏆 ${quest.xp} XP
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div class="quests-view">
+            <div class="page-header">
+                <h2 class="section-title">📜 QUEST TRACKER</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW QUEST
+                </button>
+            </div>
+            
+            <div class="quest-grid">
+                ${questCards}
+            </div>
+        </div>
+    `;
+}
+
+function renderNotes() {
+    return `
+        <div class="notes-view glass-panel">
+            <div class="page-header">
+                <h2 class="section-title">📝 SESSION NOTES</h2>
+                <button class="add-button" onclick="saveNotes()">
+                    💾 SAVE
+                </button>
+            </div>
+            
+            <textarea id="notesEditor" 
+                      class="notes-editor" 
+                      placeholder="Write your session notes here...
+
+# Session Summary
+- Key events
+- Important NPCs
+- Plot developments
+
+# Next Steps
+- Follow up on leads
+- Prepare for next encounter">${sessionNotes}</textarea>
+            
+            <div class="notes-stats">
+                <span>Characters: ${sessionNotes.length}</span>
+                <span>Last saved: Never</span>
+            </div>
+        </div>
+    `;
+}
+
 function renderDiceRoller() {
     const diceButtons = diceTypes.map(sides => `
         <button class="dice-button" onclick="rollDice(${sides}, 0)" title="Roll d${sides}">
@@ -537,7 +810,6 @@ function renderSession() {
         </div>
     `).join('');
 
-    // Create 5x5 grid with tokens
     const grid = [];
     for (let y = 0; y < 5; y++) {
         for (let x = 0; x < 5; x++) {
@@ -604,7 +876,6 @@ function renderSession() {
             </div>
         </div>
         
-        <!-- Media Player Footer -->
         <div class="media-player">
             <button class="play-button" onclick="toggleMusic()">
                 ${musicPlaying ? '⏸' : '▶'}
@@ -663,6 +934,9 @@ function render() {
         case 'dashboard': content = renderDashboard(); break;
         case 'campaigns': content = renderCampaigns(); break;
         case 'npcs': content = renderNPCs(); break;
+        case 'lore': content = renderLore(); break;
+        case 'quests': content = renderQuests(); break;
+        case 'notes': content = renderNotes(); break;
         case 'session': content = renderSession(); break;
         case 'dice': content = renderDiceRoller(); break;
         case 'timeline': content = renderTimeline(); break;
@@ -683,6 +957,18 @@ function render() {
                 <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')" title="NPCs & Enemies">
                     <span class="nav-icon">👥</span>
                     <span class="nav-label">NPCs</span>
+                </a>
+                <a class="nav-item ${currentView === 'lore' ? 'active' : ''}" onclick="navigateTo('lore')" title="Lore Library">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Lore</span>
+                </a>
+                <a class="nav-item ${currentView === 'quests' ? 'active' : ''}" onclick="navigateTo('quests')" title="Quest Tracker">
+                    <span class="nav-icon">📜</span>
+                    <span class="nav-label">Quests</span>
+                </a>
+                <a class="nav-item ${currentView === 'notes' ? 'active' : ''}" onclick="navigateTo('notes')" title="Session Notes">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Notes</span>
                 </a>
                 <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')" title="Session">
                     <span class="nav-icon">⚔️</span>
@@ -744,6 +1030,19 @@ window.addLogEntry = function () {
     }
 };
 
+window.filterLore = function (category) {
+    selectedLoreCategory = category;
+    render();
+};
+
+window.saveNotes = function () {
+    const editor = document.getElementById('notesEditor');
+    if (editor) {
+        sessionNotes = editor.value;
+        showToast('Notes saved!', 'success');
+    }
+};
+
 // Global drag handlers
 window.onTokenDragStart = onTokenDragStart;
 window.onTokenDragEnd = onTokenDragEnd;
@@ -753,4 +1052,4 @@ window.onCellDrop = onCellDrop;
 // Initial render
 render();
 
-console.log('%c🎮 GM Forge Web - INTERACTIVE FEATURES! ', 'background: #00FF9D; color: #121212; font-size: 16px; padding: 8px; font-weight: bold;');
+console.log('%c📚 GM Forge Web - LORE & QUESTS! ', 'background: #00FF9D; color: #121212; font-size: 16px; padding: 8px; font-weight: bold;');
