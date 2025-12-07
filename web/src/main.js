@@ -1,297 +1,1055 @@
-const nextSession = Date.now() + 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 60 * 2;
-
-const campaigns = [
-  {
-    title: 'The Shadowed Realm',
-    subtitle: 'Sessão em Blackwood | sábado, 19h',
-    progress: 72,
-    cover: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1000&q=60',
-  },
-  {
-    title: 'Rise of the Tiamat',
-    subtitle: '3 jogadores | high fantasy',
-    progress: 45,
-    cover: 'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1000&q=60',
-  },
-  {
-    title: 'Curse of Strahd',
-    subtitle: 'gótico | 2 sessões restantes',
-    progress: 58,
-    cover: 'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=1000&q=60',
-  },
-  {
-    title: 'Lost Mine of Phandelver',
-    subtitle: 'sandbox inicial',
-    progress: 25,
-    cover: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=60',
-  },
-];
-
-const scenes = [
-  { name: 'Tavern Start', type: 'Taverna', description: 'Briefing e ganchos iniciais', active: false },
-  { name: 'Dark Forest Path', type: 'Floresta', description: 'Emboscada de bandidos', active: false },
-  { name: 'Ancient Ruins', type: 'Ruínas', description: 'Artefato e armadilhas', active: false },
-  { name: 'Goblin Ambush', type: 'Ambush', description: 'Combate rápido', active: true },
-  { name: 'Dragon Lair Boss', type: 'Boss', description: 'Clímax da sessão', active: false },
-];
-
-const monsters = [
-  {
-    name: 'Ancient Dragon',
-    type: 'Dragon • Legendary',
-    hp: 95,
-    maxHp: 120,
-    strength: 5,
-    skill: 3,
-    resistance: 4,
-    armor: 3,
-    firepower: 5,
-    img: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?auto=format&fit=crop&w=800&q=60',
-    tags: ['fire', 'flight'],
-  },
-  {
-    name: 'Goblin Archer',
-    type: 'Goblin • Minion',
-    hp: 28,
-    maxHp: 40,
-    strength: 1,
-    skill: 3,
-    resistance: 1,
-    armor: 1,
-    firepower: 2,
-    img: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=60',
-    tags: ['ranged', 'minion'],
-  },
-  {
-    name: 'Skeleton Warrior',
-    type: 'Undead • Soldier',
-    hp: 35,
-    maxHp: 50,
-    strength: 3,
-    skill: 2,
-    resistance: 2,
-    armor: 2,
-    firepower: 0,
-    img: 'https://images.unsplash.com/photo-1603161394370-9de3220f8bb6?auto=format&fit=crop&w=800&q=60',
-    tags: ['undead', 'melee'],
-  },
-  {
-    name: 'Shadow Mage',
-    type: 'Caster • Elite',
-    hp: 32,
-    maxHp: 40,
-    strength: 1,
-    skill: 4,
-    resistance: 1,
-    armor: 1,
-    firepower: 4,
-    img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=60',
-    tags: ['magic', 'control'],
-  },
-];
-
 const app = document.getElementById('app');
 
-const attributeBar = (label, value) => {
-  const pct = Math.min(1, value / 6);
-  return `
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between text-xs text-textSecondary">
-        <span>${label}</span>
-        <span class="text-textPrimary font-semibold">${value}</span>
-      </div>
-      <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-        <div class="h-full bg-primaryPurple" style="width:${pct * 100}%"></div>
-      </div>
-    </div>
-  `;
-};
+// ==================== DATA ====================
+const campaigns = [
+    { id: 1, title: 'The Shadow War', progress: 45, players: 4, cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400', description: 'Uma guerra nas sombras contra forças ocultas' },
+    { id: 2, title: 'Dungeon Crawl', progress: 62, players: 5, cover: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400', description: 'Exploração de masmorras perigosas' },
+    { id: 3, title: 'Dragon Hunt', progress: 30, players: 3, cover: 'https://images.unsplash.com/photo-1578632749014-ca77efd052eb?w=400', description: 'Caça ao dragão ancestral' },
+    { id: 4, title: 'Quest for Glory', progress: 88, players: 6, cover: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=400', description: 'Busca pela glória eterna' }
+];
 
-const campaignCards = campaigns
-  .map(
-    (c) => `
-    <div class="glass-panel p-4 space-y-3">
-      <div class="h-32 w-full rounded-xl overflow-hidden relative">
-        <img src="${c.cover}" class="object-cover w-full h-full"/>
-        <div class="absolute inset-0 bg-gradient-to-b from-black/10 to-black/70"></div>
-      </div>
-      <div class="space-y-1">
-        <p class="text-textSecondary text-xs tracking-[0.2em] uppercase">Campanha</p>
-        <h3 class="text-lg font-bold">${c.title}</h3>
-        <p class="text-sm text-textSecondary">${c.subtitle}</p>
-      </div>
-      <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-        <div class="h-full bg-primaryPurple" style="width:${c.progress}%"></div>
-      </div>
-      <div class="flex justify-between text-xs text-textSecondary">
-        <span>Progresso</span>
-        <span class="text-textPrimary font-semibold">${c.progress}%</span>
-      </div>
-    </div>
-  `,
-  )
-  .join('');
+const participants = [
+    { id: 1, name: 'Alice', avatar: 'A', hp: 80, maxHp: 100, initiative: 18, strength: 3, skill: 2, resistance: 2, armor: 1, firepower: 0, x: 2, y: 1 },
+    { id: 2, name: 'Bob', avatar: 'B', hp: 50, maxHp: 100, initiative: 15, strength: 2, skill: 3, resistance: 1, armor: 0, firepower: 2, x: 3, y: 1 },
+    { id: 3, name: 'Goblin', avatar: 'G', hp: 20, maxHp: 60, initiative: 12, strength: 1, skill: 1, resistance: 1, armor: 0, firepower: 0, x: 2, y: 3 }
+];
 
-const sceneNodes = scenes
-  .map(
-    (s) => `
-      <div class="flex flex-col items-center gap-2">
-        <div class="w-16 h-16 rounded-full border-2 ${s.active ? 'border-primaryPurple shadow-[0_0_20px_rgba(157,78,221,0.4)]' : 'border-white/15'} flex items-center justify-center bg-white/5">
-          <span class="text-sm text-textPrimary font-semibold text-center px-2">${s.type}</span>
-        </div>
-        <div class="text-center space-y-1">
-          <p class="text-xs text-textSecondary">${s.name}</p>
-          <p class="text-[11px] text-textSecondary/70">${s.description}</p>
-        </div>
-      </div>
-    `,
-  )
-  .join('<div class="flex-1 h-[2px] bg-gradient-to-r from-white/10 via-primaryPurple/50 to-white/10"></div>');
+const npcs = [
+    { id: 1, name: 'Elara Moonwhisper', type: 'Aliado', level: 5, avatar: '🧙‍♀️', strength: 1, skill: 4, resistance: 2, armor: 0, firepower: 3, description: 'Maga da Ordem Arcana' },
+    { id: 2, name: 'Thorin Ironforge', type: 'Aliado', level: 7, avatar: '⚔️', strength: 4, skill: 2, resistance: 3, armor: 2, firepower: 0, description: 'Guerreiro Anão' },
+    { id: 3, name: 'Shadow Assassin', type: 'Inimigo', level: 6, avatar: '🗡️', strength: 2, skill: 5, resistance: 1, armor: 1, firepower: 0, description: 'Assassino das Sombras' },
+    { id: 4, name: 'Ancient Wyrm', type: 'Boss', level: 10, avatar: '🐉', strength: 5, skill: 3, resistance: 4, armor: 3, firepower: 5, description: 'Dragão Ancestral' }
+];
 
-const bestiaryGrid = monsters
-  .map(
-    (m) => `
-    <div class="glass-panel p-4 space-y-3">
-      <div class="flex gap-3">
-        <div class="w-16 h-16 rounded-xl overflow-hidden bg-white/5">
-          <img src="${m.img}" class="object-cover w-full h-full" />
-        </div>
-        <div class="space-y-1">
-          <p class="text-xs text-textSecondary uppercase tracking-[0.2em]">${m.type}</p>
-          <h4 class="text-lg font-bold text-textPrimary">${m.name}</h4>
-          <div class="flex gap-2 text-[11px] text-primaryPurple">
-            ${m.tags.map((t) => `<span class="px-2 py-1 rounded-full bg-primaryPurple/10 border border-primaryPurple/40">${t}</span>`).join('')}
-          </div>
-        </div>
-      </div>
-      ${attributeBar('Força', m.strength)}
-      ${attributeBar('Habilidade', m.skill)}
-      ${attributeBar('Resistência', m.resistance)}
-      ${attributeBar('Armadura', m.armor)}
-      ${attributeBar('PdF', m.firepower)}
-      <div class="flex items-center justify-between text-xs text-textSecondary">
-        <span>HP</span>
-        <span class="text-textPrimary font-semibold">${m.hp}/${m.maxHp}</span>
-      </div>
-    </div>
-  `,
-  )
-  .join('');
+const loreEntries = [
+    { id: 1, title: 'A Ordem Arcana', category: 'Faction', icon: '🔮', content: 'Antiga organização de magos dedicada a proteger o equilíbrio mágico do reino.' },
+    { id: 2, title: 'Espada de Thorin', category: 'Item', icon: '⚔️', content: 'Lendária espada forjada nas profundezas das montanhas anãs. +3 Força quando empunhada.' },
+    { id: 3, title: 'Torre Negra', category: 'Location', icon: '🏰', content: 'Fortaleza abandonada onde dizem habitar criaturas das sombras. Entrada pelo norte está bloqueada.' },
+    { id: 4, title: 'Lorde das Sombras', category: 'NPC', icon: '👤', content: 'Misterioso comandante das forças inimigas. Pouco se sabe sobre suas verdadeiras intenções.' }
+];
 
-app.innerHTML = `
-  <div class="min-h-screen bg-[#0D0815] text-textPrimary">
-    <div class="flex">
-      <aside class="nav-rail hidden md:flex">
-        <div class="nav-brand">GM FORGE</div>
-        <div class="nav-items">
-          <div class="nav-item active">
-            <span class="nav-icon">🏰</span>
-            <span class="nav-label">Dashboard</span>
-          </div>
-          <div class="nav-item">
-            <span class="nav-icon">📚</span>
-            <span class="nav-label">Campanhas</span>
-          </div>
-          <div class="nav-item">
-            <span class="nav-icon">🧙</span>
-            <span class="nav-label">NPCs</span>
-          </div>
-          <div class="nav-item">
-            <span class="nav-icon">⚔️</span>
-            <span class="nav-label">Combate</span>
-          </div>
-          <div class="nav-item">
-            <span class="nav-icon">🐉</span>
-            <span class="nav-label">Bestiário</span>
-          </div>
-        </div>
-      </aside>
+const quests = [
+    {
+        id: 1, title: 'Recuperar o Artefato', status: 'In Progress', xp: 500, checkpoints: [
+            { text: 'Falar com o sábio', completed: true },
+            { text: 'Explorar as ruínas', completed: true },
+            { text: 'Derrotar o guardião', completed: false },
+            { text: 'Recuperar o artefato', completed: false }
+        ]
+    },
+    {
+        id: 2, title: 'Defesa da Vila', status: 'Completed', xp: 300, checkpoints: [
+            { text: 'Alertar os aldeões', completed: true },
+            { text: 'Construir barricadas', completed: true },
+            { text: 'Repelir o ataque', completed: true }
+        ]
+    },
+    {
+        id: 3, title: 'O Dragão Ancestral', status: 'Not Started', xp: 1000, checkpoints: [
+            { text: 'Reunir informações', completed: false },
+            { text: 'Formar grupo', completed: false },
+            { text: 'Localizar covil', completed: false },
+            { text: 'Confrontar o dragão', completed: false }
+        ]
+    }
+];
 
-      <main class="main-content space-y-8">
-        <section class="dashboard">
-          <div class="next-session-banner">
-            <div class="banner-title">PRÓXIMA SESSÃO</div>
-            <div class="countdown" id="countdown"></div>
-            <div class="session-info">Session Title: The Siege of Blackwood | Date: sábado, 19h</div>
-            <button class="prepare-button">PREPARAR AGORA</button>
-          </div>
+const combatLog = [
+    { actor: 'Alice', action: 'hits for 8', color: '#00FF9D', timestamp: new Date().toLocaleTimeString() },
+    { actor: 'Bob', action: 'casts spell', color: '#BB86FC', timestamp: new Date().toLocaleTimeString() },
+    { actor: 'Goblin', action: 'misses', color: '#FF5252', timestamp: new Date().toLocaleTimeString() }
+];
 
-          <div class="section">
-            <div class="section-title">SUAS CAMPANHAS</div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">${campaignCards}</div>
-          </div>
+const nextSession = new Date('2025-12-15T19:00:00').getTime();
+const diceTypes = [4, 6, 8, 10, 12, 20, 100];
 
-          <div class="section">
-            <div class="section-title">LINHA DO TEMPO</div>
-            <div class="glass-panel p-6 flex items-center gap-6 overflow-x-auto">${sceneNodes}</div>
-          </div>
+let currentView = 'dashboard';
+let selectedCampaign = null;
+let selectedCharacter = null;
+let selectedLoreCategory = 'All';
+let diceHistory = [];
+let isRolling = false;
+let musicPlaying = false;
+let waveformBars = Array(60).fill(0).map(() => Math.random());
+let draggedToken = null;
+let sessionNotes = '';
 
-          <div class="section">
-            <div class="section-title">BESTIÁRIO</div>
-            <div class="glass-panel p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div class="lg:col-span-1 glass-panel p-0 overflow-hidden relative">
-                <img src="${monsters[0].img}" class="w-full h-full object-cover absolute inset-0 opacity-50" />
-                <div class="relative p-6 space-y-3 bg-gradient-to-b from-black/40 to-black/80">
-                  <p class="text-xs text-primaryPurple uppercase tracking-[0.3em]">Featured Monster</p>
-                  <h3 class="text-2xl font-extrabold">${monsters[0].name}</h3>
-                  <p class="text-sm text-textSecondary">CR épico, ataques flamejantes e voo.</p>
-                  <div class="flex gap-2 text-[11px] text-primaryPurple">
-                    ${monsters[0].tags.map((t) => `<span class="px-2 py-1 rounded-full bg-primaryPurple/20 border border-primaryPurple/40">${t}</span>`).join('')}
-                  </div>
-                  <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div class="h-full bg-primaryPurple" style="width:${(monsters[0].hp / monsters[0].maxHp) * 100}%"></div>
-                  </div>
-                  <p class="text-xs text-textSecondary">HP ${monsters[0].hp}/${monsters[0].maxHp}</p>
-                </div>
-              </div>
-              <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">${bestiaryGrid}</div>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
-`;
+// ==================== TOAST SYSTEM ====================
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
 
-function renderCountdown(elementId, target) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
 
-  const update = () => {
-    const now = Date.now();
-    const diff = Math.max(0, target - now);
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
-
-    el.innerHTML = `
-      <div class="countdown-unit">
-        <div class="countdown-number">${days.toString().padStart(2, '0')}</div>
-        <div class="countdown-label">DAYS</div>
-      </div>
-      <div class="countdown-separator">:</div>
-      <div class="countdown-unit">
-        <div class="countdown-number">${hours.toString().padStart(2, '0')}</div>
-        <div class="countdown-label">HOURS</div>
-      </div>
-      <div class="countdown-separator">:</div>
-      <div class="countdown-unit">
-        <div class="countdown-number">${minutes.toString().padStart(2, '0')}</div>
-        <div class="countdown-label">MINS</div>
-      </div>
-      <div class="countdown-separator">:</div>
-      <div class="countdown-unit">
-        <div class="countdown-number">${seconds.toString().padStart(2, '0')}</div>
-        <div class="countdown-label">SECS</div>
-      </div>
-    `;
-  };
-
-  update();
-  setInterval(update, 1000);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
-renderCountdown('countdown', nextSession);
+// ==================== QUEST MODAL ====================
+function showQuestDetails(quest) {
+    const completedCount = quest.checkpoints.filter(c => c.completed).length;
+    const progressPercent = (completedCount / quest.checkpoints.length) * 100;
 
-console.log('%c🎲 Mestre 3D&T Web dashboard pronto!', 'background: #9D4EDD; color: white; font-size: 16px; padding: 8px; border-radius: 4px;');
+    const modal = document.createElement('div');
+    modal.className = 'quest-modal';
+    modal.innerHTML = `
+        <div class="quest-details glass-panel">
+            <button class="close-btn" onclick="closeQuestModal()">✕</button>
+            
+            <div class="quest-header">
+                <h2>${quest.title}</h2>
+                <span class="quest-status-badge ${quest.status.toLowerCase().replace(' ', '-')}">${quest.status}</span>
+            </div>
+            
+            <div class="quest-progress-section">
+                <div class="progress-label">Progress: ${completedCount}/${quest.checkpoints.length}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            </div>
+            
+            <div class="checkpoints-section">
+                <h3>📋 Checkpoints</h3>
+                ${quest.checkpoints.map((checkpoint, i) => `
+                    <div class="checkpoint ${checkpoint.completed ? 'completed' : ''}">
+                        <div class="checkpoint-icon">${checkpoint.completed ? '✓' : '○'}</div>
+                        <div class="checkpoint-text">${checkpoint.text}</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="quest-reward">
+                <span class="reward-label">🏆 XP Reward:</span>
+                <span class="reward-value">${quest.xp} XP</span>
+            </div>
+            
+            ${quest.status !== 'Completed' ? `
+                <button class="quest-action-btn" onclick="completeQuest(${quest.id})">
+                    ✓ MARK AS COMPLETE
+                </button>
+            ` : ''}
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+window.closeQuestModal = function () {
+    const modal = document.querySelector('.quest-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.completeQuest = function (questId) {
+    const quest = quests.find(q => q.id === questId);
+    if (quest) {
+        quest.status = 'Completed';
+        quest.checkpoints.forEach(c => c.completed = true);
+        showToast(`Quest completed! +${quest.xp} XP`, 'success');
+        closeQuestModal();
+        render();
+    }
+};
+
+// ==================== LORE MODAL ====================
+function showLoreDetails(entry) {
+    const modal = document.createElement('div');
+    modal.className = 'lore-modal';
+    modal.innerHTML = `
+        <div class="lore-details glass-panel">
+            <button class="close-btn" onclick="closeLoreModal()">✕</button>
+            
+            <div class="lore-header">
+                <div class="lore-icon-large">${entry.icon}</div>
+                <div>
+                    <h2>${entry.title}</h2>
+                    <span class="lore-category-badge">${entry.category}</span>
+                </div>
+            </div>
+            
+            <div class="lore-content-section">
+                <p>${entry.content}</p>
+            </div>
+            
+            <div class="lore-actions">
+                <button class="lore-action-btn" onclick="showToast('Edit feature coming soon!', 'info')">
+                    ✏️ EDIT
+                </button>
+                <button class="lore-action-btn danger" onclick="deleteLoreEntry(${entry.id})">
+                    🗑️ DELETE
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+window.closeLoreModal = function () {
+    const modal = document.querySelector('.lore-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.deleteLoreEntry = function (entryId) {
+    if (confirm('Delete this lore entry?')) {
+        const index = loreEntries.findIndex(e => e.id === entryId);
+        if (index !== -1) {
+            loreEntries.splice(index, 1);
+            showToast('Lore entry deleted', 'error');
+            closeLoreModal();
+            render();
+        }
+    }
+};
+
+// ==================== CHARACTER SHEET MODAL ====================
+function showCharacterSheet(character) {
+    selectedCharacter = character;
+    const pv = 5 + character.resistance * 5;
+    const pm = 5 + character.firepower * 5;
+
+    const modal = document.createElement('div');
+    modal.className = 'character-modal';
+    modal.innerHTML = `
+        <div class="character-sheet glass-panel">
+            <button class="close-btn" onclick="closeCharacterSheet()">✕</button>
+            
+            <div class="sheet-header">
+                <div class="char-avatar-large">${character.avatar}</div>
+                <div class="char-info">
+                    <h2>${character.name}</h2>
+                    <p class="char-subtitle">Nível ${character.level || 1} | Initiative: ${character.initiative}</p>
+                </div>
+            </div>
+            
+            <div class="hp-section">
+                <div class="hp-display">
+                    <span class="hp-current">${character.hp}</span>
+                    <span class="hp-separator">/</span>
+                    <span class="hp-max">${character.maxHp}</span>
+                    <span class="hp-label">HP</span>
+                </div>
+                <div class="hp-controls">
+                    <button onclick="modifyHP(${character.id}, -5)" class="hp-btn damage">-5</button>
+                    <button onclick="modifyHP(${character.id}, -1)" class="hp-btn damage">-1</button>
+                    <button onclick="modifyHP(${character.id}, 1)" class="hp-btn heal">+1</button>
+                    <button onclick="modifyHP(${character.id}, 5)" class="hp-btn heal">+5</button>
+                </div>
+            </div>
+            
+            <div class="attributes-section">
+                <h3>Atributos 3D&T</h3>
+                <div class="attributes-grid">
+                    <div class="attr-box">
+                        <div class="attr-icon">💪</div>
+                        <div class="attr-value">${character.strength}</div>
+                        <div class="attr-name">Força</div>
+                    </div>
+                    <div class="attr-box">
+                        <div class="attr-icon">🎯</div>
+                        <div class="attr-value">${character.skill}</div>
+                        <div class="attr-name">Habilidade</div>
+                    </div>
+                    <div class="attr-box">
+                        <div class="attr-icon">🛡️</div>
+                        <div class="attr-value">${character.resistance}</div>
+                        <div class="attr-name">Resistência</div>
+                    </div>
+                    <div class="attr-box">
+                        <div class="attr-icon">⚔️</div>
+                        <div class="attr-value">${character.armor}</div>
+                        <div class="attr-name">Armadura</div>
+                    </div>
+                    <div class="attr-box">
+                        <div class="attr-icon">🔥</div>
+                        <div class="attr-value">${character.firepower}</div>
+                        <div class="attr-name">Poder de Fogo</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-section">
+                <div class="stat-item">
+                    <span class="stat-label">PV (Pontos de Vida):</span>
+                    <span class="stat-value">${pv}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">PM (Pontos de Magia):</span>
+                    <span class="stat-value">${pm}</span>
+                </div>
+            </div>
+            
+            <div class="actions-section">
+                <button class="action-btn-modal" onclick="rollAttack(${character.id})">
+                    ⚔️ ATTACK ROLL
+                </button>
+                <button class="action-btn-modal" onclick="rollDefense(${character.id})">
+                    🛡️ DEFENSE ROLL
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+window.closeCharacterSheet = function () {
+    const modal = document.querySelector('.character-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.modifyHP = function (charId, amount) {
+    const char = participants.find(p => p.id === charId);
+    if (char) {
+        char.hp = Math.min(Math.max(char.hp + amount, 0), char.maxHp);
+        const action = amount > 0 ? `healed ${amount} HP` : `took ${Math.abs(amount)} damage`;
+        combatLog.unshift({
+            actor: char.name,
+            action: action,
+            color: amount > 0 ? '#00FF9D' : '#FF5252',
+            timestamp: new Date().toLocaleTimeString()
+        });
+        showToast(`${char.name} ${action}`, amount > 0 ? 'success' : 'error');
+        closeCharacterSheet();
+        render();
+    }
+};
+
+window.rollAttack = function (charId) {
+    const char = participants.find(p => p.id === charId);
+    if (char) {
+        const roll = Math.floor(Math.random() * 20) + 1;
+        const total = roll + char.strength;
+        combatLog.unshift({
+            actor: char.name,
+            action: `attacks (${roll} + ${char.strength} = ${total})`,
+            color: roll === 20 ? '#00FF9D' : '#BB86FC',
+            timestamp: new Date().toLocaleTimeString()
+        });
+        showToast(`${char.name} rolled ${total} to attack!`, roll === 20 ? 'success' : 'info');
+        closeCharacterSheet();
+        render();
+    }
+};
+
+window.rollDefense = function (charId) {
+    const char = participants.find(p => p.id === charId);
+    if (char) {
+        const roll = Math.floor(Math.random() * 20) + 1;
+        const total = roll + char.resistance;
+        combatLog.unshift({
+            actor: char.name,
+            action: `defends (${roll} + ${char.resistance} = ${total})`,
+            color: '#BB86FC',
+            timestamp: new Date().toLocaleTimeString()
+        });
+        showToast(`${char.name} rolled ${total} to defend!`, 'info');
+        closeCharacterSheet();
+        render();
+    }
+};
+
+// ==================== MAP TOKENS ====================
+function onTokenDragStart(event, charId) {
+    draggedToken = charId;
+    event.target.style.opacity = '0.5';
+}
+
+function onTokenDragEnd(event) {
+    event.target.style.opacity = '1';
+    draggedToken = null;
+}
+
+function onCellDragOver(event) {
+    event.preventDefault();
+}
+
+function onCellDrop(event, x, y) {
+    event.preventDefault();
+    if (draggedToken !== null) {
+        const char = participants.find(p => p.id === draggedToken);
+        if (char) {
+            char.x = x;
+            char.y = y;
+            showToast(`${char.name} moved to (${x}, ${y})`, 'info');
+            render();
+        }
+    }
+}
+
+// ==================== DICE ROLLER ====================
+function rollDice(sides, modifier = 0) {
+    if (isRolling) return;
+    isRolling = true;
+
+    const result = Math.floor(Math.random() * sides) + 1;
+    const total = result + modifier;
+    const isCritical = result === sides;
+    const isFail = result === 1;
+
+    const entry = {
+        dice: `d${sides}`,
+        result,
+        modifier,
+        total,
+        isCritical,
+        isFail,
+        timestamp: new Date().toLocaleTimeString()
+    };
+
+    diceHistory.unshift(entry);
+    if (diceHistory.length > 10) diceHistory.pop();
+
+    showDiceAnimation(entry);
+
+    setTimeout(() => {
+        isRolling = false;
+        if (currentView === 'dice') render();
+    }, 1500);
+}
+
+function showDiceAnimation(entry) {
+    const modal = document.createElement('div');
+    modal.className = 'dice-animation-modal';
+    modal.innerHTML = `
+        <div class="dice-result-container ${entry.isCritical ? 'critical' : ''} ${entry.isFail ? 'fail' : ''}">
+            <div class="dice-icon">${entry.dice}</div>
+            <div class="dice-number">${entry.result}</div>
+            ${entry.modifier !== 0 ? `<div class="dice-modifier">${entry.modifier > 0 ? '+' : ''}${entry.modifier}</div>` : ''}
+            <div class="dice-total">= ${entry.total}</div>
+            ${entry.isCritical ? '<div class="dice-label">🎯 CRITICAL!</div>' : ''}
+            ${entry.isFail ? '<div class="dice-label">💥 FAIL!</div>' : ''}
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    setTimeout(() => {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }, 1200);
+}
+
+// ==================== MEDIA PLAYER ====================
+function toggleMusic() {
+    musicPlaying = !musicPlaying;
+    if (musicPlaying) {
+        animateWaveform();
+        showToast('Music playing: Epic Combat Music', 'info');
+    } else {
+        showToast('Music paused', 'info');
+    }
+    render();
+}
+
+function animateWaveform() {
+    if (!musicPlaying) return;
+
+    waveformBars = waveformBars.map(() => Math.random());
+
+    const canvas = document.getElementById('waveformCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const barWidth = width / 60;
+
+        ctx.clearRect(0, 0, width, height);
+
+        waveformBars.forEach((barHeight, i) => {
+            const h = barHeight * canvas.height * 0.8;
+            const x = i * barWidth;
+            const y = (canvas.height - h) / 2;
+
+            ctx.fillStyle = '#BB86FC';
+            ctx.fillRect(x, y, barWidth - 2, h);
+        });
+    }
+
+    setTimeout(animateWaveform, 100);
+}
+
+// ==================== COUNTDOWN ====================
+function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = nextSession - now;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const countdownEl = document.getElementById('countdown');
+    if (countdownEl) {
+        countdownEl.innerHTML = `
+            <div class="countdown-unit">
+                <div class="countdown-number">${String(days).padStart(2, '0')}</div>
+                <div class="countdown-label">DAYS</div>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+                <div class="countdown-number">${String(hours).padStart(2, '0')}</div>
+                <div class="countdown-label">HOURS</div>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+                <div class="countdown-number">${String(minutes).padStart(2, '0')}</div>
+                <div class="countdown-label">MINS</div>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+                <div class="countdown-number">${String(seconds).padStart(2, '0')}</div>
+                <div class="countdown-label">SECS</div>
+            </div>
+        `;
+    }
+}
+
+// ==================== VIEWS ====================
+function renderDashboard() {
+    const campaignCards = campaigns.map(c => `
+        <div class="campaign-card" onclick="selectCampaign(${c.id})">
+            <div class="campaign-cover" style="background-image: url('${c.cover}')">
+                <div class="campaign-overlay"></div>
+            </div>
+            <div class="campaign-content">
+                <h3 class="campaign-title">${c.title.toUpperCase()}</h3>
+                <div class="campaign-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${c.progress}%"></div>
+                    </div>
+                    <span class="progress-text">${c.progress}%</span>
+                </div>
+                <div class="campaign-players">
+                    <span>👥 ${c.players} players</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="dashboard">
+            <div class="next-session-banner">
+                <h2 class="banner-title">🌑 NEXT SESSION</h2>
+                <div id="countdown" class="countdown"></div>
+                <p class="session-info">Session: The Siege | Sat 7PM</p>
+                <button class="prepare-button" onclick="navigateTo('session')">PREPARE NOW</button>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">YOUR CAMPAIGNS</h2>
+                <div class="campaign-grid">
+                    ${campaignCards}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCampaigns() {
+    const campaignList = campaigns.map(c => `
+        <div class="campaign-list-item glass-panel" onclick="selectCampaign(${c.id})">
+            <div class="campaign-list-cover" style="background-image: url('${c.cover}')"></div>
+            <div class="campaign-list-content">
+                <h3>${c.title.toUpperCase()}</h3>
+                <p>${c.description}</p>
+                <div class="campaign-list-meta">
+                    <span>👥 ${c.players} players</span>
+                    <span>📊 ${c.progress}% complete</span>
+                </div>
+            </div>
+            <button class="campaign-action-btn" onclick="event.stopPropagation(); navigateTo('session')">
+                ▶ START SESSION
+            </button>
+        </div>
+    `).join('');
+
+    return `
+        <div class="campaigns-view">
+            <div class="page-header">
+                <h2 class="section-title">📁 YOUR CAMPAIGNS</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW CAMPAIGN
+                </button>
+            </div>
+            <div class="campaign-list">
+                ${campaignList}
+            </div>
+        </div>
+    `;
+}
+
+function renderNPCs() {
+    const npcCards = npcs.map(npc => `
+        <div class="npc-card glass-panel ${npc.type.toLowerCase()}" onclick="showCharacterSheet(${JSON.stringify(npc).replace(/"/g, '&quot;')})">
+            <div class="npc-avatar">${npc.avatar}</div>
+            <div class="npc-header">
+                <h3>${npc.name}</h3>
+                <span class="npc-level">Nível ${npc.level}</span>
+                <span class="npc-type">${npc.type}</span>
+            </div>
+            <p class="npc-description">${npc.description}</p>
+            <div class="npc-attributes">
+                <div class="attr-item"><span class="attr-label">F:</span> ${npc.strength}</div>
+                <div class="attr-item"><span class="attr-label">H:</span> ${npc.skill}</div>
+                <div class="attr-item"><span class="attr-label">R:</span> ${npc.resistance}</div>
+                <div class="attr-item"><span class="attr-label">A:</span> ${npc.armor}</div>
+                <div class="attr-item"><span class="attr-label">PdF:</span> ${npc.firepower}</div>
+            </div>
+            <div class="npc-stats">
+                <div class="stat">PV: ${5 + npc.resistance * 5}</div>
+                <div class="stat">PM: ${5 + npc.firepower * 5}</div>
+            </div>
+            <button class="npc-action-btn" onclick="event.stopPropagation(); addToSession(${npc.id})">
+                + ADD TO SESSION
+            </button>
+        </div>
+    `).join('');
+
+    return `
+        <div class="npcs-view">
+            <div class="page-header">
+                <h2 class="section-title">👥 NPCs & ENEMIES</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW NPC
+                </button>
+            </div>
+            <div class="npc-grid">
+                ${npcCards}
+            </div>
+        </div>
+    `;
+}
+
+function renderLore() {
+    const categories = ['All', 'NPC', 'Location', 'Item', 'Faction'];
+    const filteredEntries = selectedLoreCategory === 'All'
+        ? loreEntries
+        : loreEntries.filter(e => e.category === selectedLoreCategory);
+
+    const categoryButtons = categories.map(cat => `
+        <button class="category-btn ${selectedLoreCategory === cat ? 'active' : ''}" 
+                onclick="filterLore('${cat}')">
+            ${cat}
+        </button>
+    `).join('');
+
+    const loreCards = filteredEntries.map(entry => `
+        <div class="lore-card glass-panel" onclick="showLoreDetails(${JSON.stringify(entry).replace(/"/g, '&quot;')})">
+            <div class="lore-card-icon">${entry.icon}</div>
+            <h3>${entry.title}</h3>
+            <span class="lore-card-category">${entry.category}</span>
+            <p>${entry.content.substring(0, 100)}${entry.content.length > 100 ? '...' : ''}</p>
+        </div>
+    `).join('');
+
+    return `
+        <div class="lore-view">
+            <div class="page-header">
+                <h2 class="section-title">📚 LORE LIBRARY</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW ENTRY
+                </button>
+            </div>
+            
+            <div class="category-filters">
+                ${categoryButtons}
+            </div>
+            
+            <div class="lore-grid">
+                ${loreCards.length > 0 ? loreCards : '<p class="empty-state">No lore entries found</p>'}
+            </div>
+        </div>
+    `;
+}
+
+function renderQuests() {
+    const questCards = quests.map(quest => {
+        const completedCount = quest.checkpoints.filter(c => c.completed).length;
+        const progressPercent = (completedCount / quest.checkpoints.length) * 100;
+
+        return `
+            <div class="quest-card glass-panel" onclick="showQuestDetails(${JSON.stringify(quest).replace(/"/g, '&quot;')})">
+                <div class="quest-card-header">
+                    <h3>${quest.title}</h3>
+                    <span class="quest-status-badge ${quest.status.toLowerCase().replace(' ', '-')}">${quest.status}</span>
+                </div>
+                
+                <div class="quest-progress">
+                    <div class="progress-label">${completedCount}/${quest.checkpoints.length} checkpoints</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                
+                <div class="quest-xp">
+                    🏆 ${quest.xp} XP
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div class="quests-view">
+            <div class="page-header">
+                <h2 class="section-title">📜 QUEST TRACKER</h2>
+                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                    + NEW QUEST
+                </button>
+            </div>
+            
+            <div class="quest-grid">
+                ${questCards}
+            </div>
+        </div>
+    `;
+}
+
+function renderNotes() {
+    return `
+        <div class="notes-view glass-panel">
+            <div class="page-header">
+                <h2 class="section-title">📝 SESSION NOTES</h2>
+                <button class="add-button" onclick="saveNotes()">
+                    💾 SAVE
+                </button>
+            </div>
+            
+            <textarea id="notesEditor" 
+                      class="notes-editor" 
+                      placeholder="Write your session notes here...
+
+# Session Summary
+- Key events
+- Important NPCs
+- Plot developments
+
+# Next Steps
+- Follow up on leads
+- Prepare for next encounter">${sessionNotes}</textarea>
+            
+            <div class="notes-stats">
+                <span>Characters: ${sessionNotes.length}</span>
+                <span>Last saved: Never</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderDiceRoller() {
+    const diceButtons = diceTypes.map(sides => `
+        <button class="dice-button" onclick="rollDice(${sides}, 0)" title="Roll d${sides}">
+            <div class="dice-face">d${sides}</div>
+        </button>
+    `).join('');
+
+    const historyEntries = diceHistory.map(entry => `
+        <div class="history-entry ${entry.isCritical ? 'critical' : ''} ${entry.isFail ? 'fail' : ''}">
+            <span class="history-dice">${entry.dice}</span>
+            <span class="history-result">${entry.result}</span>
+            ${entry.modifier !== 0 ? `<span class="history-mod">${entry.modifier > 0 ? '+' : ''}${entry.modifier}</span>` : ''}
+            <span class="history-total">= ${entry.total}</span>
+            <span class="history-time">${entry.timestamp}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="dice-roller-view">
+            <div class="dice-section glass-panel">
+                <h2 class="section-title">🎲 DICE ROLLER</h2>
+                <div class="dice-grid">
+                    ${diceButtons}
+                </div>
+                <div class="modifier-controls">
+                    <button class="mod-button" onclick="rollDice(20, -2)" title="Roll d20 with -2 modifier">-2</button>
+                    <button class="mod-button" onclick="rollDice(20, -1)" title="Roll d20 with -1 modifier">-1</button>
+                    <button class="mod-button highlight" onclick="rollDice(20, 0)" title="Roll d20">ROLL</button>
+                    <button class="mod-button" onclick="rollDice(20, 1)" title="Roll d20 with +1 modifier">+1</button>
+                    <button class="mod-button" onclick="rollDice(20, 2)" title="Roll d20 with +2 modifier">+2</button>
+                </div>
+            </div>
+            
+            <div class="history-section glass-panel">
+                <h3>HISTORY</h3>
+                <div class="dice-history">
+                    ${historyEntries.length > 0 ? historyEntries : '<p class="empty-state">Nenhuma rolagem ainda</p>'}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderSession() {
+    const participantsList = participants.map(p => `
+        <div class="participant" onclick="showCharacterSheet(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+            <div class="avatar">${p.avatar}</div>
+            <div class="info">
+                <div class="participant-name">${p.name}</div>
+                <div class="participant-initiative">Initiative: ${p.initiative}</div>
+                <div class="hp-bar">
+                    <div class="hp-fill" style="width: ${(p.hp / p.maxHp) * 100}%"></div>
+                </div>
+                <div class="hp-text">${p.hp}/${p.maxHp} HP</div>
+            </div>
+        </div>
+    `).join('');
+
+    const grid = [];
+    for (let y = 0; y < 5; y++) {
+        for (let x = 0; x < 5; x++) {
+            const token = participants.find(p => p.x === x && p.y === y);
+            grid.push(`
+                <div class="grid-cell" 
+                     ondragover="onCellDragOver(event)" 
+                     ondrop="onCellDrop(event, ${x}, ${y})"
+                     title="(${x}, ${y})">
+                    ${token ? `
+                        <div class="map-token" 
+                             draggable="true"
+                             ondragstart="onTokenDragStart(event, ${token.id})"
+                             ondragend="onTokenDragEnd(event)">
+                            ${token.avatar}
+                        </div>
+                    ` : ''}
+                </div>
+            `);
+        }
+    }
+
+    const logEntries = combatLog.slice(0, 10).map(log => `
+        <div class="log-entry" style="border-left-color: ${log.color}">
+            <div class="log-content">
+                <strong>${log.actor}</strong> ${log.action}
+            </div>
+            <div class="log-time">${log.timestamp}</div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="session-view">
+            <div class="session-panel initiative-panel glass-panel">
+                <h3>⚔️ INITIATIVE</h3>
+                <div class="participants-list">
+                    ${participantsList}
+                </div>
+            </div>
+            
+            <div class="session-panel map-panel glass-panel">
+                <h3>🗺️ MAP VIEW</h3>
+                <div class="map-container">
+                    <div class="map-grid">
+                        ${grid.join('')}
+                    </div>
+                    <p class="map-hint">Arraste os tokens para mover</p>
+                </div>
+            </div>
+            
+            <div class="session-panel tools-panel glass-panel">
+                <h3>📜 COMBAT LOG</h3>
+                <div class="combat-log">
+                    ${logEntries}
+                </div>
+                <div class="tools-actions">
+                    <button class="roll-button" onclick="navigateTo('dice')">
+                        🎲 DICE ROLLER
+                    </button>
+                    <button class="action-button" onclick="addLogEntry()">
+                        ⚡ ADD ACTION
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="media-player">
+            <button class="play-button" onclick="toggleMusic()">
+                ${musicPlaying ? '⏸' : '▶'}
+            </button>
+            <div class="track-info">
+                <div class="track-name">Epic Combat Music</div>
+                <div class="track-category">Battle Theme</div>
+            </div>
+            <canvas id="waveformCanvas" width="400" height="60"></canvas>
+            <div class="player-controls">
+                <button class="control-btn" title="Shuffle">🔀</button>
+                <button class="control-btn" title="Repeat">🔁</button>
+                <input type="range" class="volume-slider" min="0" max="100" value="70" title="Volume">
+            </div>
+        </div>
+    `;
+}
+
+function renderTimeline() {
+    const scenes = [
+        { name: 'Taverna', emoji: '🏠', completed: true },
+        { name: 'Floresta', emoji: '🌲', completed: true },
+        { name: 'Masmorra', emoji: '🏰', completed: false, active: true },
+        { name: 'Emboscada', emoji: '⚔️', completed: false },
+        { name: 'Dragão', emoji: '🐉', completed: false }
+    ];
+
+    const sceneNodes = scenes.map((scene, i) => `
+        <div class="timeline-node ${scene.completed ? 'completed' : ''} ${scene.active ? 'active' : ''}"
+             onclick="showToast('Scene: ${scene.name}', 'info')">
+            <div class="timeline-icon">${scene.emoji}</div>
+            <div class="timeline-label">${scene.name}</div>
+            ${scene.completed ? '<div class="timeline-check">✓</div>' : ''}
+        </div>
+    `).join('');
+
+    return `
+        <div class="timeline-view glass-panel">
+            <h2 class="section-title">🗺️ CAMPAIGN TIMELINE</h2>
+            <div class="timeline-container">
+                ${sceneNodes}
+            </div>
+            <div class="timeline-legend">
+                <span class="legend-item"><span class="legend-dot completed"></span> Completado</span>
+                <span class="legend-item"><span class="legend-dot active"></span> Ativo</span>
+                <span class="legend-item"><span class="legend-dot"></span> Futuro</span>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== RENDER ====================
+function render() {
+    let content = '';
+    switch (currentView) {
+        case 'dashboard': content = renderDashboard(); break;
+        case 'campaigns': content = renderCampaigns(); break;
+        case 'npcs': content = renderNPCs(); break;
+        case 'lore': content = renderLore(); break;
+        case 'quests': content = renderQuests(); break;
+        case 'notes': content = renderNotes(); break;
+        case 'session': content = renderSession(); break;
+        case 'dice': content = renderDiceRoller(); break;
+        case 'timeline': content = renderTimeline(); break;
+    }
+
+    app.innerHTML = `
+        <nav class="nav-rail">
+            <div class="nav-brand">GM FORGE</div>
+            <div class="nav-items">
+                <a class="nav-item ${currentView === 'dashboard' ? 'active' : ''}" onclick="navigateTo('dashboard')" title="Dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a class="nav-item ${currentView === 'campaigns' ? 'active' : ''}" onclick="navigateTo('campaigns')" title="Campaigns">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-label">Campaigns</span>
+                </a>
+                <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')" title="NPCs & Enemies">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">NPCs</span>
+                </a>
+                <a class="nav-item ${currentView === 'lore' ? 'active' : ''}" onclick="navigateTo('lore')" title="Lore Library">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Lore</span>
+                </a>
+                <a class="nav-item ${currentView === 'quests' ? 'active' : ''}" onclick="navigateTo('quests')" title="Quest Tracker">
+                    <span class="nav-icon">📜</span>
+                    <span class="nav-label">Quests</span>
+                </a>
+                <a class="nav-item ${currentView === 'notes' ? 'active' : ''}" onclick="navigateTo('notes')" title="Session Notes">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Notes</span>
+                </a>
+                <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')" title="Session">
+                    <span class="nav-icon">⚔️</span>
+                    <span class="nav-label">Session</span>
+                </a>
+                <a class="nav-item ${currentView === 'dice' ? 'active' : ''}" onclick="navigateTo('dice')" title="Dice Roller">
+                    <span class="nav-icon">🎲</span>
+                    <span class="nav-label">Dice</span>
+                </a>
+                <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')" title="Timeline">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Timeline</span>
+                </a>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            ${content}
+        </main>
+    `;
+
+    if (currentView === 'dashboard') {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    if (currentView === 'session' && musicPlaying) {
+        setTimeout(animateWaveform, 100);
+    }
+}
+
+// ==================== GLOBAL FUNCTIONS ====================
+window.navigateTo = function (view) {
+    currentView = view;
+    render();
+};
+
+window.selectCampaign = function (id) {
+    selectedCampaign = campaigns.find(c => c.id === id);
+    showToast(`Selected: ${selectedCampaign.title}`, 'info');
+    navigateTo('campaigns');
+};
+
+window.addToSession = function (npcId) {
+    showToast('NPC adicionado à sessão!', 'success');
+};
+
+window.addLogEntry = function () {
+    const action = prompt('Digite a ação:');
+    if (action) {
+        combatLog.unshift({
+            actor: 'GM',
+            action: action,
+            color: '#00FF9D',
+            timestamp: new Date().toLocaleTimeString()
+        });
+        showToast('Action added to combat log', 'success');
+        render();
+    }
+};
+
+window.filterLore = function (category) {
+    selectedLoreCategory = category;
+    render();
+};
+
+window.saveNotes = function () {
+    const editor = document.getElementById('notesEditor');
+    if (editor) {
+        sessionNotes = editor.value;
+        showToast('Notes saved!', 'success');
+    }
+};
+
+// Global drag handlers
+window.onTokenDragStart = onTokenDragStart;
+window.onTokenDragEnd = onTokenDragEnd;
+window.onCellDragOver = onCellDragOver;
+window.onCellDrop = onCellDrop;
+
+// Initial render
+render();
+
+console.log('%c📚 GM Forge Web - LORE & QUESTS! ', 'background: #00FF9D; color: #121212; font-size: 16px; padding: 8px; font-weight: bold;');
