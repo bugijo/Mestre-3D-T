@@ -123,19 +123,7 @@ fun MestreApp(viewModel: MestreViewModel = viewModel()) {
                     onResetEncounter = viewModel::resetEncounter
                 )
 
-                MestreTab.Sound -> SoundScreen(
-                    soundScenes = uiState.soundScenes,
-                    activeIndex = uiState.activeSoundSceneIndex,
-                    isPlaying = uiState.isSoundPlaying,
-                    musicVolume = uiState.musicVolume,
-                    sfxVolume = uiState.sfxVolume,
-                    onSelect = viewModel::selectSoundScene,
-                    onTogglePlay = viewModel::toggleSoundPlayback,
-                    onSetBackground = viewModel::setSoundBackground,
-                    onAddEffect = viewModel::addSoundEffect,
-                    onSetMusicVolume = viewModel::setMusicVolume,
-                    onSetSfxVolume = viewModel::setSfxVolume
-                )
+                MestreTab.Sound -> GMBestiaryScreen(entries = uiState.toBestiaryEntries())
             }
         }
     } else {
