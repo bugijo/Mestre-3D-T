@@ -105,7 +105,7 @@ fun GMNavigationRail(
                 NavItem("characters", "Characters", Icons.Default.People),
                 NavItem("encounters", "Encounters", Icons.Default.Shield),
                 NavItem("maps", "Maps", Icons.Default.Map),
-                NavItem("lore", "Lore", Icons.Default.MenuBook)
+                NavItem("lore", "Bestiary", Icons.Default.MenuBook)
             )
 
             navItems.forEach { item ->

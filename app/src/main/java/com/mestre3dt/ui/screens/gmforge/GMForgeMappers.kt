@@ -8,6 +8,7 @@ import com.mestre3dt.data.EncounterEnemyState
 import com.mestre3dt.data.Npc
 import com.mestre3dt.data.Scene
 import com.mestre3dt.ui.AppUiState
+import com.mestre3dt.ui.screens.gmforge.BestiaryEntry
 import com.mestre3dt.ui.theme.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
@@ -145,4 +146,31 @@ fun AppUiState.getNextSessionTimestamp(): Long {
     val now = System.currentTimeMillis()
     val nextSaturday = now + TimeUnit.DAYS.toMillis(6)
     return nextSaturday
+}
+
+// Bestiary mapping
+fun AppUiState.toBestiaryEntries(): List<BestiaryEntry> {
+    return enemies.map { enemy ->
+        val attributes = enemy.attributes
+        val cr = (attributes.strength + attributes.skill + attributes.resistance + attributes.armor + attributes.firepower) / 2 + enemy.powers.size
+        BestiaryEntry(
+            id = enemy.id,
+            name = enemy.name,
+            type = enemy.tags.joinToString(separator = " • ").ifBlank { "Creature" },
+            description = enemy.powers.firstOrNull()?.description ?: enemy.tags.joinToString(" / "),
+            imageUri = enemy.imageUri,
+            strength = attributes.strength,
+            skill = attributes.skill,
+            resistance = attributes.resistance,
+            armor = attributes.armor,
+            firepower = attributes.firepower,
+            maxHp = enemy.maxHp,
+            currentHp = enemy.currentHp,
+            maxMp = enemy.maxMp,
+            currentMp = enemy.currentMp,
+            tags = enemy.tags,
+            challengeRating = cr,
+            powers = enemy.powers.map { it.name }
+        )
+    }
 }
