@@ -77,7 +77,7 @@ const combatLog = [
 const nextSession = new Date('2025-12-15T19:00:00').getTime();
 const diceTypes = [4, 6, 8, 10, 12, 20, 100];
 
-let currentView = 'dashboard';
+let currentView = currentUser ? 'dashboard' : 'login'; // Mostrar login se não tiver user
 let selectedCampaign = null;
 let selectedCharacter = null;
 let selectedLoreCategory = 'All';
@@ -1089,6 +1089,15 @@ function render() {
                     <span class="nav-label">Timeline</span>
                 </a>
             </div>
+            
+            ${currentUser ? `
+                <div class="nav-user">
+                    <div class="nav-user-email">${currentUser.email || 'Demo User'}</div>
+                    <button class="nav-logout-btn" onclick="signOut()" title="Logout">
+                        🚪 Sair
+                    </button>
+                </div>
+            ` : ''}
         </nav>
         
         <main class="main-content">
