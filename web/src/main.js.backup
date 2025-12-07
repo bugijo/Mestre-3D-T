@@ -1,25 +1,11 @@
-const app = document.getElementById('app');
-
-// ==================== SUPABASE CLIENT ====================
-// IMPORTANTE: Substituir com suas credenciais reais do Supabase
-const SUPABASE_URL = 'https://your-project.supabase.co'; // TODO: Substituir
-const SUPABASE_ANON_KEY = 'your-anon-key'; // TODO: Substituir
-
-// Initialize Supabase client (temporariamente desabilitado até configurar)
-let supabase = null;
-let currentUser = null;
-let isAuthEnabled = false; // Flag para ativar quando tiver credentials
-
-// Descomentar quando tiver credentials:
-// supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// isAuthEnabled = true;
+﻿const app = document.getElementById('app');
 
 // ==================== DATA ====================
 const campaigns = [
-    { id: 1, title: 'The Shadow War', progress: 45, players: 4, cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400', description: 'Uma guerra nas sombras contra forças ocultas' },
-    { id: 2, title: 'Dungeon Crawl', progress: 62, players: 5, cover: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400', description: 'Exploração de masmorras perigosas' },
-    { id: 3, title: 'Dragon Hunt', progress: 30, players: 3, cover: 'https://images.unsplash.com/photo-1578632749014-ca77efd052eb?w=400', description: 'Caça ao dragão ancestral' },
-    { id: 4, title: 'Quest for Glory', progress: 88, players: 6, cover: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=400', description: 'Busca pela glória eterna' }
+    { id: 1, title: 'The Shadow War', progress: 45, players: 4, cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400', description: 'Uma guerra nas sombras contra for├ºas ocultas' },
+    { id: 2, title: 'Dungeon Crawl', progress: 62, players: 5, cover: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400', description: 'Explora├º├úo de masmorras perigosas' },
+    { id: 3, title: 'Dragon Hunt', progress: 30, players: 3, cover: 'https://images.unsplash.com/photo-1578632749014-ca77efd052eb?w=400', description: 'Ca├ºa ao drag├úo ancestral' },
+    { id: 4, title: 'Quest for Glory', progress: 88, players: 6, cover: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=400', description: 'Busca pela gl├│ria eterna' }
 ];
 
 const participants = [
@@ -29,41 +15,41 @@ const participants = [
 ];
 
 const npcs = [
-    { id: 1, name: 'Elara Moonwhisper', type: 'Aliado', level: 5, avatar: '🧙‍♀️', strength: 1, skill: 4, resistance: 2, armor: 0, firepower: 3, description: 'Maga da Ordem Arcana' },
-    { id: 2, name: 'Thorin Ironforge', type: 'Aliado', level: 7, avatar: '⚔️', strength: 4, skill: 2, resistance: 3, armor: 2, firepower: 0, description: 'Guerreiro Anão' },
-    { id: 3, name: 'Shadow Assassin', type: 'Inimigo', level: 6, avatar: '🗡️', strength: 2, skill: 5, resistance: 1, armor: 1, firepower: 0, description: 'Assassino das Sombras' },
-    { id: 4, name: 'Ancient Wyrm', type: 'Boss', level: 10, avatar: '🐉', strength: 5, skill: 3, resistance: 4, armor: 3, firepower: 5, description: 'Dragão Ancestral' }
+    { id: 1, name: 'Elara Moonwhisper', type: 'Aliado', level: 5, avatar: '­ƒºÖÔÇìÔÖÇ´©Å', strength: 1, skill: 4, resistance: 2, armor: 0, firepower: 3, description: 'Maga da Ordem Arcana' },
+    { id: 2, name: 'Thorin Ironforge', type: 'Aliado', level: 7, avatar: 'ÔÜö´©Å', strength: 4, skill: 2, resistance: 3, armor: 2, firepower: 0, description: 'Guerreiro An├úo' },
+    { id: 3, name: 'Shadow Assassin', type: 'Inimigo', level: 6, avatar: '­ƒùí´©Å', strength: 2, skill: 5, resistance: 1, armor: 1, firepower: 0, description: 'Assassino das Sombras' },
+    { id: 4, name: 'Ancient Wyrm', type: 'Boss', level: 10, avatar: '­ƒÉë', strength: 5, skill: 3, resistance: 4, armor: 3, firepower: 5, description: 'Drag├úo Ancestral' }
 ];
 
 const loreEntries = [
-    { id: 1, title: 'A Ordem Arcana', category: 'Faction', icon: '🔮', content: 'Antiga organização de magos dedicada a proteger o equilíbrio mágico do reino.' },
-    { id: 2, title: 'Espada de Thorin', category: 'Item', icon: '⚔️', content: 'Lendária espada forjada nas profundezas das montanhas anãs. +3 Força quando empunhada.' },
-    { id: 3, title: 'Torre Negra', category: 'Location', icon: '🏰', content: 'Fortaleza abandonada onde dizem habitar criaturas das sombras. Entrada pelo norte está bloqueada.' },
-    { id: 4, title: 'Lorde das Sombras', category: 'NPC', icon: '👤', content: 'Misterioso comandante das forças inimigas. Pouco se sabe sobre suas verdadeiras intenções.' }
+    { id: 1, title: 'A Ordem Arcana', category: 'Faction', icon: '­ƒö«', content: 'Antiga organiza├º├úo de magos dedicada a proteger o equil├¡brio m├ígico do reino.' },
+    { id: 2, title: 'Espada de Thorin', category: 'Item', icon: 'ÔÜö´©Å', content: 'Lend├íria espada forjada nas profundezas das montanhas an├ús. +3 For├ºa quando empunhada.' },
+    { id: 3, title: 'Torre Negra', category: 'Location', icon: '­ƒÅ░', content: 'Fortaleza abandonada onde dizem habitar criaturas das sombras. Entrada pelo norte est├í bloqueada.' },
+    { id: 4, title: 'Lorde das Sombras', category: 'NPC', icon: '­ƒæñ', content: 'Misterioso comandante das for├ºas inimigas. Pouco se sabe sobre suas verdadeiras inten├º├Áes.' }
 ];
 
 const quests = [
     {
         id: 1, title: 'Recuperar o Artefato', status: 'In Progress', xp: 500, checkpoints: [
-            { text: 'Falar com o sábio', completed: true },
-            { text: 'Explorar as ruínas', completed: true },
-            { text: 'Derrotar o guardião', completed: false },
+            { text: 'Falar com o s├íbio', completed: true },
+            { text: 'Explorar as ru├¡nas', completed: true },
+            { text: 'Derrotar o guardi├úo', completed: false },
             { text: 'Recuperar o artefato', completed: false }
         ]
     },
     {
         id: 2, title: 'Defesa da Vila', status: 'Completed', xp: 300, checkpoints: [
-            { text: 'Alertar os aldeões', completed: true },
+            { text: 'Alertar os alde├Áes', completed: true },
             { text: 'Construir barricadas', completed: true },
             { text: 'Repelir o ataque', completed: true }
         ]
     },
     {
-        id: 3, title: 'O Dragão Ancestral', status: 'Not Started', xp: 1000, checkpoints: [
-            { text: 'Reunir informações', completed: false },
+        id: 3, title: 'O Drag├úo Ancestral', status: 'Not Started', xp: 1000, checkpoints: [
+            { text: 'Reunir informa├º├Áes', completed: false },
             { text: 'Formar grupo', completed: false },
             { text: 'Localizar covil', completed: false },
-            { text: 'Confrontar o dragão', completed: false }
+            { text: 'Confrontar o drag├úo', completed: false }
         ]
     }
 ];
@@ -87,93 +73,6 @@ let musicPlaying = false;
 let waveformBars = Array(60).fill(0).map(() => Math.random());
 let draggedToken = null;
 let sessionNotes = '';
-
-// ==================== AUTH FUNCTIONS ====================
-async function checkAuth() {
-    if (!isAuthEnabled || !s upabase) return false;
-
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (session) {
-        currentUser = session.user;
-        return true;
-    }
-    return false;
-}
-
-async function signUp(email, password, displayName) {
-    if (!isAuthEnabled) {
-        showToast('Auth not configured yet', 'error');
-        return null;
-    }
-
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-            data: {
-                display_name: displayName
-            }
-        }
-    });
-
-    if (error) {
-        showToast(error.message, 'error');
-        return null;
-    }
-
-    showToast('Account created! Please log in.', 'success');
-    return data;
-}
-
-async function signIn(email, password) {
-    if (!isAuthEnabled) {
-        // Modo demo: apenas ir para dashboard
-        currentUser = { email: email, demo: true };
-        showToast('Welcome! (Demo Mode)', 'success');
-        navigateTo('dashboard');
-        return { demo: true };
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) {
-        showToast(error.message, 'error');
-        return null;
-    }
-
-    currentUser = data.user;
-    showToast('Welcome back!', 'success');
-    navigateTo('dashboard');
-    return data;
-}
-
-async function signOut() {
-    if (!isAuthEnabled) {
-        currentUser = null;
-        showToast('Logged out (Demo Mode)', 'info');
-        navigateTo('login');
-        return;
-    }
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-        showToast(error.message, 'error');
-        return;
-    }
-
-    currentUser = null;
-    showToast('Logged out', 'info');
-    navigateTo('login');
-}
-
-window.signUp = signUp;
-window.signIn = signIn;
-window.signOut = signOut;
 
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
@@ -199,7 +98,7 @@ function showQuestDetails(quest) {
     modal.className = 'quest-modal';
     modal.innerHTML = `
         <div class="quest-details glass-panel">
-            <button class="close-btn" onclick="closeQuestModal()">✕</button>
+            <button class="close-btn" onclick="closeQuestModal()">Ô£ò</button>
             
             <div class="quest-header">
                 <h2>${quest.title}</h2>
@@ -214,23 +113,23 @@ function showQuestDetails(quest) {
             </div>
             
             <div class="checkpoints-section">
-                <h3>📋 Checkpoints</h3>
+                <h3>­ƒôï Checkpoints</h3>
                 ${quest.checkpoints.map((checkpoint, i) => `
                     <div class="checkpoint ${checkpoint.completed ? 'completed' : ''}">
-                        <div class="checkpoint-icon">${checkpoint.completed ? '✓' : '○'}</div>
+                        <div class="checkpoint-icon">${checkpoint.completed ? 'Ô£ô' : 'Ôùï'}</div>
                         <div class="checkpoint-text">${checkpoint.text}</div>
                     </div>
                 `).join('')}
             </div>
             
             <div class="quest-reward">
-                <span class="reward-label">🏆 XP Reward:</span>
+                <span class="reward-label">­ƒÅå XP Reward:</span>
                 <span class="reward-value">${quest.xp} XP</span>
             </div>
             
             ${quest.status !== 'Completed' ? `
                 <button class="quest-action-btn" onclick="completeQuest(${quest.id})">
-                    ✓ MARK AS COMPLETE
+                    Ô£ô MARK AS COMPLETE
                 </button>
             ` : ''}
         </div>
@@ -265,7 +164,7 @@ function showLoreDetails(entry) {
     modal.className = 'lore-modal';
     modal.innerHTML = `
         <div class="lore-details glass-panel">
-            <button class="close-btn" onclick="closeLoreModal()">✕</button>
+            <button class="close-btn" onclick="closeLoreModal()">Ô£ò</button>
             
             <div class="lore-header">
                 <div class="lore-icon-large">${entry.icon}</div>
@@ -281,10 +180,10 @@ function showLoreDetails(entry) {
             
             <div class="lore-actions">
                 <button class="lore-action-btn" onclick="showToast('Edit feature coming soon!', 'info')">
-                    ✏️ EDIT
+                    Ô£Å´©Å EDIT
                 </button>
                 <button class="lore-action-btn danger" onclick="deleteLoreEntry(${entry.id})">
-                    🗑️ DELETE
+                    ­ƒùæ´©Å DELETE
                 </button>
             </div>
         </div>
@@ -324,13 +223,13 @@ function showCharacterSheet(character) {
     modal.className = 'character-modal';
     modal.innerHTML = `
         <div class="character-sheet glass-panel">
-            <button class="close-btn" onclick="closeCharacterSheet()">✕</button>
+            <button class="close-btn" onclick="closeCharacterSheet()">Ô£ò</button>
             
             <div class="sheet-header">
                 <div class="char-avatar-large">${character.avatar}</div>
                 <div class="char-info">
                     <h2>${character.name}</h2>
-                    <p class="char-subtitle">Nível ${character.level || 1} | Initiative: ${character.initiative}</p>
+                    <p class="char-subtitle">N├¡vel ${character.level || 1} | Initiative: ${character.initiative}</p>
                 </div>
             </div>
             
@@ -353,27 +252,27 @@ function showCharacterSheet(character) {
                 <h3>Atributos 3D&T</h3>
                 <div class="attributes-grid">
                     <div class="attr-box">
-                        <div class="attr-icon">💪</div>
+                        <div class="attr-icon">­ƒÆ¬</div>
                         <div class="attr-value">${character.strength}</div>
-                        <div class="attr-name">Força</div>
+                        <div class="attr-name">For├ºa</div>
                     </div>
                     <div class="attr-box">
-                        <div class="attr-icon">🎯</div>
+                        <div class="attr-icon">­ƒÄ»</div>
                         <div class="attr-value">${character.skill}</div>
                         <div class="attr-name">Habilidade</div>
                     </div>
                     <div class="attr-box">
-                        <div class="attr-icon">🛡️</div>
+                        <div class="attr-icon">­ƒøí´©Å</div>
                         <div class="attr-value">${character.resistance}</div>
-                        <div class="attr-name">Resistência</div>
+                        <div class="attr-name">Resist├¬ncia</div>
                     </div>
                     <div class="attr-box">
-                        <div class="attr-icon">⚔️</div>
+                        <div class="attr-icon">ÔÜö´©Å</div>
                         <div class="attr-value">${character.armor}</div>
                         <div class="attr-name">Armadura</div>
                     </div>
                     <div class="attr-box">
-                        <div class="attr-icon">🔥</div>
+                        <div class="attr-icon">­ƒöÑ</div>
                         <div class="attr-value">${character.firepower}</div>
                         <div class="attr-name">Poder de Fogo</div>
                     </div>
@@ -393,10 +292,10 @@ function showCharacterSheet(character) {
             
             <div class="actions-section">
                 <button class="action-btn-modal" onclick="rollAttack(${character.id})">
-                    ⚔️ ATTACK ROLL
+                    ÔÜö´©Å ATTACK ROLL
                 </button>
                 <button class="action-btn-modal" onclick="rollDefense(${character.id})">
-                    🛡️ DEFENSE ROLL
+                    ­ƒøí´©Å DEFENSE ROLL
                 </button>
             </div>
         </div>
@@ -533,8 +432,8 @@ function showDiceAnimation(entry) {
             <div class="dice-number">${entry.result}</div>
             ${entry.modifier !== 0 ? `<div class="dice-modifier">${entry.modifier > 0 ? '+' : ''}${entry.modifier}</div>` : ''}
             <div class="dice-total">= ${entry.total}</div>
-            ${entry.isCritical ? '<div class="dice-label">🎯 CRITICAL!</div>' : ''}
-            ${entry.isFail ? '<div class="dice-label">💥 FAIL!</div>' : ''}
+            ${entry.isCritical ? '<div class="dice-label">­ƒÄ» CRITICAL!</div>' : ''}
+            ${entry.isFail ? '<div class="dice-label">­ƒÆÑ FAIL!</div>' : ''}
         </div>
     `;
 
@@ -638,7 +537,7 @@ function renderDashboard() {
                     <span class="progress-text">${c.progress}%</span>
                 </div>
                 <div class="campaign-players">
-                    <span>👥 ${c.players} players</span>
+                    <span>­ƒæÑ ${c.players} players</span>
                 </div>
             </div>
         </div>
@@ -647,7 +546,7 @@ function renderDashboard() {
     return `
         <div class="dashboard">
             <div class="next-session-banner">
-                <h2 class="banner-title">🌑 NEXT SESSION</h2>
+                <h2 class="banner-title">­ƒîæ NEXT SESSION</h2>
                 <div id="countdown" class="countdown"></div>
                 <p class="session-info">Session: The Siege | Sat 7PM</p>
                 <button class="prepare-button" onclick="navigateTo('session')">PREPARE NOW</button>
@@ -671,12 +570,12 @@ function renderCampaigns() {
                 <h3>${c.title.toUpperCase()}</h3>
                 <p>${c.description}</p>
                 <div class="campaign-list-meta">
-                    <span>👥 ${c.players} players</span>
-                    <span>📊 ${c.progress}% complete</span>
+                    <span>­ƒæÑ ${c.players} players</span>
+                    <span>­ƒôè ${c.progress}% complete</span>
                 </div>
             </div>
             <button class="campaign-action-btn" onclick="event.stopPropagation(); navigateTo('session')">
-                ▶ START SESSION
+                ÔûÂ START SESSION
             </button>
         </div>
     `).join('');
@@ -684,7 +583,7 @@ function renderCampaigns() {
     return `
         <div class="campaigns-view">
             <div class="page-header">
-                <h2 class="section-title">📁 YOUR CAMPAIGNS</h2>
+                <h2 class="section-title">­ƒôü YOUR CAMPAIGNS</h2>
                 <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
                     + NEW CAMPAIGN
                 </button>
@@ -702,7 +601,7 @@ function renderNPCs() {
             <div class="npc-avatar">${npc.avatar}</div>
             <div class="npc-header">
                 <h3>${npc.name}</h3>
-                <span class="npc-level">Nível ${npc.level}</span>
+                <span class="npc-level">N├¡vel ${npc.level}</span>
                 <span class="npc-type">${npc.type}</span>
             </div>
             <p class="npc-description">${npc.description}</p>
@@ -726,7 +625,7 @@ function renderNPCs() {
     return `
         <div class="npcs-view">
             <div class="page-header">
-                <h2 class="section-title">👥 NPCs & ENEMIES</h2>
+                <h2 class="section-title">­ƒæÑ NPCs & ENEMIES</h2>
                 <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
                     + NEW NPC
                 </button>
@@ -763,7 +662,7 @@ function renderLore() {
     return `
         <div class="lore-view">
             <div class="page-header">
-                <h2 class="section-title">📚 LORE LIBRARY</h2>
+                <h2 class="section-title">­ƒôÜ LORE LIBRARY</h2>
                 <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
                     + NEW ENTRY
                 </button>
@@ -800,7 +699,7 @@ function renderQuests() {
                 </div>
                 
                 <div class="quest-xp">
-                    🏆 ${quest.xp} XP
+                    ­ƒÅå ${quest.xp} XP
                 </div>
             </div>
         `;
@@ -809,7 +708,7 @@ function renderQuests() {
     return `
         <div class="quests-view">
             <div class="page-header">
-                <h2 class="section-title">📜 QUEST TRACKER</h2>
+                <h2 class="section-title">­ƒô£ QUEST TRACKER</h2>
                 <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
                     + NEW QUEST
                 </button>
@@ -826,9 +725,9 @@ function renderNotes() {
     return `
         <div class="notes-view glass-panel">
             <div class="page-header">
-                <h2 class="section-title">📝 SESSION NOTES</h2>
+                <h2 class="section-title">­ƒôØ SESSION NOTES</h2>
                 <button class="add-button" onclick="saveNotes()">
-                    💾 SAVE
+                    ­ƒÆ¥ SAVE
                 </button>
             </div>
             
@@ -873,7 +772,7 @@ function renderDiceRoller() {
     return `
         <div class="dice-roller-view">
             <div class="dice-section glass-panel">
-                <h2 class="section-title">🎲 DICE ROLLER</h2>
+                <h2 class="section-title">­ƒÄ▓ DICE ROLLER</h2>
                 <div class="dice-grid">
                     ${diceButtons}
                 </div>
@@ -945,14 +844,14 @@ function renderSession() {
     return `
         <div class="session-view">
             <div class="session-panel initiative-panel glass-panel">
-                <h3>⚔️ INITIATIVE</h3>
+                <h3>ÔÜö´©Å INITIATIVE</h3>
                 <div class="participants-list">
                     ${participantsList}
                 </div>
             </div>
             
             <div class="session-panel map-panel glass-panel">
-                <h3>🗺️ MAP VIEW</h3>
+                <h3>­ƒù║´©Å MAP VIEW</h3>
                 <div class="map-container">
                     <div class="map-grid">
                         ${grid.join('')}
@@ -962,16 +861,16 @@ function renderSession() {
             </div>
             
             <div class="session-panel tools-panel glass-panel">
-                <h3>📜 COMBAT LOG</h3>
+                <h3>­ƒô£ COMBAT LOG</h3>
                 <div class="combat-log">
                     ${logEntries}
                 </div>
                 <div class="tools-actions">
                     <button class="roll-button" onclick="navigateTo('dice')">
-                        🎲 DICE ROLLER
+                        ­ƒÄ▓ DICE ROLLER
                     </button>
                     <button class="action-button" onclick="addLogEntry()">
-                        ⚡ ADD ACTION
+                        ÔÜí ADD ACTION
                     </button>
                 </div>
             </div>
@@ -979,7 +878,7 @@ function renderSession() {
         
         <div class="media-player">
             <button class="play-button" onclick="toggleMusic()">
-                ${musicPlaying ? '⏸' : '▶'}
+                ${musicPlaying ? 'ÔÅ©' : 'ÔûÂ'}
             </button>
             <div class="track-info">
                 <div class="track-name">Epic Combat Music</div>
@@ -987,8 +886,8 @@ function renderSession() {
             </div>
             <canvas id="waveformCanvas" width="400" height="60"></canvas>
             <div class="player-controls">
-                <button class="control-btn" title="Shuffle">🔀</button>
-                <button class="control-btn" title="Repeat">🔁</button>
+                <button class="control-btn" title="Shuffle">­ƒöÇ</button>
+                <button class="control-btn" title="Repeat">­ƒöü</button>
                 <input type="range" class="volume-slider" min="0" max="100" value="70" title="Volume">
             </div>
         </div>
@@ -997,11 +896,11 @@ function renderSession() {
 
 function renderTimeline() {
     const scenes = [
-        { name: 'Taverna', emoji: '🏠', completed: true },
-        { name: 'Floresta', emoji: '🌲', completed: true },
-        { name: 'Masmorra', emoji: '🏰', completed: false, active: true },
-        { name: 'Emboscada', emoji: '⚔️', completed: false },
-        { name: 'Dragão', emoji: '🐉', completed: false }
+        { name: 'Taverna', emoji: '­ƒÅá', completed: true },
+        { name: 'Floresta', emoji: '­ƒî▓', completed: true },
+        { name: 'Masmorra', emoji: '­ƒÅ░', completed: false, active: true },
+        { name: 'Emboscada', emoji: 'ÔÜö´©Å', completed: false },
+        { name: 'Drag├úo', emoji: '­ƒÉë', completed: false }
     ];
 
     const sceneNodes = scenes.map((scene, i) => `
@@ -1009,13 +908,13 @@ function renderTimeline() {
              onclick="showToast('Scene: ${scene.name}', 'info')">
             <div class="timeline-icon">${scene.emoji}</div>
             <div class="timeline-label">${scene.name}</div>
-            ${scene.completed ? '<div class="timeline-check">✓</div>' : ''}
+            ${scene.completed ? '<div class="timeline-check">Ô£ô</div>' : ''}
         </div>
     `).join('');
 
     return `
         <div class="timeline-view glass-panel">
-            <h2 class="section-title">🗺️ CAMPAIGN TIMELINE</h2>
+            <h2 class="section-title">­ƒù║´©Å CAMPAIGN TIMELINE</h2>
             <div class="timeline-container">
                 ${sceneNodes}
             </div>
@@ -1041,51 +940,46 @@ function render() {
         case 'session': content = renderSession(); break;
         case 'dice': content = renderDiceRoller(); break;
         case 'timeline': content = renderTimeline(); break;
-        case 'login': content = renderLogin(); break;
-        case 'register': content = renderRegister(); break;
     }
 
-    // Auth views não têm nav-rail
-    const isAuthView = currentView === 'login' || currentView === 'register';
-
-    app.innerHTML = isAuthView ? content : `
+    app.innerHTML = `
         <nav class="nav-rail">
             <div class="nav-brand">GM FORGE</div>
             <div class="nav-items">
                 <a class="nav-item ${currentView === 'dashboard' ? 'active' : ''}" onclick="navigateTo('dashboard')" title="Dashboard">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon">­ƒôè</span>
                     <span class="nav-label">Dashboard</span>
                 </a>
                 <a class="nav-item ${currentView === 'campaigns' ? 'active' : ''}" onclick="navigateTo('campaigns')" title="Campaigns">
-                    <span class="nav-icon">📁</span>
+                    <span class="nav-icon">­ƒôü</span>
                     <span class="nav-label">Campaigns</span>
                 </a>
                 <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')" title="NPCs & Enemies">
-                    <span class="nav-icon">👥</span>
+                    <span class="nav-icon">­ƒæÑ</span>
                     <span class="nav-label">NPCs</span>
                 </a>
                 <a class="nav-item ${currentView === 'lore' ? 'active' : ''}" onclick="navigateTo('lore')" title="Lore Library">
-                    <span class="nav-icon">📚</span>
+                    <span class="nav-icon">­ƒôÜ</span>
                     <span class="nav-label">Lore</span>
                 </a>
                 <a class="nav-item ${currentView === 'quests' ? 'active' : ''}" onclick="navigateTo('quests')" title="Quest Tracker">
-                    <span class="nav-icon">📜</span>
+                    <span class="nav-icon">­ƒô£</span>
                     <span class="nav-label">Quests</span>
                 </a>
                 <a class="nav-item ${currentView === 'notes' ? 'active' : ''}" onclick="navigateTo('notes')" title="Session Notes">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon">­ƒôØ</span>
                     <span class="nav-label">Notes</span>
                 </a>
                 <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')" title="Session">
-                    <span class="nav-icon">⚔️</span>
+                    <span class="nav-icon">ÔÜö´©Å</span>
                     <span class="nav-label">Session</span>
                 </a>
                 <a class="nav-item ${currentView === 'dice' ? 'active' : ''}" onclick="navigateTo('dice')" title="Dice Roller">
-                    <span class="nav-icon">🎲</span>
+                    <span class="nav-icon">­ƒÄ▓</span>
                     <span class="nav-label">Dice</span>
                 </a>
                 <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')" title="Timeline">
-                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-icon">­ƒù║´©Å</span>
                     <span class="nav-label">Timeline</span>
                 </a>
             </div>
@@ -1106,147 +1000,6 @@ function render() {
     }
 }
 
-// ==================== AUTH VIEWS ====================
-function renderLogin() {
-    return `
-        <div class="auth-container">
-            <div class="auth-card glass-panel">
-                <div class="auth-header">
-                    <h1>🎮 GM Forge</h1>
-                    <p>Bem-vindo de volta, Mestre!</p>
-                </div>
-                
-                <form class="auth-form" onsubmit="event.preventDefault(); handleLogin();">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            placeholder="seu@email.com" 
-                            required
-                            class="auth-input"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password">Senha</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            placeholder="••••••••" 
-                            required
-                            class="auth-input"
-                        >
-                    </div>
-                    
-                    <button type="submit" class="auth-button primary">
-                        ENTRAR
-                    </button>
-                </form>
-                
-                <div class="auth-footer">
-                    <p>Não tem uma conta?</p>
-                    <button onclick="navigateTo('register')" class="link-button">
-                        Registrar-se
-                    </button>
-                </div>
-                
-                ${!isAuthEnabled ? `
-                    <div class="demo-notice">
-                        <p>🔓 Modo Demo Ativo</p>
-                        <small>Configure Supabase para persistência real</small>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}
-
-function renderRegister() {
-    return `
-        <div class="auth-container">
-            <div class="auth-card glass-panel">
-                <div class="auth-header">
-                    <h1>🎮 GM Forge</h1>
-                    <p>Crie sua conta de Mestre</p>
-                </div>
-                
-                <form class="auth-form" onsubmit="event.preventDefault(); handleRegister();">
-                    <div class="form-group">
-                        <label for="displayName">Nome de Exibição</label>
-                        <input 
-                            type="text" 
-                            id="displayName" 
-                            placeholder="Mestre Épico" 
-                            required
-                            class="auth-input"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            placeholder="seu@email.com" 
-                            required
-                            class="auth-input"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password">Senha</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            placeholder="••••••••" 
-                            required
-                            minlength="6"
-                            class="auth-input"
-                        >
-                    </div>
-                    
-                    <button type="submit" class="auth-button primary">
-                        CRIAR CONTA
-                    </button>
-                </form>
-                
-                <div class="auth-footer">
-                    <p>Já tem uma conta?</p>
-                    <button onclick="navigateTo('login')" class="link-button">
-                        Fazer Login
-                    </button>
-                </div>
-                
-                ${!isAuthEnabled ? `
-                    <div class="demo-notice">
-                        <p>🔓 Modo Demo Ativo</p>
-                        <small>Configure Supabase para persistência real</small>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}
-
-// Auth form handlers
-window.handleLogin = async function () {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    await signIn(email, password);
-};
-
-window.handleRegister = async function () {
-    const displayName = document.getElementById('displayName').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    const result = await signUp(email, password, displayName);
-    if (result) {
-        navigateTo('login');
-    }
-};
-
 // ==================== GLOBAL FUNCTIONS ====================
 window.navigateTo = function (view) {
     currentView = view;
@@ -1260,11 +1013,11 @@ window.selectCampaign = function (id) {
 };
 
 window.addToSession = function (npcId) {
-    showToast('NPC adicionado à sessão!', 'success');
+    showToast('NPC adicionado ├á sess├úo!', 'success');
 };
 
 window.addLogEntry = function () {
-    const action = prompt('Digite a ação:');
+    const action = prompt('Digite a a├º├úo:');
     if (action) {
         combatLog.unshift({
             actor: 'GM',
@@ -1299,4 +1052,4 @@ window.onCellDrop = onCellDrop;
 // Initial render
 render();
 
-console.log('%c📚 GM Forge Web - LORE & QUESTS! ', 'background: #00FF9D; color: #121212; font-size: 16px; padding: 8px; font-weight: bold;');
+console.log('%c­ƒôÜ GM Forge Web - LORE & QUESTS! ', 'background: #00FF9D; color: #121212; font-size: 16px; padding: 8px; font-weight: bold;');
