@@ -761,6 +761,9 @@ function renderDashboard() {
         <div class="campaign-card" onclick="selectCampaign(${c.id})">
             <div class="campaign-cover" style="background-image: url('${c.cover}')">
                 <div class="campaign-overlay"></div>
+                <button class="campaign-edit-btn" onclick="event.stopPropagation(); showCampaignModal(${c.id})" title="Edit Campaign">
+                    ✏️
+                </button>
             </div>
             <div class="campaign-content">
                 <h3 class="campaign-title">${c.title.toUpperCase()}</h3>
