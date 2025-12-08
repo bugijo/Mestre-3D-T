@@ -308,6 +308,210 @@ window.showCampaignModal = showCampaignModal;
 window.saveCampaign = saveCampaign;
 window.deleteCampaign = deleteCampaign;
 
+// ==================== NPC/CHARACTER CRUD ====================
+function showNPCModal(npcId = null) {
+    const npc = npcId ? npcs.find(n => n.id === npcId) : null;
+    const isEdit = !!npc;
+
+    const modal = document.createElement('div');
+    modal.className = 'npc-modal';
+    modal.innerHTML = `
+        <div class="npc-form glass-panel">
+            <button class="close-btn" onclick="closeNPCModal()">✕</button>
+            
+            <h2>${isEdit ? '✏️ EDIT CHARACTER' : '✨ NEW CHARACTER'}</h2>
+            
+            <form class="form-group-container" onsubmit="event.preventDefault(); saveNPC(${npcId});">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="npcName" value="${npc?.name || ''}" required 
+                               placeholder="Ex: Elara Moonwhisper" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Avatar Emoji</label>
+                        <input type="text" id="npcAvatar" value="${npc?.avatar || '🧙'}" 
+                               placeholder="🧙" class="form-input" maxlength="2">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="npcType" class="form-input">
+                            <option value="Aliado" ${npc?.type === 'Aliado' ? 'selected' : ''}>Aliado</option>
+                            <option value="Inimigo" ${npc?.type === 'Inimigo' ? 'selected' : ''}>Inimigo</option>
+                            <option value="Boss" ${npc?.type === 'Boss' ? 'selected' : ''}>Boss</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Level</label>
+                        <input type="number" id="npcLevel" value="${npc?.level || 1}" 
+                               min="1" max="20" class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="npcDescription" rows="2" class="form-input" 
+                              placeholder="Ex: Maga da Ordem Arcana">${npc?.description || ''}</textarea>
+                </div>
+                
+                <div class="attributes-section">
+                    <h3>⚔️ Atributos 3D&T</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Força (F)</label>
+                            <input type="number" id="npcStrength" value="${npc?.strength || 0}" 
+                                   min="0" max="5" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Habilidade (H)</label>
+                            <input type="number" id="npcSkill" value="${npc?.skill || 0}" 
+                                   min="0" max="5" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Resistência (R)</label>
+                            <input type="number" id="npcResistance" value="${npc?.resistance || 0}" 
+                                   min="0" max="5" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Armadura (A)</label>
+                            <input type="number" id="npcArmor" value="${npc?.armor || 0}" 
+                                   min="0" max="5" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>PdF</label>
+                            <input type="number" id="npcFirepower" value="${npc?.firepower || 0}" 
+                                   min="0" max="5" class="form-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-preview">
+                    <span>PV: <strong id="pvPreview">${5 + (npc?.resistance || 0) * 5}</strong></span>
+                    <span>PM: <strong id="pmPreview">${5 + (npc?.firepower || 0) * 5}</strong></span>
+                </div>
+                
+                <div class="form-actions">
+                    ${isEdit ? `
+                        <button type="button" class="btn-delete" onclick="deleteNPC(${npcId})">
+                            🗑️ DELETE
+                        </button>
+                    ` : ''}
+                    <button type="submit" class="btn-save">
+                        💾 ${isEdit ? 'UPDATE' : 'CREATE'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    // Update PV/PM preview on resistance/firepower change
+    const updatePreview = () => {
+        const r = parseInt(document.getElementById('npcResistance').value) || 0;
+        const f = parseInt(document.getElementById('npcFirepower').value) || 0;
+        document.getElementById('pvPreview').textContent = 5 + r * 5;
+        document.getElementById('pmPreview').textContent = 5 + f * 5;
+    };
+
+    document.getElementById('npcResistance')?.addEventListener('input', updatePreview);
+    document.getElementById('npcFirepower')?.addEventListener('input', updatePreview);
+    document.getElementById('npcName')?.focus();
+}
+
+function saveNPC(npcId = null) {
+    const name = document.getElementById('npcName').value;
+    const avatar = document.getElementById('npcAvatar').value || '🧙';
+    const type = document.getElementById('npcType').value;
+    const level = parseInt(document.getElementById('npcLevel').value);
+    const description = document.getElementById('npcDescription').value;
+    const strength = parseInt(document.getElementById('npcStrength').value);
+    const skill = parseInt(document.getElementById('npcSkill').value);
+    const resistance = parseInt(document.getElementById('npcResistance').value);
+    const armor = parseInt(document.getElementById('npcArmor').value);
+    const firepower = parseInt(document.getElementById('npcFirepower').value);
+
+    if (!name.trim()) {
+        showToast('Name is required!', 'error');
+        return;
+    }
+
+    if (npcId) {
+        // UPDATE
+        const npc = npcs.find(n => n.id === npcId);
+        if (npc) {
+            npc.name = name;
+            npc.avatar = avatar;
+            npc.type = type;
+            npc.level = level;
+            npc.description = description;
+            npc.strength = strength;
+            npc.skill = skill;
+            npc.resistance = resistance;
+            npc.armor = armor;
+            npc.firepower = firepower;
+            showToast('Character updated!', 'success');
+        }
+    } else {
+        // CREATE
+        const newNPC = {
+            id: npcs.length + 1,
+            name,
+            avatar,
+            type,
+            level,
+            description,
+            strength,
+            skill,
+            resistance,
+            armor,
+            firepower
+        };
+        npcs.push(newNPC);
+        showToast('Character created!', 'success');
+    }
+
+    closeNPCModal();
+    render();
+}
+
+function deleteNPC(npcId) {
+    if (!confirm('Are you sure you want to delete this character? This action cannot be undone.')) {
+        return;
+    }
+
+    const index = npcs.findIndex(n => n.id === npcId);
+    if (index !== -1) {
+        const npcName = npcs[index].name;
+        npcs.splice(index, 1);
+        showToast(`"${npcName}" deleted`, 'info');
+        closeNPCModal();
+        render();
+    }
+}
+
+window.closeNPCModal = function () {
+    const modal = document.querySelector('.npc-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.showNPCModal = showNPCModal;
+window.saveNPC = saveNPC;
+window.deleteNPC = deleteNPC;
+
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
@@ -863,7 +1067,7 @@ function renderNPCs() {
         <div class="npcs-view">
             <div class="page-header">
                 <h2 class="section-title">👥 NPCs & ENEMIES</h2>
-                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                <button class="add-button" onclick="showNPCModal()">
                     + NEW NPC
                 </button>
             </div>
