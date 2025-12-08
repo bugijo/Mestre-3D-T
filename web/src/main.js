@@ -175,6 +175,139 @@ window.signUp = signUp;
 window.signIn = signIn;
 window.signOut = signOut;
 
+// ==================== CAMPAIGN CRUD ====================
+function showCampaignModal(campaignId = null) {
+    const campaign = campaignId ? campaigns.find(c => c.id === campaignId) : null;
+    const isEdit = !!campaign;
+
+    const modal = document.createElement('div');
+    modal.className = 'campaign-modal';
+    modal.innerHTML = `
+        <div class="campaign-form glass-panel">
+            <button class="close-btn" onclick="closeCampaignModal()">✕</button>
+            
+            <h2>${isEdit ? '✏️ EDIT CAMPAIGN' : '✨ NEW CAMPAIGN'}</h2>
+            
+            <form class="form-group-container" onsubmit="event.preventDefault(); saveCampaign(${campaignId});">
+                <div class="form-group">
+                    <label>Campaign Title *</label>
+                    <input type="text" id="campaignTitle" value="${campaign?.title || ''}" required 
+                           placeholder="Ex: The Shadow War" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="campaignDescription" rows="3" class="form-input" 
+                              placeholder="Uma guerra nas sombras...">${campaign?.description || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cover Image URL</label>
+                    <input type="url" id="campaignCover" value="${campaign?.cover || ''}" 
+                           placeholder="https://images.unsplash.com/..." class="form-input">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Players</label>
+                        <input type="number" id="campaignPlayers" value="${campaign?.players || 4}" 
+                               min="1" max="10" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Progress (%)</label>
+                        <input type="number" id="campaignProgress" value="${campaign?.progress || 0}" 
+                               min="0" max="100" class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    ${isEdit ? `
+                        <button type="button" class="btn-delete" onclick="deleteCampaign(${campaignId})">
+                            🗑️ DELETE
+                        </button>
+                    ` : ''}
+                    <button type="submit" class="btn-save">
+                        💾 ${isEdit ? 'UPDATE' : 'CREATE'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+    document.getElementById('campaignTitle')?.focus();
+}
+
+function saveCampaign(campaignId = null) {
+    const title = document.getElementById('campaignTitle').value;
+    const description = document.getElementById('campaignDescription').value;
+    const cover = document.getElementById('campaignCover').value || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400';
+    const players = parseInt(document.getElementById('campaignPlayers').value);
+    const progress = parseInt(document.getElementById('campaignProgress').value);
+
+    if (!title.trim()) {
+        showToast('Title is required!', 'error');
+        return;
+    }
+
+    if (campaignId) {
+        // UPDATE
+        const campaign = campaigns.find(c => c.id === campaignId);
+        if (campaign) {
+            campaign.title = title;
+            campaign.description = description;
+            campaign.cover = cover;
+            campaign.players = players;
+            campaign.progress = progress;
+            showToast('Campaign updated!', 'success');
+        }
+    } else {
+        // CREATE
+        const newCampaign = {
+            id: campaigns.length + 1,
+            title,
+            description,
+            cover,
+            players,
+            progress
+        };
+        campaigns.push(newCampaign);
+        showToast('Campaign created!', 'success');
+    }
+
+    closeCampaignModal();
+    render();
+}
+
+function deleteCampaign(campaignId) {
+    if (!confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
+        return;
+    }
+
+    const index = campaigns.findIndex(c => c.id === campaignId);
+    if (index !== -1) {
+        const campaignTitle = campaigns[index].title;
+        campaigns.splice(index, 1);
+        showToast(`"${campaignTitle}" deleted`, 'info');
+        closeCampaignModal();
+        render();
+    }
+}
+
+window.closeCampaignModal = function () {
+    const modal = document.querySelector('.campaign-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+};
+
+window.showCampaignModal = showCampaignModal;
+window.saveCampaign = saveCampaign;
+window.deleteCampaign = deleteCampaign;
+
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
@@ -685,7 +818,7 @@ function renderCampaigns() {
         <div class="campaigns-view">
             <div class="page-header">
                 <h2 class="section-title">📁 YOUR CAMPAIGNS</h2>
-                <button class="add-button" onclick="showToast('Feature coming soon!', 'info')">
+                <button class="add-button" onclick="showCampaignModal()">
                     + NEW CAMPAIGN
                 </button>
             </div>
