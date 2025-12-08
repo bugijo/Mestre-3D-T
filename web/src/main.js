@@ -90,7 +90,7 @@ let sessionNotes = '';
 
 // ==================== AUTH FUNCTIONS ====================
 async function checkAuth() {
-    if (!isAuthEnabled || !s upabase) return false;
+    if (!isAuthEnabled || !supabase) return false;
 
     const { data: { session } } = await supabase.auth.getSession();
 
