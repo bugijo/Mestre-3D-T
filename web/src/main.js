@@ -88,6 +88,15 @@ let waveformBars = Array(60).fill(0).map(() => Math.random());
 let draggedToken = null;
 let sessionNotes = '';
 
+// Map interactive state
+let mapZoom = 1.0;
+let mapPanX = 0;
+let mapPanY = 0;
+let mapGridVisible = true;
+let fogOfWarEnabled = false;
+let revealedAreas = [];
+let mapBackground = null;
+
 // ==================== AUTH FUNCTIONS ====================
 async function checkAuth() {
     if (!isAuthEnabled || !supabase) return false;
@@ -560,6 +569,39 @@ window.saveDiceSpeed = function (speed) {
 if (localStorage.getItem('theme') === 'light') {
     document.body.classList.add('light-theme');
 }
+
+// ==================== MAP CONTROLS ====================
+window.toggleGrid = function () {
+    mapGridVisible = !mapGridVisible;
+    showToast(`Grid ${mapGridVisible ? 'visible' : 'hidden'}`, 'info');
+    render();
+};
+
+window.toggleFogOfWar = function () {
+    fogOfWarEnabled = !fogOfWarEnabled;
+    showToast(`Fog of War ${fogOfWarEnabled ? 'enabled' : 'disabled'}`, fogOfWarEnabled ? 'success' : 'info');
+    render();
+};
+
+window.zoomIn = function () {
+    mapZoom = Math.min(mapZoom + 0.1, 2.0);
+    showToast(`Zoom: ${(mapZoom * 100).toFixed(0)}%`, 'info');
+    render();
+};
+
+window.zoomOut = function () {
+    mapZoom = Math.max(mapZoom - 0.1, 0.5);
+    showToast(`Zoom: ${(mapZoom * 100).toFixed(0)}%`, 'info');
+    render();
+};
+
+window.resetMapView = function () {
+    mapZoom = 1.0;
+    mapGridVisible = true;
+    fogOfWarEnabled = false;
+    showToast('Map view reset', 'success');
+    render();
+};
 
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
@@ -1342,8 +1384,31 @@ function renderSession() {
             
             <div class="session-panel map-panel glass-panel">
                 <h3>🗺️ MAP VIEW</h3>
-                <div class="map-container">
-                    <div class="map-grid">
+                
+                <!-- Map Toolbar -->
+                <div class="map-toolbar">
+                    <button onclick="toggleGrid()" class="map-btn ${mapGridVisible ? 'active' : ''}" title="Toggle Grid">
+                        <span>⊞</span> Grid
+                    </button>
+                    <button onclick="toggleFogOfWar()" class="map-btn ${fogOfWarEnabled ? 'active' : ''}" title="Toggle Fog of War">
+                        <span>👁️</span> Fog
+                    </button>
+                    <button onclick="zoomIn()" class="map-btn" title="Zoom In">
+                        <span>+</span> Zoom In
+                    </button>
+                    <button onclick="zoomOut()" class="map-btn" title="Zoom Out">
+                        <span>-</span> Zoom Out
+                    </button>
+                    <button onclick="resetMapView()" class="map-btn" title="Reset View">
+                        <span>↺</span> Reset
+                    </button>
+                    <div class="zoom-indicator">
+                        ${(mapZoom * 100).toFixed(0)}%
+                    </div>
+                </div>
+                
+                <div class="map-container" style="transform: scale(${mapZoom}); opacity: ${fogOfWarEnabled ? 0.5 : 1};">
+                    <div class="map-grid" style="display: ${mapGridVisible ? 'grid' : 'none'};">
                         ${grid.join('')}
                     </div>
                     <p class="map-hint">Arraste os tokens para mover</p>
