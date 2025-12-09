@@ -97,6 +97,49 @@ let fogOfWarEnabled = false;
 let revealedAreas = [];
 let mapBackground = null;
 
+// Music player state
+let audioElement = null;
+let currentTrackIndex = 0;
+let isShuffleEnabled = false;
+let isRepeatEnabled = false;
+
+const musicPlaylists = {
+    battle: [
+        { name: "Epic Combat", category: "Battle Theme" },
+        { name: "Dragon's Fury", category: "Boss Fight" },
+        { name: "Steel and Magic", category: "Battle Theme" }
+    ],
+    exploration: [
+        { name: "Mystical Forest", category: "Exploration" },
+        { name: "Ancient Ruins", category: "Adventure" },
+        { name: "Mountain Pass", category: "Exploration" }
+    ],
+    tavern: [
+        { name: "Merry Inn", category: "Tavern Music" },
+        { name: "Peaceful Rest", category: "Town Theme" },
+        { name: "Bardic Tales", category: "Tavern Music" }
+    ]
+};
+
+let currentPlaylist = musicPlaylists.battle;
+
+// Initialize Audio Element
+function initAudioPlayer() {
+    if (!audioElement) {
+        audioElement = new Audio();
+        audioElement.volume = parseFloat(localStorage.getItem('musicVolume') || '75') / 100;
+
+        audioElement.addEventListener('ended', () => {
+            if (isRepeatEnabled) {
+                audioElement.currentTime = 0;
+                audioElement.play();
+            } else {
+                nextTrack();
+            }
+        });
+    }
+}
+
 // ==================== AUTH FUNCTIONS ====================
 async function checkAuth() {
     if (!isAuthEnabled || !supabase) return false;
@@ -600,6 +643,48 @@ window.resetMapView = function () {
     mapGridVisible = true;
     fogOfWarEnabled = false;
     showToast('Map view reset', 'success');
+    render();
+};
+
+// ==================== MUSIC PLAYER CONTROLS ====================
+window.toggleMusic = function () {
+    initAudioPlayer();
+
+    if (musicPlaying) {
+        audioElement.pause();
+        musicPlaying = false;
+        showToast('Music paused', 'info');
+    } else {
+        if (!audioElement.src) {
+            audioElement.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+        }
+
+        audioElement.play().catch(err => {
+            showToast('Unable to play audio', 'error');
+        });
+
+        musicPlaying = true;
+        showToast('Music playing', 'success');
+    }
+
+    render();
+};
+
+window.setMusicVolume = function (value) {
+    initAudioPlayer();
+    audioElement.volume = parseFloat(value) / 100;
+    localStorage.setItem('musicVolume', value);
+};
+
+window.toggleShuffle = function () {
+    isShuffleEnabled = !isShuffleEnabled;
+    showToast(`Shuffle ${isShuffleEnabled ? 'ON' : 'OFF'}`, 'info');
+    render();
+};
+
+window.toggleRepeat = function () {
+    isRepeatEnabled = !isRepeatEnabled;
+    showToast(`Repeat ${isRepeatEnabled ? 'ON' : 'OFF'}`, 'info');
     render();
 };
 
@@ -1436,14 +1521,17 @@ function renderSession() {
                 ${musicPlaying ? '⏸' : '▶'}
             </button>
             <div class="track-info">
-                <div class="track-name">Epic Combat Music</div>
-                <div class="track-category">Battle Theme</div>
+                <div class="track-name">${currentPlaylist[currentTrackIndex].name}</div>
+                <div class="track-category">${currentPlaylist[currentTrackIndex].category}</div>
             </div>
             <canvas id="waveformCanvas" width="400" height="60"></canvas>
             <div class="player-controls">
-                <button class="control-btn" title="Shuffle">🔀</button>
-                <button class="control-btn" title="Repeat">🔁</button>
-                <input type="range" class="volume-slider" min="0" max="100" value="70" title="Volume">
+                <button class="control-btn ${isShuffleEnabled ? 'active' : ''}" onclick="toggleShuffle()" title="Shuffle">🔀</button>
+                <button class="control-btn ${isRepeatEnabled ? 'active' : ''}" onclick="toggleRepeat()" title="Repeat">🔁</button>
+                <input type="range" class="volume-slider" min="0" max="100" 
+                       value="${localStorage.getItem('musicVolume') || '75'}" 
+                       oninput="setMusicVolume(this.value)" 
+                       title="Volume">
             </div>
         </div>
     `;
