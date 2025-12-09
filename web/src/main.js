@@ -123,6 +123,11 @@ const musicPlaylists = {
 
 let currentPlaylist = musicPlaylists.battle;
 
+// NPC filter state
+let npcSearchQuery = '';
+let npcFilterType = 'All';
+let npcFilterLevel = 'All';
+
 // Initialize Audio Element
 function initAudioPlayer() {
     if (!audioElement) {
@@ -688,6 +693,30 @@ window.toggleRepeat = function () {
     render();
 };
 
+// ==================== NPC FILTERS ====================
+window.updateNPCSearch = function (value) {
+    npcSearchQuery = value;
+    render();
+};
+
+window.updateNPCTypeFilter = function (value) {
+    npcFilterType = value;
+    render();
+};
+
+window.updateNPCLevelFilter = function (value) {
+    npcFilterLevel = value;
+    render();
+};
+
+window.resetNPCFilters = function () {
+    npcSearchQuery = '';
+    npcFilterType = 'All';
+    npcFilterLevel = 'All';
+    showToast('Filters reset', 'info');
+    render();
+};
+
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
@@ -1213,7 +1242,25 @@ function renderCampaigns() {
 }
 
 function renderNPCs() {
-    const npcCards = npcs.map(npc => `
+    // Filter NPCs based on search and filters
+    const filteredNPCs = npcs.filter(npc => {
+        // Search filter
+        const matchesSearch = npc.name.toLowerCase().includes(npcSearchQuery.toLowerCase());
+
+        // Type filter
+        const matchesType = npcFilterType === 'All' || npc.type === npcFilterType;
+
+        // Level filter  
+        const matchesLevel = npcFilterLevel === 'All' || (
+            npcFilterLevel === '1-5' && npc.level >= 1 && npc.level <= 5 ||
+            npcFilterLevel === '6-10' && npc.level >= 6 && npc.level <= 10 ||
+            npcFilterLevel === '11-20' && npc.level >= 11 && npc.level <= 20
+        );
+
+        return matchesSearch && matchesType && matchesLevel;
+    });
+
+    const npcCards = filteredNPCs.map(npc => `
         <div class="npc-card glass-panel ${npc.type.toLowerCase()}" onclick="showCharacterSheet(${JSON.stringify(npc).replace(/"/g, '&quot;')})">
             <div class="npc-avatar">${npc.avatar}</div>
             <div class="npc-header">
@@ -1247,9 +1294,52 @@ function renderNPCs() {
                     + NEW NPC
                 </button>
             </div>
-            <div class="npc-grid">
-                ${npcCards}
+            
+            <!-- Filters Toolbar -->
+            <div class="filters-toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" 
+                           placeholder="Search NPCs..." 
+                           value="${npcSearchQuery}"
+                           oninput="updateNPCSearch(this.value)"
+                           class="search-input">
+                </div>
+                
+                <select class="filter-select" onchange="updateNPCTypeFilter(this.value)">
+                    <option value="All" ${npcFilterType === 'All' ? 'selected' : ''}>All Types</option>
+                    <option value="Aliado" ${npcFilterType === 'Aliado' ? 'selected' : ''}>Aliado</option>
+                    <option value="Inimigo" ${npcFilterType === 'Inimigo' ? 'selected' : ''}>Inimigo</option>
+                    <option value="Boss" ${npcFilterType === 'Boss' ? 'selected' : ''}>Boss</option>
+                </select>
+                
+                <select class="filter-select" onchange="updateNPCLevelFilter(this.value)">
+                    <option value="All" ${npcFilterLevel === 'All' ? 'selected' : ''}>All Levels</option>
+                    <option value="1-5" ${npcFilterLevel === '1-5' ? 'selected' : ''}>Level 1-5</option>
+                    <option value="6-10" ${npcFilterLevel === '6-10' ? 'selected' : ''}>Level 6-10</option>
+                    <option value="11-20" ${npcFilterLevel === '11-20' ? 'selected' : ''}>Level 11-20</option>
+                </select>
+                
+                <button class="filter-reset-btn" onclick="resetNPCFilters()">
+                    ↺ Reset
+                </button>
+                
+                <div class="filter-results">
+                    ${filteredNPCs.length} of ${npcs.length} NPCs
+                </div>
             </div>
+            
+            ${filteredNPCs.length === 0 ? `
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <h3>No NPCs found</h3>
+                    <p>Try adjusting your filters or search query</p>
+                </div>
+            ` : `
+                <div class="npc-grid">
+                    ${npcCards}
+                </div>
+            `}
         </div>
     `;
 }
