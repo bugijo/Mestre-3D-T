@@ -512,6 +512,55 @@ window.showNPCModal = showNPCModal;
 window.saveNPC = saveNPC;
 window.deleteNPC = deleteNPC;
 
+// ==================== SETTINGS FUNCTIONS ====================
+window.saveProfile = function () {
+    const displayName = document.getElementById('displayNameInput').value;
+    if (displayName.trim()) {
+        localStorage.setItem('displayName', displayName);
+        showToast('Profile updated!', 'success');
+        // Update nav-rail display if needed
+        render();
+    } else {
+        showToast('Display name cannot be empty', 'error');
+    }
+};
+
+window.toggleTheme = function () {
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    localStorage.setItem('theme', newTheme);
+    document.body.classList.toggle('light-theme', newTheme === 'light');
+
+    showToast(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, 'success');
+    render(); // Re-render to update toggle state
+};
+
+window.updateVolumePreview = function (value) {
+    document.getElementById('volumeValue').textContent = value + '%';
+    localStorage.setItem('musicVolume', value);
+    // In future, update actual audio volume if playing
+};
+
+window.toggleAutoSave = function () {
+    const current = localStorage.getItem('autoSave') === 'true';
+    const newValue = !current;
+
+    localStorage.setItem('autoSave', newValue.toString());
+    showToast(`Auto-save ${newValue ? 'enabled' : 'disabled'}`, newValue ? 'success' : 'info');
+    render();
+};
+
+window.saveDiceSpeed = function (speed) {
+    localStorage.setItem('diceSpeed', speed);
+    showToast(`Dice speed set to ${speed}`, 'success');
+};
+
+// Initialize theme on load
+if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-theme');
+}
+
 // ==================== TOAST SYSTEM ====================
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
@@ -1368,6 +1417,120 @@ function renderTimeline() {
     `;
 }
 
+function renderSettings() {
+    // Get current settings from localStorage
+    const userDisplayName = localStorage.getItem('displayName') || currentUser?.email || 'Game Master';
+    const theme = localStorage.getItem('theme') || 'dark';
+    const volume = localStorage.getItem('musicVolume') || '75';
+    const autoSave = localStorage.getItem('autoSave') === 'true';
+
+    return `
+        <div class="settings-view">
+            <h2 class="section-title">⚙️ SETTINGS</h2>
+            
+            <!-- Profile Section -->
+            <div class="settings-section glass-panel">
+                <h3>👤 Profile</h3>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Display Name</strong>
+                        <small>How others see you</small>
+                    </div>
+                    <input type="text" id="displayNameInput" value="${userDisplayName}" class="settings-input" placeholder="Game Master">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Email</strong>
+                        <small>Your account email</small>
+                    </div>
+                    <div class="setting-value">${currentUser?.email || 'demo@gmforge.com'}</div>
+                </div>
+                <button onclick="saveProfile()" class="settings-save-btn">💾 SAVE PROFILE</button>
+            </div>
+            
+            <!-- Theme Section -->
+            <div class="settings-section glass-panel">
+                <h3>🎨 Theme</h3>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Dark Mode</strong>
+                        <small>Switch between dark and light theme</small>
+                    </div>
+                    <div class="toggle-switch ${theme === 'dark' ? 'active' : ''}" onclick="toggleTheme()"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Color Accent</strong>
+                        <small>Primary color scheme</small>
+                    </div>
+                    <div class="setting-value">Purple (Default)</div>
+                </div>
+            </div>
+            
+            <!-- Preferences Section -->
+            <div class="settings-section glass-panel">
+                <h3>🔧 Preferences</h3>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Music Volume</strong>
+                        <small>Background music volume level</small>
+                    </div>
+                    <div class="volume-control">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="${volume}" 
+                               oninput="updateVolumePreview(this.value)" class="volume-slider-input">
+                        <span class="volume-value" id="volumeValue">${volume}%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Auto-save Notes</strong>
+                        <small>Automatically save session notes</small>
+                    </div>
+                    <div class="toggle-switch ${autoSave ? 'active' : ''}" onclick="toggleAutoSave()"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <strong>Dice Animation Speed</strong>
+                        <small>Speed of dice roll animations</small>
+                    </div>
+                    <select class="settings-input" onchange="saveDiceSpeed(this.value)">
+                        <option value="slow">Slow</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="settings-section glass-panel">
+                <h3>ℹ️ About</h3>
+                <div class="setting-item">
+                    <div class="setting-label"><strong>Version</strong></div>
+                    <div class="setting-value">v0.60.0</div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label"><strong>Platform</strong></div>
+                    <div class="setting-value">GM Forge Web</div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label"><strong>GitHub</strong></div>
+                    <a href="https://github.com/bugijo/Mestre-3D-T" target="_blank" class="setting-link">
+                        View Repository →
+                    </a>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label"><strong>Support</strong></div>
+                    <div class="setting-value">support@gmforge.com</div>
+                </div>
+                <div class="about-footer">
+                    <p>Developed with ❤️ for RPG Game Masters</p>
+                    <p><small>© 2025 GM Forge. All rights reserved.</small></p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // ==================== RENDER ====================
 function render() {
     let content = '';
@@ -1381,6 +1544,7 @@ function render() {
         case 'session': content = renderSession(); break;
         case 'dice': content = renderDiceRoller(); break;
         case 'timeline': content = renderTimeline(); break;
+        case 'settings': content = renderSettings(); break;
         case 'login': content = renderLogin(); break;
         case 'register': content = renderRegister(); break;
     }
@@ -1427,6 +1591,10 @@ function render() {
                 <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')" title="Timeline">
                     <span class="nav-icon">🗺️</span>
                     <span class="nav-label">Timeline</span>
+                </a>
+                <a class="nav-item ${currentView === 'settings' ? 'active' : ''}" onclick="navigateTo('settings')" title="Settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Settings</span>
                 </a>
             </div>
             
