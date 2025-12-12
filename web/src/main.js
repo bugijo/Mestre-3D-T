@@ -2,17 +2,22 @@ const app = document.getElementById('app');
 
 // ==================== SUPABASE CLIENT ====================
 // IMPORTANTE: Substituir com suas credenciais reais do Supabase
-const SUPABASE_URL = 'https://your-project.supabase.co'; // TODO: Substituir
-const SUPABASE_ANON_KEY = 'your-anon-key'; // TODO: Substituir
+const SUPABASE_URL = 'https://fyixcsfrcfukblqyadsq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aXhjc2ZyY2Z1a2JscXlhZHNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0MDI4MzQsImV4cCI6MjA4MDk3ODgzNH0.wV1BeB5qG_73xIp6sv9xFWmuLJw4q-yFto411afpSRI';
 
-// Initialize Supabase client (temporariamente desabilitado até configurar)
+// Initialize Supabase client
 let supabase = null;
 let currentUser = null;
-let isAuthEnabled = false; // Flag para ativar quando tiver credentials
+let isAuthEnabled = false;
 
-// Descomentar quando tiver credentials:
-// supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// isAuthEnabled = true;
+// Initialize if creating client is possible
+if (typeof window.supabase !== 'undefined') {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    isAuthEnabled = true;
+    console.log('✅ Supabase initialized with real credentials');
+} else {
+    console.warn('⚠️ Supabase SDK not loaded');
+}
 
 // ==================== DATA ====================
 const campaigns = [
@@ -192,18 +197,30 @@ async function signIn(email, password) {
         return { demo: true };
     }
 
+    // Show loading state (opcional - could add spinner)
+    showToast('Authenticating...', 'info');
+
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
     });
 
     if (error) {
-        showToast(error.message, 'error');
+        console.error('Login Error:', error);
+
+        let message = error.message;
+        if (message.includes('Invalid login credentials')) {
+            message = 'Incorrect email or password.';
+        } else if (message.includes('Email not confirmed')) {
+            message = 'Please confirm your email address first.';
+        }
+
+        showToast('❌ ' + message, 'error');
         return null;
     }
 
     currentUser = data.user;
-    showToast('Welcome back!', 'success');
+    showToast('✨ Welcome back, Master!', 'success');
     navigateTo('dashboard');
     return data;
 }
@@ -1870,51 +1887,51 @@ function render() {
 function renderLogin() {
     return `
         <div class="auth-container">
-            <div class="auth-card glass-panel">
+            <div class="auth-card">
                 <div class="auth-header">
-                    <h1>🎮 GM Forge</h1>
-                    <p>Bem-vindo de volta, Mestre!</p>
+                    <h1>GM FORGE</h1>
+                    <p>WELCOME BACK, GAME MASTER</p>
                 </div>
                 
                 <form class="auth-form" onsubmit="event.preventDefault(); handleLogin();">
                     <div class="form-group">
-                        <label for="email">Email</label>
                         <input 
                             type="email" 
                             id="email" 
-                            placeholder="seu@email.com" 
-                            required
-                            class="auth-input"
+                            class="auth-input" 
+                            placeholder="✉️  Email Address" 
+                            required 
+                            autocomplete="email"
                         >
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Senha</label>
                         <input 
                             type="password" 
                             id="password" 
-                            placeholder="••••••••" 
-                            required
-                            class="auth-input"
+                            class="auth-input" 
+                            placeholder="🔒  Password" 
+                            required 
+                            autocomplete="current-password"
                         >
                     </div>
-                    
-                    <button type="submit" class="auth-button primary">
-                        ENTRAR
+
+                    <button type="submit" class="auth-button">
+                        LOGIN
                     </button>
                 </form>
                 
                 <div class="auth-footer">
-                    <p>Não tem uma conta?</p>
+                    <p>Don't have an account?</p>
                     <button onclick="navigateTo('register')" class="link-button">
-                        Registrar-se
+                        Create Account
                     </button>
                 </div>
                 
                 ${!isAuthEnabled ? `
                     <div class="demo-notice">
-                        <p>🔓 Modo Demo Ativo</p>
-                        <small>Configure Supabase para persistência real</small>
+                        <p>🔓 DEMO MODE ACTIVE</p>
+                        <small>Data stored locally only</small>
                     </div>
                 ` : ''}
             </div>
@@ -1925,63 +1942,62 @@ function renderLogin() {
 function renderRegister() {
     return `
         <div class="auth-container">
-            <div class="auth-card glass-panel">
+            <div class="auth-card">
                 <div class="auth-header">
-                    <h1>🎮 GM Forge</h1>
-                    <p>Crie sua conta de Mestre</p>
+                    <h1>GM FORGE</h1>
+                    <p>CREATE MASTER ACCOUNT</p>
                 </div>
                 
                 <form class="auth-form" onsubmit="event.preventDefault(); handleRegister();">
                     <div class="form-group">
-                        <label for="displayName">Nome de Exibição</label>
                         <input 
                             type="text" 
                             id="displayName" 
-                            placeholder="Mestre Épico" 
-                            required
-                            class="auth-input"
+                            class="auth-input" 
+                            placeholder="👤  Display Name" 
+                            required 
+                            autocomplete="username"
                         >
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="email">Email</label>
                         <input 
                             type="email" 
                             id="email" 
-                            placeholder="seu@email.com" 
-                            required
-                            class="auth-input"
+                            class="auth-input" 
+                            placeholder="✉️  Email Address" 
+                            required 
+                            autocomplete="email"
                         >
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Senha</label>
                         <input 
                             type="password" 
                             id="password" 
-                            placeholder="••••••••" 
-                            required
-                            minlength="6"
-                            class="auth-input"
+                            class="auth-input" 
+                            placeholder="🔒  Password" 
+                            required 
+                            autocomplete="new-password"
                         >
                     </div>
-                    
-                    <button type="submit" class="auth-button primary">
-                        CRIAR CONTA
+
+                    <button type="submit" class="auth-button">
+                        CREATE ACCOUNT
                     </button>
                 </form>
                 
                 <div class="auth-footer">
-                    <p>Já tem uma conta?</p>
+                    <p>Already have an account?</p>
                     <button onclick="navigateTo('login')" class="link-button">
-                        Fazer Login
+                        Back to Login
                     </button>
                 </div>
                 
                 ${!isAuthEnabled ? `
                     <div class="demo-notice">
-                        <p>🔓 Modo Demo Ativo</p>
-                        <small>Configure Supabase para persistência real</small>
+                        <p>🔓 DEMO MODE ACTIVE</p>
+                        <small>Data stored locally only</small>
                     </div>
                 ` : ''}
             </div>
