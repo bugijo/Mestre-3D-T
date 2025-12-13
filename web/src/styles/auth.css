@@ -8,10 +8,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Mystic Forest Background */
+  /* Tavern Background */
   background:
-    linear-gradient(rgba(10, 5, 20, 0.6), rgba(10, 5, 20, 0.8)),
-    url('https://images.unsplash.com/photo-1633510006720-42867c293674?q=80&w=1920');
+    linear-gradient(rgba(10, 5, 20, 0.4), rgba(10, 5, 20, 0.7)),
+    url('../assets/login-bg.png');
   background-size: cover;
   background-position: center;
   font-family: 'Inter', sans-serif;
