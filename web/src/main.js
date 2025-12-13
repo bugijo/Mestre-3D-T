@@ -1906,14 +1906,19 @@ function renderLogin() {
                     </div>
                     
                     <div class="form-group">
-                        <input 
-                            type="password" 
-                            id="password" 
-                            class="auth-input" 
-                            placeholder="🔒  Password" 
-                            required 
-                            autocomplete="current-password"
-                        >
+                        <div class="password-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                class="auth-input" 
+                                placeholder="🔒  Password" 
+                                required 
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="password-toggle" onclick="togglePassword('password')" title="Show Password">
+                                👁️
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="auth-button">
@@ -2012,13 +2017,46 @@ window.handleLogin = async function () {
     await signIn(email, password);
 };
 
+window.togglePassword = function (inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+};
+
 window.handleRegister = async function () {
     const displayName = document.getElementById('displayName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    const result = await signUp(email, password, displayName);
-    if (result) {
+    showToast('Creating account...', 'info');
+
+    // 1. Sign Up
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                display_name: displayName
+            }
+        }
+    });
+
+    if (error) {
+        showToast('❌ ' + error.message, 'error');
+        return;
+    }
+
+    // 2. Auto Login (if Confirm Email is disabled, you get a session immediately)
+    if (data.session) {
+        currentUser = data.session.user;
+        showToast('✨ Account created! Welcome, Master.', 'success');
+        navigateTo('dashboard');
+    } else {
+        // 3. Fallback (if Confirm Email is enabled)
+        showToast('✅ Account created! Please check your email.', 'success');
         navigateTo('login');
     }
 };
