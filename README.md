@@ -14,10 +14,10 @@ Portal web inspirado no MasterApp (board.masterapprpg.com), focado em campanhas,
 - Implementar estados de carregamento/erro para listas, busca e paginação.
 
 ## Como rodar
-1. Instale as dependências no diretório `web/`:
+1. Instale as dependências no diretório `web/` (use `npm ci` para seguir o lockfile):
    ```bash
    cd web
-   npm install
+   npm ci
    ```
 2. Execute o servidor de desenvolvimento:
    ```bash

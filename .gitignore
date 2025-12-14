@@ -11,3 +11,11 @@ local.properties
 
 # Generated
 .DS_Store
+
+# Node
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+npm-debug.log*
+
