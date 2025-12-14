@@ -3,40 +3,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* RESET with strict overrides */
 html,
 body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  /* Strict no-scroll */
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  /* Ensure no background color hides our image */
+  background-color: transparent !important;
 }
 
 body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Tavern Background - Absolute Fix */
-  background: url('../assets/login-bg.png') no-repeat center center fixed;
-  background-size: cover;
+
+  /* Direct Background - The most robust way */
+  background-image: url('../assets/login-bg.png') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+
   font-family: 'Inter', sans-serif;
   color: #FCD34D;
-  /* Warm Gold Text */
-  min-height: 100vh;
+  position: relative;
 }
 
-/* Warm Overlay to harmonise UI with Art */
+/* Warm Overlay (on pseudo-element IN FRONT of background but BEHIND content) */
 body::before {
   content: '';
-  position: fixed;
-  /* Fixed to cover screen even on resize */
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -44,40 +42,36 @@ body::before {
   background: radial-gradient(circle at center, rgba(20, 10, 5, 0.4) 0%, rgba(10, 5, 0, 0.8) 100%);
   pointer-events: none;
   z-index: 1;
+  /* Overlay on top of image (z0), below content (z2) */
 }
 
 .auth-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+  /* Content on top of everything */
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 2;
   padding: 1rem;
 }
 
-/* PARCHMENT / WARM GLASS CARD */
+/* CARD STYLES */
 .auth-card {
   width: 100%;
   max-width: 440px;
   padding: 3rem;
 
-  /* Warm Glass Effect - Dark Wood Tone */
   background: rgba(28, 18, 10, 0.90);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
-  /* Gold Border */
   border: 2px solid rgba(251, 191, 36, 0.5);
-  /* Amber-400 */
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.95),
-    /* Deep shadow */
     0 0 30px rgba(251, 191, 36, 0.15),
-    /* Warm Glow */
     inset 0 0 40px rgba(0, 0, 0, 0.6);
-  /* Inner Vignette */
 
   border-radius: 12px;
   position: relative;
@@ -93,7 +87,7 @@ body::before {
     0 0 40px rgba(251, 191, 36, 0.25);
 }
 
-/* Header Section */
+/* Typography */
 .auth-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -104,8 +98,6 @@ body::before {
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-
-  /* Gold Gradient Text */
   background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -115,7 +107,6 @@ body::before {
 
 .auth-header p {
   color: #9CA3AF;
-  /* Muted silver */
   font-size: 0.9rem;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -123,7 +114,7 @@ body::before {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Form Layout */
+/* Inputs */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -135,7 +126,6 @@ body::before {
   margin: 0;
 }
 
-/* Input Fields */
 .auth-input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -151,7 +141,6 @@ body::before {
 .auth-input:focus {
   outline: none;
   border-color: #FBBF24;
-  /* Amber Focus */
   background: rgba(0, 0, 0, 0.7);
   box-shadow: 0 0 15px rgba(251, 191, 36, 0.25);
 }
@@ -176,8 +165,6 @@ body::before {
   letter-spacing: 1px;
   position: relative;
   overflow: hidden;
-
-  /* Gold/Fire Gradient Button */
   background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
   border: 1px solid #F59E0B;
   color: #FEF3C7;
@@ -195,7 +182,7 @@ body::before {
   transform: translateY(0);
 }
 
-/* Footer & Links */
+/* Misc */
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
@@ -205,16 +192,10 @@ body::before {
   padding-top: 1.5rem;
 }
 
-.auth-footer p {
-  color: #9CA3AF;
-  margin-bottom: 0.5rem;
-}
-
 .link-button {
   background: none;
   border: none;
   color: #FBBF24;
-  /* Amber Link */
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -231,7 +212,6 @@ body::before {
   text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
-/* Password Toggle */
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -254,16 +234,13 @@ body::before {
 
 .password-toggle:hover {
   color: #FBBF24;
-  /* Gold Hover */
 }
 
-/* Hide default edge password eye */
 input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
 
-/* Demo Notice */
 .demo-notice {
   margin-top: 1.5rem;
   padding: 0.75rem;
