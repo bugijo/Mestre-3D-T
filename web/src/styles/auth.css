@@ -13,45 +13,45 @@ html,
 body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  /* Prevents scrollbars causing strips */
+  /* Strict no-scroll */
 }
 
 body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Tavern Background */
-  background: url('../assets/login-bg.png');
+  /* Tavern Background - Absolute Fix */
+  background: url('../assets/login-bg.png') no-repeat center center fixed;
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   font-family: 'Inter', sans-serif;
-  position: relative;
   color: #FCD34D;
   /* Warm Gold Text */
+  min-height: 100vh;
 }
 
-/* Warm Overlay to blend UI with Art */
+/* Warm Overlay to harmonise UI with Art */
 body::before {
   content: '';
-  position: absolute;
+  position: fixed;
+  /* Fixed to cover screen even on resize */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at center, rgba(20, 10, 5, 0.3) 0%, rgba(10, 5, 0, 0.7) 100%);
+  background: radial-gradient(circle at center, rgba(20, 10, 5, 0.4) 0%, rgba(10, 5, 0, 0.8) 100%);
   pointer-events: none;
   z-index: 1;
 }
 
 .auth-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Keeping center for focus, but glass helps blend */
   position: relative;
   z-index: 2;
   padding: 1rem;
@@ -63,38 +63,34 @@ body::before {
   max-width: 440px;
   padding: 3rem;
 
-  /* Warm Glass Effect */
-  background: rgba(28, 18, 10, 0.85);
-  /* Deep Wood/Leather tone */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* Warm Glass Effect - Dark Wood Tone */
+  background: rgba(28, 18, 10, 0.90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   /* Gold Border */
-  border: 2px solid rgba(251, 191, 36, 0.4);
+  border: 2px solid rgba(251, 191, 36, 0.5);
   /* Amber-400 */
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.8),
-    /* Deep shadow for depth */
+    0 20px 60px rgba(0, 0, 0, 0.95),
+    /* Deep shadow */
     0 0 30px rgba(251, 191, 36, 0.15),
     /* Warm Glow */
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
+    inset 0 0 40px rgba(0, 0, 0, 0.6);
   /* Inner Vignette */
 
   border-radius: 12px;
-  /* Less rounded, more like a book/menu */
   position: relative;
   transform: translateY(0);
   transition: transform 0.3s ease;
-
-  /* Decoration: Gold Corners (simulated via box-shadow/border tricks or leaving simple) */
 }
 
 .auth-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(251, 191, 36, 0.8);
+  border-color: rgba(251, 191, 36, 0.9);
   box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(251, 191, 36, 0.3);
+    0 25px 70px rgba(0, 0, 0, 1),
+    0 0 40px rgba(251, 191, 36, 0.25);
 }
 
 /* Header Section */
@@ -113,7 +109,7 @@ body::before {
   background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
   letter-spacing: 2px;
 }
 
@@ -124,19 +120,27 @@ body::before {
   letter-spacing: 3px;
   text-transform: uppercase;
   font-family: 'Cinzel', serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Layout */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  position: relative;
+  margin: 0;
 }
 
 /* Input Fields */
-.form-group {
-  margin-bottom: 1.5rem;
-  position: relative;
-}
-
 .auth-input {
   width: 100%;
   padding: 1rem 1.25rem;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(251, 191, 36, 0.3);
   border-radius: 6px;
   color: #F3F4F6;
   font-size: 1rem;
@@ -148,8 +152,8 @@ body::before {
   outline: none;
   border-color: #FBBF24;
   /* Amber Focus */
-  background: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.25);
 }
 
 .auth-input::placeholder {
@@ -160,7 +164,7 @@ body::before {
 .auth-button {
   width: 100%;
   padding: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   border: none;
   border-radius: 6px;
   font-family: 'Cinzel', serif;
@@ -174,15 +178,17 @@ body::before {
   overflow: hidden;
 
   /* Gold/Fire Gradient Button */
-  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
-  color: #FFFbeb;
-  box-shadow: 0 4px 15px rgba(180, 83, 9, 0.4);
+  background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
+  border: 1px solid #F59E0B;
+  color: #FEF3C7;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .auth-button:hover {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.6);
+  background: linear-gradient(135deg, #D97706 0%, #92400E 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+  color: #FFF;
 }
 
 .auth-button:active {
@@ -195,6 +201,13 @@ body::before {
   text-align: center;
   color: #9CA3AF;
   font-size: 0.9rem;
+  border-top: 1px solid rgba(251, 191, 36, 0.1);
+  padding-top: 1.5rem;
+}
+
+.auth-footer p {
+  color: #9CA3AF;
+  margin-bottom: 0.5rem;
 }
 
 .link-button {
@@ -204,17 +217,18 @@ body::before {
   /* Amber Link */
   font-weight: 600;
   cursor: pointer;
-  margin-left: 0.5rem;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
   text-decoration: none;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .link-button:hover {
   color: #FCD34D;
   text-decoration: underline;
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
 /* Password Toggle */
@@ -249,19 +263,6 @@ input::-ms-clear {
   display: none;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Demo Notice */
 .demo-notice {
   margin-top: 1.5rem;
@@ -269,6 +270,7 @@ input::-ms-clear {
   background: rgba(251, 191, 36, 0.1);
   border-radius: 6px;
   border: 1px dashed rgba(251, 191, 36, 0.3);
+  text-align: center;
 }
 
 .demo-notice p {
@@ -279,202 +281,4 @@ input::-ms-clear {
 
 .demo-notice small {
   color: #9CA3AF;
-}
-
-.password-toggle:hover {
-  color: var(--primary-color);
-}
-
-/* Hide default edge password eye */
-input::-ms-reveal,
-input::-ms-clear {
-  display: none;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Header Section */
-.auth-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.auth-header h1 {
-  font-family: 'Cinzel', serif;
-  /* Fantasy Font */
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #E879F9 0%, #C084FC 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(232, 121, 249, 0.5);
-  letter-spacing: 2px;
-}
-
-.auth-header p {
-  font-family: 'Orbitron', sans-serif;
-  /* Cyber Font */
-  color: #F0ABFC;
-  /* Pink Light */
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(240, 171, 252, 0.6);
-}
-
-/* Form Styles */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: relative;
-}
-
-.form-group label {
-  display: none;
-  /* Hiding labels for cleaner look like reference image */
-}
-
-/* Inputs with Neon Glow */
-.auth-input {
-  width: 100%;
-  padding: 16px 20px 16px 45px;
-  /* Left padding for icon space */
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid #334155;
-  border-radius: 12px;
-  color: #fff;
-  font-size: 15px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.auth-input::placeholder {
-  color: #64748B;
-}
-
-/* Input Focus State - Green Neon like reference */
-.auth-input:focus {
-  outline: none;
-  border-color: #4ADE80;
-  /* Neon Green */
-  box-shadow:
-    0 0 0 1px #4ADE80,
-    0 0 20px rgba(74, 222, 128, 0.2);
-  background: rgba(15, 23, 42, 0.95);
-}
-
-/* Icons for Inputs (Simulated with ::before on wrapper if I could change HTML, 
-   but since I can't easily add wrappers everywhere, I'll stick to simple inputs 
-   or try background images) */
-
-/* Button Styling - Purple Neon */
-.auth-button {
-  margin-top: 10px;
-  padding: 18px;
-  width: 100%;
-  background: transparent;
-  border: 2px solid #D946EF;
-  /* Fuchsia 500 */
-  border-radius: 12px;
-  color: #D946EF;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(217, 70, 239, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Filled hover effect */
-.auth-button:hover {
-  background: #D946EF;
-  color: #0F172A;
-  box-shadow:
-    0 0 30px rgba(217, 70, 239, 0.4),
-    0 0 60px rgba(217, 70, 239, 0.2);
-  transform: translateY(-2px);
-  text-shadow: none;
-}
-
-.auth-button:active {
-  transform: translateY(0);
-}
-
-/* Footer Links */
-.auth-footer {
-  margin-top: 30px;
-  text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 20px;
-}
-
-.auth-footer p {
-  color: #94A3B8;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.link-button {
-  background: none;
-  border: none;
-  color: #4ADE80;
-  /* Green Neon */
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.2s;
-}
-
-.link-button:hover {
-  color: #86EFAC;
-  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-  text-decoration: underline;
-}
-
-/* Demo Notice */
-.demo-notice {
-  margin-top: 20px;
-  padding: 12px;
-  background: rgba(234, 179, 8, 0.1);
-  /* Yellow/Gold tint */
-  border: 1px solid rgba(234, 179, 8, 0.3);
-  border-radius: 8px;
-  text-align: center;
-}
-
-.demo-notice p {
-  color: #FACC15;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.demo-notice small {
-  color: #FEF08A;
-  font-size: 11px;
 }
