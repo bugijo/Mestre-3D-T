@@ -8,12 +8,14 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #121212;
   color: #E0E0E0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #app {
   display: flex;
   height: 100vh;
+  min-height: 100vh;
 }
 
 /* ==================== Navigation Rail ==================== */
@@ -194,7 +196,7 @@ body {
 /* ==================== Campaign Grid ==================== */
 .campaign-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
 }
 
@@ -275,7 +277,7 @@ body {
 /* ==================== Session View ==================== */
 .session-view {
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-columns: minmax(240px, 1fr) 1.6fr minmax(240px, 1fr);
   gap: 24px;
   height: calc(100vh - 64px);
 }
@@ -724,7 +726,7 @@ body {
 
 .npc-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 24px;
 }
 
@@ -2188,7 +2190,160 @@ body {
  . f o r m - g r o u p   l a b e l   {  
      f o n t - s i z e :   1 4 p x ;  
      f o n t - w e i g h t :   6 0 0 ;  
-     c o l o r :   # E 0 E 0 E 0 ;  
+ 
+/* ==================== Responsive Layout ==================== */
+@media (max-width: 1280px) {
+  .main-content {
+    padding: 28px 24px;
+  }
+
+  .next-session-banner {
+    padding: 36px 32px;
+  }
+
+  .session-view {
+    grid-template-columns: minmax(220px, 1fr) 1.4fr minmax(220px, 1fr);
+    height: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  #app {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .nav-rail {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 12px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    z-index: 20;
+  }
+
+  .nav-brand {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .nav-items {
+    flex-direction: row;
+    gap: 8px;
+    padding: 0;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .nav-item {
+    flex: 1;
+    min-width: 72px;
+    padding: 10px 8px;
+  }
+
+  .nav-icon {
+    font-size: 20px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+  }
+
+  .main-content {
+    padding: 20px 16px 28px;
+  }
+
+  .dashboard,
+  .timeline-view,
+  .campaigns-view,
+  .npcs-view {
+    padding-top: 8px;
+    padding-inline: 4px;
+  }
+
+  .next-session-banner {
+    text-align: left;
+    padding: 28px 20px;
+  }
+
+  .banner-title {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .countdown {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .countdown-number {
+    font-size: 48px;
+  }
+
+  .countdown-label {
+    font-size: 11px;
+  }
+
+  .campaign-grid,
+  .npc-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .session-view {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .timeline-container {
+    padding: 40px 20px;
+    gap: 16px;
+  }
+
+  .map-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-items {
+    gap: 6px;
+  }
+
+  .nav-item {
+    min-width: 64px;
+  }
+
+  .nav-label {
+    font-size: 9px;
+  }
+
+  .next-session-banner {
+    border-radius: 18px;
+  }
+
+  .countdown-number {
+    font-size: 40px;
+  }
+
+  .session-panel h3 {
+    font-size: 13px;
+  }
+
+  .timeline-container {
+    padding: 32px 16px;
+  }
+}
+ 
      l e t t e r - s p a c i n g :   0 . 5 p x ;  
      t e x t - t r a n s f o r m :   u p p e r c a s e ;  
      f o n t - s i z e :   1 1 p x ;  

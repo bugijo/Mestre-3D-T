@@ -322,7 +322,7 @@ const renderBestiary = () => {
 app.innerHTML = `
   <div class="min-h-screen bg-[#0D0815] text-textPrimary">
     <div class="flex">
-      <aside class="nav-rail hidden md:flex">
+      <aside class="nav-rail">
         <div class="nav-brand">GM FORGE</div>
         <div class="nav-items">
           <div class="nav-item active">
