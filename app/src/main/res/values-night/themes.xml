@@ -1,6 +1,0 @@
-<resources>
-    <style name="Theme.Mestre3DT" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
-    </style>
-</resources>
