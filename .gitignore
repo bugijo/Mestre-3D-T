@@ -1,13 +1,21 @@
-# Gradle
-/.gradle/
-build/
-*/build/
-local.properties
-.gradle/
+# Node
+node_modules/
+web/node_modules/
+.npm-cache/
 
-# Android Studio
+# Builds
+build/
+dist/
+out/
+*.log
+
+# OS/Editor
+.DS_Store
 .idea/
 *.iml
 
-# Generated
-.DS_Store
+# Gradle/Android (legacy)
+.gradle/
+*/build/
+local.properties
+
