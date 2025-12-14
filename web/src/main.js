@@ -1811,66 +1811,71 @@ function render() {
 
     // Auth views não têm nav-rail
     const isAuthView = currentView === 'login' || currentView === 'register';
+    document.body.classList.toggle('auth-page', isAuthView);
 
     app.innerHTML = isAuthView ? content : `
-        <nav class="nav-rail">
-            <div class="nav-brand">GM FORGE</div>
-            <div class="nav-items">
-                <a class="nav-item ${currentView === 'dashboard' ? 'active' : ''}" onclick="navigateTo('dashboard')" title="Dashboard">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-label">Dashboard</span>
-                </a>
-                <a class="nav-item ${currentView === 'campaigns' ? 'active' : ''}" onclick="navigateTo('campaigns')" title="Campaigns">
-                    <span class="nav-icon">📁</span>
-                    <span class="nav-label">Campaigns</span>
-                </a>
-                <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')" title="NPCs & Enemies">
-                    <span class="nav-icon">👥</span>
-                    <span class="nav-label">NPCs</span>
-                </a>
-                <a class="nav-item ${currentView === 'lore' ? 'active' : ''}" onclick="navigateTo('lore')" title="Lore Library">
-                    <span class="nav-icon">📚</span>
-                    <span class="nav-label">Lore</span>
-                </a>
-                <a class="nav-item ${currentView === 'quests' ? 'active' : ''}" onclick="navigateTo('quests')" title="Quest Tracker">
-                    <span class="nav-icon">📜</span>
-                    <span class="nav-label">Quests</span>
-                </a>
-                <a class="nav-item ${currentView === 'notes' ? 'active' : ''}" onclick="navigateTo('notes')" title="Session Notes">
-                    <span class="nav-icon">📝</span>
-                    <span class="nav-label">Notes</span>
-                </a>
-                <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')" title="Session">
-                    <span class="nav-icon">⚔️</span>
-                    <span class="nav-label">Session</span>
-                </a>
-                <a class="nav-item ${currentView === 'dice' ? 'active' : ''}" onclick="navigateTo('dice')" title="Dice Roller">
-                    <span class="nav-icon">🎲</span>
-                    <span class="nav-label">Dice</span>
-                </a>
-                <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')" title="Timeline">
-                    <span class="nav-icon">🗺️</span>
-                    <span class="nav-label">Timeline</span>
-                </a>
-                <a class="nav-item ${currentView === 'settings' ? 'active' : ''}" onclick="navigateTo('settings')" title="Settings">
-                    <span class="nav-icon">⚙️</span>
-                    <span class="nav-label">Settings</span>
-                </a>
+        <div class="app-shell">
+            <div class="app-surface">
+                <nav class="nav-rail">
+                    <div class="nav-brand">GM FORGE</div>
+                    <div class="nav-items">
+                        <a class="nav-item ${currentView === 'dashboard' ? 'active' : ''}" onclick="navigateTo('dashboard')" title="Dashboard">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-label">Dashboard</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'campaigns' ? 'active' : ''}" onclick="navigateTo('campaigns')" title="Campaigns">
+                            <span class="nav-icon">📁</span>
+                            <span class="nav-label">Campaigns</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'npcs' ? 'active' : ''}" onclick="navigateTo('npcs')" title="NPCs & Enemies">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-label">NPCs</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'lore' ? 'active' : ''}" onclick="navigateTo('lore')" title="Lore Library">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-label">Lore</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'quests' ? 'active' : ''}" onclick="navigateTo('quests')" title="Quest Tracker">
+                            <span class="nav-icon">📜</span>
+                            <span class="nav-label">Quests</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'notes' ? 'active' : ''}" onclick="navigateTo('notes')" title="Session Notes">
+                            <span class="nav-icon">📝</span>
+                            <span class="nav-label">Notes</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'session' ? 'active' : ''}" onclick="navigateTo('session')" title="Session">
+                            <span class="nav-icon">⚔️</span>
+                            <span class="nav-label">Session</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'dice' ? 'active' : ''}" onclick="navigateTo('dice')" title="Dice Roller">
+                            <span class="nav-icon">🎲</span>
+                            <span class="nav-label">Dice</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'timeline' ? 'active' : ''}" onclick="navigateTo('timeline')" title="Timeline">
+                            <span class="nav-icon">🗺️</span>
+                            <span class="nav-label">Timeline</span>
+                        </a>
+                        <a class="nav-item ${currentView === 'settings' ? 'active' : ''}" onclick="navigateTo('settings')" title="Settings">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-label">Settings</span>
+                        </a>
+                    </div>
+
+                    ${currentUser ? `
+                        <div class="nav-user">
+                            <div class="nav-user-email">${currentUser.email || 'Demo User'}</div>
+                            <button class="nav-logout-btn" onclick="signOut()" title="Logout">
+                                🚪 Sair
+                            </button>
+                        </div>
+                    ` : ''}
+                </nav>
+
+                <main class="main-content">
+                    ${content}
+                </main>
             </div>
-            
-            ${currentUser ? `
-                <div class="nav-user">
-                    <div class="nav-user-email">${currentUser.email || 'Demo User'}</div>
-                    <button class="nav-logout-btn" onclick="signOut()" title="Logout">
-                        🚪 Sair
-                    </button>
-                </div>
-            ` : ''}
-        </nav>
-        
-        <main class="main-content">
-            ${content}
-        </main>
+        </div>
     `;
 
     if (currentView === 'dashboard') {
