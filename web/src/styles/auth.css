@@ -21,9 +21,6 @@ body {
 }
 
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: #0D0815;
   font-family: 'Inter', sans-serif;
   color: #FCD34D;
@@ -37,6 +34,11 @@ body.auth-page {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+body:not(.auth-page) {
+  background-image: none !important;
+  background-color: #0D0815;
 }
 
 /* Warm Overlay to harmonise UI with Art */
