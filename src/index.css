@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary antialiased font-sans selection:bg-primary/30 selection:text-white;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-highlight rounded-full hover:bg-white/20 transition-colors;
+  }
+}
+
+/* Tema clássico vs neon */
+:root {
+  --bg-base: #09090b;
+}
+
+body[data-theme="classic"] {
+  background-color: #0f172a;
+}
+
+body[data-theme="classic"] .btn-secondary {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+body[data-theme="classic"] .btn-primary {
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+@layer components {
+  /* Glassmorphism Panels */
+  .glass-panel {
+    @apply bg-[#15171E]/80 backdrop-blur-xl border border-white/5 shadow-glass;
+  }
+  
+  .glass-card {
+    @apply bg-[#1F2229]/60 backdrop-blur-md border border-white/5 hover:border-primary/50 hover:shadow-neon-green transition-all duration-300 rounded-2xl;
+  }
+
+  /* Inputs & Form Elements */
+  .input-forge {
+    @apply bg-surface-highlight/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-text-muted focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary/10 text-primary border border-primary/50 hover:bg-primary hover:text-black font-semibold py-2 px-6 rounded-lg shadow-neon-green transition-all active:scale-95 uppercase tracking-wide font-display;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary/10 text-secondary border border-secondary/50 hover:bg-secondary hover:text-white font-semibold py-2 px-6 rounded-lg shadow-neon-purple transition-all active:scale-95 uppercase tracking-wide font-display;
+  }
+
+  .btn-ghost {
+    @apply text-text-secondary hover:text-white hover:bg-white/5 py-2 px-4 rounded-lg transition-all;
+  }
+
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400;
+  }
+
+  .text-gradient-secondary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-secondary to-fuchsia-500;
+  }
+}
+
+/* Animations */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 255, 157, 0.6); }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s infinite;
+}
