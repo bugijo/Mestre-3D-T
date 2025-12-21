@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/store/AppStore'
 import { Plus, Edit2, Trash2, ChevronDown, ChevronRight, Map, Play, Image as ImageIcon } from 'lucide-react'
 import { ImageUpload } from '@/components/ui/ImageUpload'
+import { ImageGenerator } from '@/components/ui/ImageGenerator'
 import { cn } from '@/lib/cn'
 import type { Arc, Scene } from '@/domain/models'
 
@@ -245,6 +246,8 @@ function SceneItem({ scene }: { scene: Scene }) {
   const [editingMedia, setEditingMedia] = useState(false)
   const [bg, setBg] = useState<string>(scene.backgroundImageDataUrl || '')
   const [mapImg, setMapImg] = useState<string>(scene.mapImageDataUrl || '')
+  const [showBgGen, setShowBgGen] = useState(false)
+  const [showMapGen, setShowMapGen] = useState(false)
   
   return (
     <div className="group p-3 rounded-lg bg-background hover:bg-white/5 border border-transparent hover:border-white/10 transition-all">
@@ -294,6 +297,25 @@ function SceneItem({ scene }: { scene: Scene }) {
               onImageSelected={(val: string) => { setBg(val); updateScene(scene.id, { backgroundImageDataUrl: val || null }) }}
               config={{ compressionQuality: 0.7, maxSizeInBytes: 3 * 1024 * 1024, maxWidth: 1920, maxHeight: 1080 }}
             />
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={()=>setShowBgGen(v=>!v)} className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15">
+                {showBgGen ? 'Ocultar Gerador' : 'Gerar Fundo'}
+              </button>
+              {bg && (
+                <span className="text-[10px] text-text-muted">{Math.round((bg.length/4)*3/1024)} KB</span>
+              )}
+            </div>
+            {showBgGen && (
+              <div className="mt-2">
+                <ImageGenerator
+                  initialCategory={'SCENE'}
+                  onGenerated={(dataUrl)=>{
+                    setBg(dataUrl)
+                    updateScene(scene.id, { backgroundImageDataUrl: dataUrl })
+                  }}
+                />
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <ImageUpload 
@@ -302,6 +324,25 @@ function SceneItem({ scene }: { scene: Scene }) {
               onImageSelected={(val: string) => { setMapImg(val); updateScene(scene.id, { mapImageDataUrl: val || null }) }}
               config={{ compressionQuality: 0.7, maxSizeInBytes: 3 * 1024 * 1024, maxWidth: 2048, maxHeight: 2048 }}
             />
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={()=>setShowMapGen(v=>!v)} className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15">
+                {showMapGen ? 'Ocultar Gerador' : 'Gerar Mapa'}
+              </button>
+              {mapImg && (
+                <span className="text-[10px] text-text-muted">{Math.round((mapImg.length/4)*3/1024)} KB</span>
+              )}
+            </div>
+            {showMapGen && (
+              <div className="mt-2">
+                <ImageGenerator
+                  initialCategory={'SCENE'}
+                  onGenerated={(dataUrl)=>{
+                    setMapImg(dataUrl)
+                    updateScene(scene.id, { mapImageDataUrl: dataUrl })
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -91,6 +91,34 @@ describe('AppStoreProvider', () => {
     if (scene.npcIds.length === 0 && current.state.characters.length > 0) {
       current.linkCharacterToScene(scene.id, current.state.characters[0].id, 'npc')
     }
+    const campId2 = current.state.session.activeCampaignId!
+    const player = current.createCharacter({
+      name: 'Jogador',
+      type: 'PLAYER',
+      role: 'Aventureiro',
+      imageUri: null,
+      portraitUri: null,
+      tags: [],
+      strength: 2,
+      skill: 2,
+      resistance: 2,
+      armor: 0,
+      firepower: 0,
+      activeConditions: [],
+      personality: '',
+      speechStyle: '',
+      mannerisms: [],
+      goal: '',
+      secrets: {},
+      quickPhrases: [],
+      advantages: [],
+      disadvantages: [],
+      equipment: [],
+      powers: [],
+      campaignId: campId2,
+      isTemplate: false,
+    })
+    current.linkCharacterToScene(scene.id, player.id, 'npc')
 
     current.startCombatFromScene(activeSceneId)
     await waitFor(() => expect(current.state.session.activeCombatId).not.toBeNull())
@@ -121,6 +149,7 @@ describe('AppStoreProvider', () => {
 
     current.endCombat(combatId)
     await waitFor(() => expect(current.state.session.activeCombatId).toBeNull())
-    expect(current.state.session.notes[0].text).toMatch(/Combate encerrado/)
+    expect(current.state.session.notes.some((n: any) => /Combate encerrado/.test(n.text))).toBe(true)
+    await waitFor(() => expect(current.state.rewardEvents.length).toBeGreaterThan(0))
   })
 })

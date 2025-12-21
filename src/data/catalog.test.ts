@@ -62,5 +62,17 @@ describe('Catálogo gerado', () => {
       })
     }
   })
-})
 
+  it('itens possuem contagem e bônus balanceados', () => {
+    expect(catalog.items.length).toBeGreaterThanOrEqual(100)
+    for (const it of catalog.items) {
+      const vals = [it.bonusF, it.bonusH, it.bonusR, it.bonusA, it.bonusPdF]
+      vals.forEach((v) => {
+        expect(v).toBeGreaterThanOrEqual(0)
+        expect(v).toBeLessThanOrEqual(3)
+      })
+      const sum = vals.reduce((a, b) => a + b, 0)
+      expect(sum).toBeLessThanOrEqual(6)
+    }
+  })
+})

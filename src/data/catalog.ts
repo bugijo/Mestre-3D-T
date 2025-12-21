@@ -253,7 +253,41 @@ const npcs: PrebuiltCharacter[] = buildArray(100, (i) => makeCharacter(2000 + i,
 const villains: PrebuiltCharacter[] = buildArray(100, (i) => makeCharacter(3000 + i, 'ENEMY'))
 const stories: StoryOption[] = buildArray(100, (i) => makeStory(4000 + i))
 
-export const catalog = { heroes, npcs, villains, stories }
+function makeItem(seed: number) {
+  const r = rng(seed)
+  const names = ['Espada Curta','Arco Composto','Escudo Leve','Armadura de Couro','Cajado Rúnico','Adaga Enfeitiçada','Lança Equilibrada','Elmo da Vigília','Botas Silenciosas','Amuleto do Foco']
+  const types: EquipmentItem['type'][] = ['WEAPON','ARMOR','SHIELD','ACCESSORY']
+  const name = names[Math.floor(r() * names.length)]
+  const type = types[Math.floor(r() * types.length)]
+  let budget = 6
+  let F = 0, H = 0, R = 0, A = 0, PdF = 0
+  while (budget > 0) {
+    const idx = Math.floor(r() * 5)
+    if (idx === 0 && F < 3) { F++; budget-- }
+    else if (idx === 1 && H < 3) { H++; budget-- }
+    else if (idx === 2 && R < 3) { R++; budget-- }
+    else if (idx === 3 && A < 3) { A++; budget-- }
+    else if (PdF < 3) { PdF++; budget-- }
+  }
+  return {
+    id: createId(),
+    name,
+    type,
+    description: 'Item de catálogo balanceado para 3D&T',
+    bonusF: F,
+    bonusH: H,
+    bonusR: R,
+    bonusA: A,
+    bonusPdF: PdF,
+    special: '',
+    imageUri: null,
+    isEquipped: false,
+  } as EquipmentItem
+}
+
+const items: EquipmentItem[] = buildArray(100, (i) => makeItem(5000 + i))
+
+export const catalog = { heroes, npcs, villains, stories, items }
 
 export function filterCharactersBySystem(list: PrebuiltCharacter[], system: SystemKey | 'ALL') {
   if (system === 'ALL') return list

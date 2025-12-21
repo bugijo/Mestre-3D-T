@@ -643,7 +643,26 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
 
         dispatch({ type: 'COMBAT/START', sceneId, participants })
       },
-      endCombat: (combatId) => dispatch({ type: 'COMBAT/END', combatId }),
+      endCombat: (combatId) => {
+        const combat = state.combats.find((c) => c.id === combatId)
+        dispatch({ type: 'COMBAT/END', combatId })
+        if (combat) {
+          const rule = state.rewardTables[0] || { id: createId(), name: 'Padrão', criteria: '', xp: 50, gold: 20 }
+          const participants = combat.participants
+          if (participants.length > 0) {
+            const grants: RewardGrant[] = participants.map((p) => ({ characterId: p.characterId!, xp: rule.xp, gold: rule.gold, items: [] }))
+            const event: RewardEvent = {
+              id: createId(),
+              sceneId: combat.sceneId,
+              combatId: combat.id,
+              createdAt: Date.now(),
+              grants,
+              notes: 'XP automático ao encerrar combate',
+            }
+            dispatch({ type: 'REWARDS/GRANT', event })
+          }
+        }
+      },
       nextCombatTurn: (combatId) => dispatch({ type: 'COMBAT/NEXT_TURN', combatId }),
       adjustCombatParticipant: (combatId, participantId, hpDelta, mpDelta) =>
         dispatch({ type: 'COMBAT/ADJUST_PARTICIPANT', combatId, participantId, hpDelta, mpDelta }),

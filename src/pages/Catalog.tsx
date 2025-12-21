@@ -1,20 +1,24 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { catalog, filterCharactersBySystem, filterStoriesBySystem, powerValue } from '@/data/catalog'
 import { useAppStore } from '@/store/AppStore'
 import { Search, Users, BookOpenCheck, Swords, Plus, Filter, ArrowDownUp } from 'lucide-react'
-import type { Character, Mood } from '@/domain/models'
+import type { Character, Mood, EquipmentItem } from '@/domain/models'
 import { cn } from '@/lib/cn'
+import { createId } from '@/lib/id'
+import { generateImage } from '@/lib/imageGen'
 
 type SystemKey = 'ALL' | '3DT' | 'DND5E'
-type TypeKey = 'ALL' | 'HERO' | 'NPC' | 'VILLAIN' | 'STORY'
+type TypeKey = 'ALL' | 'HERO' | 'NPC' | 'VILLAIN' | 'STORY' | 'ITEM'
 type SortKey = 'RECENT' | 'POWER'
 
 export function Catalog() {
-  const { state, createCharacter, createCampaign, createArc, createScene } = useAppStore()!
+  const { state, createCharacter, createCampaign, createArc, createScene, updateCharacter, linkCharacterToScene, updateScene } = useAppStore()!
   const [system, setSystem] = useState<SystemKey>('ALL')
   const [type, setType] = useState<TypeKey>('ALL')
   const [sort, setSort] = useState<SortKey>('POWER')
   const [query, setQuery] = useState('')
+  const [targetCharacterId, setTargetCharacterId] = useState<string | null>(null)
+  const [isGeneratingAll, setIsGeneratingAll] = useState(false)
 
   const filteredChars = useMemo(() => {
     const pool = [
@@ -48,6 +52,12 @@ export function Catalog() {
     const c = createCampaign({ title: 'Catálogo', system: sysName, description: 'Conteúdo importado do catálogo' })
     return c.id
   }, [state.session.activeCampaignId, state.campaigns, system])
+
+  const campaignCharacters = useMemo(() => state.characters.filter((c) => c.campaignId === targetCampaignId), [state.characters, targetCampaignId])
+
+  useEffect(() => {
+    setTargetCharacterId(campaignCharacters[0]?.id ?? null)
+  }, [targetCampaignId, campaignCharacters.length])
 
   const importCharacter = (c: Character) => {
     const base = {
@@ -90,9 +100,142 @@ export function Catalog() {
 
   const importStory = (name: string, scenes: Array<{ name: string; description: string; objective: string; mood: Mood; opening: string }>) => {
     const arc = createArc(targetCampaignId, name, '')
-    scenes.forEach((s) => {
-      createScene(targetCampaignId, arc.id, s)
+    scenes.forEach((s, idx) => {
+      const sc = createScene(targetCampaignId, arc.id, s)
+      const npcBase = catalog.npcs[(idx + name.length) % catalog.npcs.length] as any
+      const enemyBase = catalog.villains[(idx * 3 + name.length) % catalog.villains.length] as any
+      const npc = createCharacter({
+        name: npcBase.name,
+        role: npcBase.role,
+        type: 'NPC',
+        imageUri: null,
+        strength: npcBase.strength,
+        skill: npcBase.skill,
+        resistance: npcBase.resistance,
+        armor: npcBase.armor,
+        firepower: npcBase.firepower,
+        xp: 0,
+        gold: 0,
+        portraitUri: null,
+        tags: npcBase.tags ?? [],
+        currentHp: Math.max(1, npcBase.resistance * 5),
+        currentMp: Math.max(1, npcBase.resistance * 5),
+        personality: npcBase.personality,
+        speechStyle: npcBase.speechStyle,
+        mannerisms: npcBase.mannerisms ?? [],
+        goal: npcBase.goal,
+        secrets: npcBase.secrets ?? {},
+        quickPhrases: npcBase.quickPhrases ?? [],
+        advantages: npcBase.advantages ?? [],
+        disadvantages: npcBase.disadvantages ?? [],
+        equipment: npcBase.equipment ?? [],
+        powers: npcBase.powers ?? [],
+        activeConditions: [],
+        campaignId: targetCampaignId,
+        isTemplate: false,
+      })
+      const enemy = createCharacter({
+        name: enemyBase.name,
+        role: enemyBase.role,
+        type: 'ENEMY',
+        imageUri: null,
+        strength: enemyBase.strength,
+        skill: enemyBase.skill,
+        resistance: enemyBase.resistance,
+        armor: enemyBase.armor,
+        firepower: enemyBase.firepower,
+        xp: 0,
+        gold: 0,
+        portraitUri: null,
+        tags: enemyBase.tags ?? [],
+        currentHp: Math.max(1, enemyBase.resistance * 5),
+        currentMp: Math.max(1, enemyBase.resistance * 5),
+        personality: enemyBase.personality,
+        speechStyle: enemyBase.speechStyle,
+        mannerisms: enemyBase.mannerisms ?? [],
+        goal: enemyBase.goal,
+        secrets: enemyBase.secrets ?? {},
+        quickPhrases: enemyBase.quickPhrases ?? [],
+        advantages: enemyBase.advantages ?? [],
+        disadvantages: enemyBase.disadvantages ?? [],
+        equipment: enemyBase.equipment ?? [],
+        powers: enemyBase.powers ?? [],
+        activeConditions: [],
+        campaignId: targetCampaignId,
+        isTemplate: false,
+      })
+      linkCharacterToScene(sc.id, npc.id, 'npc')
+      linkCharacterToScene(sc.id, enemy.id, 'enemy')
     })
+  }
+
+  const importItem = (item: EquipmentItem) => {
+    let charId = targetCharacterId
+    if (!charId) {
+      const base = catalog.heroes[0] as any
+      const created = createCharacter({
+        name: base.name,
+        role: base.role,
+        type: 'PLAYER',
+        imageUri: null,
+        strength: base.strength,
+        skill: base.skill,
+        resistance: base.resistance,
+        armor: base.armor,
+        firepower: base.firepower,
+        xp: 0,
+        gold: 0,
+        portraitUri: null,
+        tags: [],
+        currentHp: Math.max(1, base.resistance * 5),
+        currentMp: Math.max(1, base.resistance * 5),
+        personality: base.personality,
+        speechStyle: base.speechStyle,
+        mannerisms: base.mannerisms,
+        goal: base.goal,
+        secrets: base.secrets,
+        quickPhrases: base.quickPhrases,
+        advantages: base.advantages,
+        disadvantages: base.disadvantages,
+        equipment: [],
+        powers: base.powers,
+        activeConditions: [],
+        campaignId: targetCampaignId,
+        isTemplate: false,
+      })
+      charId = created.id
+      setTargetCharacterId(created.id)
+    }
+    const target = state.characters.find((c) => c.id === charId)
+    if (!target) return
+    const clone: EquipmentItem = { ...item, id: createId(), isEquipped: false }
+    updateCharacter(charId, { equipment: [...target.equipment, clone] })
+  }
+
+  async function generateAllMedia() {
+    if (isGeneratingAll) return
+    setIsGeneratingAll(true)
+    try {
+      const chars = state.characters.filter(c => c.campaignId === targetCampaignId && !c.imageUri)
+      for (const ch of chars) {
+        const cat = (ch.type === 'ENEMY' || ch.type === 'BOSS') ? 'CREATURE' : 'CHARACTER'
+        const { dataUrl } = await generateImage({ category: cat as any, title: ch.name, theme: 'classic', mood: 'mysterious', width: 1920, height: 1080, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+        updateCharacter(ch.id, { imageUri: dataUrl })
+      }
+      const scenes = state.scenes.filter(s => s.campaignId === targetCampaignId)
+      for (const sc of scenes) {
+        if (!sc.backgroundImageDataUrl) {
+          const { dataUrl } = await generateImage({ category: 'SCENE', title: sc.name, theme: 'classic', mood: sc.mood, width: 1920, height: 1080, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+          updateScene(sc.id, { backgroundImageDataUrl: dataUrl })
+        }
+        if (!sc.mapImageDataUrl) {
+          const { dataUrl } = await generateImage({ category: 'SCENE', title: sc.name + ' mapa', theme: 'classic', mood: sc.mood, width: 1920, height: 1080, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: true })
+          updateScene(sc.id, { mapImageDataUrl: dataUrl })
+        }
+      }
+    } finally {
+      setIsGeneratingAll(false)
+    }
   }
 
   return (
@@ -101,6 +244,11 @@ export function Catalog() {
         <div>
           <h1 className="text-3xl font-rajdhani font-bold text-white mb-2">Catálogo</h1>
           <p className="text-text-muted">Opções prontas para 3D&T e D&D 5e.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={generateAllMedia} disabled={isGeneratingAll} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-purple text-white font-bold disabled:opacity-50">
+            <Plus size={16} /> {isGeneratingAll ? 'Gerando...' : 'Gerar Imagens'}
+          </button>
         </div>
       </div>
 
@@ -138,6 +286,7 @@ export function Catalog() {
         <TabButton active={type === 'NPC'} onClick={() => setType('NPC')} label={`NPCs (${catalog.npcs.length})`} icon={<Users size={14} />} />
         <TabButton active={type === 'VILLAIN'} onClick={() => setType('VILLAIN')} label={`Vilões (${catalog.villains.length})`} icon={<Swords size={14} />} />
         <TabButton active={type === 'STORY'} onClick={() => setType('STORY')} label={`Aventuras (${catalog.stories.length})`} icon={<BookOpenCheck size={14} />} />
+        <TabButton active={type === 'ITEM'} onClick={() => setType('ITEM')} label={`Itens (${catalog.items.length})`} icon={<Swords size={14} />} />
       </div>
 
       {type === 'STORY' ? (
@@ -165,6 +314,40 @@ export function Catalog() {
               </div>
             )
           })}
+        </div>
+      ) : type === 'ITEM' ? (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Filter size={16} className="text-text-muted" />
+            <select value={targetCharacterId ?? ''} onChange={(e) => setTargetCharacterId(e.target.value || null)} className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-3 text-white">
+              <option value="">Selecionar personagem alvo</option>
+              {campaignCharacters.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {catalog.items.filter((it) => it.name.toLowerCase().includes(query.toLowerCase())).map((it) => (
+              <div key={it.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm">
+                <div className="p-4">
+                  <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{it.name}</h3>
+                  <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">{it.type}</p>
+                  <div className="grid grid-cols-5 gap-1 mb-3">
+                    <Attr label="F" value={it.bonusF} />
+                    <Attr label="H" value={it.bonusH} />
+                    <Attr label="R" value={it.bonusR} />
+                    <Attr label="A" value={it.bonusA} />
+                    <Attr label="PdF" value={it.bonusPdF} />
+                  </div>
+                  <div className="flex justify-end">
+                    <button onClick={() => importItem(it)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-green text-black font-bold">
+                      <Plus size={16} /> Adicionar ao personagem
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -225,4 +408,3 @@ function Attr({ label, value }: { label: string; value: number }) {
     </div>
   )
 }
-

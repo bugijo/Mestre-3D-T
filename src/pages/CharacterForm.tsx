@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/store/AppStore'
 import { Save, ArrowLeft, User, Shield, Zap, Target, Sword, Heart } from 'lucide-react'
 import { ImageUpload } from '@/components/ui/ImageUpload'
+import { ImageGenerator } from '@/components/ui/ImageGenerator'
 import { cn } from '@/lib/cn'
 import { calcMaxHp, calcMaxMp, type CharacterType } from '@/domain/models'
 
@@ -27,6 +28,7 @@ export function CharacterForm() {
   const [role, setRole] = useState('')
   const [type, setType] = useState<CharacterType>('NPC')
   const [image, setImage] = useState<string>('')
+  const [showGenerator, setShowGenerator] = useState(false)
   
   // Attributes
   const [strength, setStrength] = useState(0)
@@ -222,6 +224,24 @@ export function CharacterForm() {
                   </div>
                 )}
               </div>
+              <div className="flex items-center justify-between">
+                <button type="button" onClick={()=>setShowGenerator(v=>!v)} className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15">
+                  {showGenerator ? 'Ocultar Gerador' : 'Gerar Imagem'}
+                </button>
+                {image && (
+                  <span className="text-[10px] text-text-muted">{Math.round((image.length/4)*3/1024)} KB</span>
+                )}
+              </div>
+              {showGenerator && (
+                <div className="mt-3">
+                  <ImageGenerator
+                    initialCategory={(type==='ENEMY'||type==='BOSS')?'CREATURE':'CHARACTER'}
+                    onGenerated={(dataUrl)=>{
+                      setImage(dataUrl)
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Right Col: Basic Data & Attributes */}
