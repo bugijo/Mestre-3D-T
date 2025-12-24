@@ -24,6 +24,14 @@ export function Catalog() {
   const [itemPreviews, setItemPreviews] = useState<Record<string, string>>({})
   const [storyPreviews, setStoryPreviews] = useState<Record<string, string>>({})
 
+  const filteredItems = useMemo(
+    () =>
+      catalog.items
+        .filter((it) => it.name.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [query]
+  )
+
   const filteredChars = useMemo(() => {
     const pool = [
       ...(type === 'ALL' || type === 'HERO' ? catalog.heroes : []),
@@ -83,8 +91,7 @@ export function Catalog() {
   useEffect(() => {
     let mounted = true
     async function run() {
-      const items = catalog.items.filter((it) => it.name.toLowerCase().includes(query.toLowerCase()))
-      for (const it of items) {
+      for (const it of filteredItems) {
         if (!mounted) break
         if (it.imageUri) continue
         if (itemPreviews[it.id]) continue
@@ -95,7 +102,7 @@ export function Catalog() {
     }
     run()
     return () => { mounted = false }
-  }, [query])
+  }, [filteredItems])
 
   useEffect(() => {
     let mounted = true
@@ -383,7 +390,7 @@ export function Catalog() {
             </select>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {catalog.items.filter((it) => it.name.toLowerCase().includes(query.toLowerCase())).map((it) => (
+            {filteredItems.map((it) => (
               <div key={it.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm">
                 <div className="h-40 w-full bg-black/30 overflow-hidden">
                   <img src={it.imageUri || itemPreviews[it.id] || loginBg} alt={it.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
