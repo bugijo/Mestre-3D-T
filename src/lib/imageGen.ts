@@ -317,7 +317,27 @@ export async function generateImage(opts: ImageGenOptions): Promise<{ dataUrl: s
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
-  const ctx = canvas.getContext('2d')!
+  const ctx = canvas.getContext('2d')
+  const meta: ImageMeta = {
+    author: 'Mestre 3D&T',
+    generator: 'ImageGen v1',
+    category: opts.category,
+    title: opts.title ?? '',
+    seed,
+    theme,
+  }
+  if (!ctx) {
+    const dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
+    const withText = await injectTextChunks(dataUrl, {
+      Author: meta.author,
+      Generator: meta.generator,
+      Category: meta.category,
+      Title: meta.title,
+      Seed: String(meta.seed),
+      Theme: meta.theme,
+    })
+    return { dataUrl: withText, meta }
+  }
   if (opts.transparentBackground) {
     ctx.clearRect(0, 0, w, h)
   } else {
@@ -334,14 +354,6 @@ export async function generateImage(opts: ImageGenOptions): Promise<{ dataUrl: s
   if (opts.gridOverlay) grid(ctx, w, h, '#ffffff11', Math.max(24, Math.floor(Math.min(w, h) / 32)))
   if (opts.watermarkText) renderWatermark(ctx, w, h, opts.watermarkText)
   const dataUrl = canvas.toDataURL('image/png')
-  const meta: ImageMeta = {
-    author: 'Mestre 3D&T',
-    generator: 'ImageGen v1',
-    category: opts.category,
-    title: opts.title ?? '',
-    seed,
-    theme,
-  }
   const withText = await injectTextChunks(dataUrl, {
     Author: meta.author,
     Generator: meta.generator,

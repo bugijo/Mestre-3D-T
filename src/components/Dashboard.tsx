@@ -1,6 +1,8 @@
 import { Users, MoreVertical } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import loginBg from '@/assets/login-bg.png'
+import { generateImage } from '@/lib/imageGen'
 
 const campaigns = [
   { 
@@ -8,32 +10,28 @@ const campaigns = [
     title: 'THE SHADOWED REALM', 
     description: 'A gothic adventure across the Shadowed health.',
     progress: 45, 
-    players: 2, 
-    image: 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=800&q=80'
+    players: 2
   },
   { 
     id: 2, 
     title: 'RISE OF THE TIAMAT', 
     description: 'Rise of the Tiamat comets the five dragon.',
     progress: 75, 
-    players: 6, 
-    image: 'https://images.unsplash.com/photo-1615672963428-2a81878d655f?w=800&q=80'
+    players: 6
   },
   { 
     id: 3, 
     title: 'CURSE OF STRAHD', 
     description: 'Curse of Strahd is a session in vampire.',
     progress: 20, 
-    players: 2, 
-    image: 'https://images.unsplash.com/photo-1626544827763-d516dce335ca?w=800&q=80'
+    players: 2
   },
   { 
     id: 4, 
     title: 'LOST MINE OF PHANDELVER', 
     description: 'Lost Mine of Phandelver has even mountains.',
     progress: 90, 
-    players: 4, 
-    image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80'
+    players: 4
   }
 ];
 
@@ -41,6 +39,7 @@ export function Dashboard() {
   const navigate = useNavigate()
   const [tab, setTab] = useState<'ALL' | 'ACTIVE' | 'ARCHIVED'>('ALL')
   const [timeLeft, setTimeLeft] = useState({ days: 2, hours: 14, mins: 35, secs: 22 })
+  const [images, setImages] = useState<Record<number, string>>({})
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,6 +54,20 @@ export function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    let mounted = true
+    async function run() {
+      for (const camp of campaigns) {
+        if (!mounted) break
+        const { dataUrl } = await generateImage({ category: 'SCENE', title: camp.title, theme: 'neon', mood: 'mysterious', width: 960, height: 540, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+        if (!mounted) break
+        setImages(prev => ({ ...prev, [camp.id]: dataUrl }))
+      }
+    }
+    run()
+    return () => { mounted = false }
+  }, [])
+
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       
@@ -62,7 +75,7 @@ export function Dashboard() {
       <section className="relative w-full h-[400px] rounded-3xl overflow-hidden group shadow-neon-purple border border-secondary/20">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=2574&auto=format&fit=crop" 
+            src={loginBg} 
             alt="Next Session Background" 
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
           />
@@ -133,7 +146,7 @@ export function Dashboard() {
               {/* Image Area */}
               <div className="h-48 relative overflow-hidden">
                 <img 
-                  src={camp.image} 
+                  src={images[camp.id] || loginBg} 
                   alt={camp.title} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "sync": "powershell -ExecutionPolicy Bypass -File ./.tools/sync-github.ps1"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",

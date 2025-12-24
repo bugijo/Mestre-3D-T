@@ -8,6 +8,7 @@ type ImageUploadProps = {
   onImageSelected: (dataUrl: string) => void
   className?: string
   config?: Partial<AttachmentConfig>
+  syncGithub?: { enabled?: boolean; issueNumber?: number; pullNumber?: number; pathPrefix?: string; commitMessage?: string }
 }
 
 export function ImageUpload({
@@ -16,6 +17,7 @@ export function ImageUpload({
   onImageSelected,
   className,
   config,
+  syncGithub,
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -35,6 +37,25 @@ export function ImageUpload({
       if (result.success && result.dataUrl) {
         setPreview(result.dataUrl)
         onImageSelected(result.dataUrl)
+        if (syncGithub?.enabled) {
+          try {
+            const { syncAttachmentToGithub } = await import('@/lib/github')
+            const res = await syncAttachmentToGithub({
+              dataUrl: result.dataUrl,
+              mime: file.type,
+              originalName: file.name,
+              issueNumber: syncGithub.issueNumber,
+              pullNumber: syncGithub.pullNumber,
+              pathPrefix: syncGithub.pathPrefix,
+              commitMessage: syncGithub.commitMessage,
+            })
+            if (!res.ok) {
+              setError(res.error)
+            }
+          } catch (ghErr) {
+            console.error('[Attachment] Sync GitHub falhou:', ghErr)
+          }
+        }
       } else {
         setError(result.error || 'Erro desconhecido ao processar imagem.')
       }

@@ -25,5 +25,8 @@ export const router = createBrowserRouter(
       <Route path="catalog" element={<Catalog />} />
       <Route path="session" element={<SessionRunner />} />
     </Route>
-  )
+  ),
+  {
+    basename: import.meta.env.BASE_URL,
+  }
 )

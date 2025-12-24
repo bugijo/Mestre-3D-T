@@ -6,6 +6,7 @@ import type { Character, Mood, EquipmentItem } from '@/domain/models'
 import { cn } from '@/lib/cn'
 import { createId } from '@/lib/id'
 import { generateImage } from '@/lib/imageGen'
+import loginBg from '@/assets/login-bg.png'
 
 type SystemKey = 'ALL' | '3DT' | 'DND5E'
 type TypeKey = 'ALL' | 'HERO' | 'NPC' | 'VILLAIN' | 'STORY' | 'ITEM'
@@ -19,6 +20,9 @@ export function Catalog() {
   const [query, setQuery] = useState('')
   const [targetCharacterId, setTargetCharacterId] = useState<string | null>(null)
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
+  const [charPreviews, setCharPreviews] = useState<Record<string, string>>({})
+  const [itemPreviews, setItemPreviews] = useState<Record<string, string>>({})
+  const [storyPreviews, setStoryPreviews] = useState<Record<string, string>>({})
 
   const filteredChars = useMemo(() => {
     const pool = [
@@ -58,6 +62,55 @@ export function Catalog() {
   useEffect(() => {
     setTargetCharacterId(campaignCharacters[0]?.id ?? null)
   }, [targetCampaignId, campaignCharacters.length])
+
+  useEffect(() => {
+    let mounted = true
+    async function run() {
+      for (const c of filteredChars) {
+        if (!mounted) break
+        if (c.imageUri) continue
+        if (charPreviews[c.id]) continue
+        const cat = (c.type === 'ENEMY' || c.type === 'BOSS') ? 'CREATURE' : 'CHARACTER'
+        const { dataUrl } = await generateImage({ category: cat as any, title: c.name, theme: 'neon', mood: 'mysterious', width: 640, height: 360, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+        if (!mounted) break
+        setCharPreviews(prev => ({ ...prev, [c.id]: dataUrl }))
+      }
+    }
+    run()
+    return () => { mounted = false }
+  }, [filteredChars])
+
+  useEffect(() => {
+    let mounted = true
+    async function run() {
+      const items = catalog.items.filter((it) => it.name.toLowerCase().includes(query.toLowerCase()))
+      for (const it of items) {
+        if (!mounted) break
+        if (it.imageUri) continue
+        if (itemPreviews[it.id]) continue
+        const { dataUrl } = await generateImage({ category: 'ITEM', title: it.name, theme: 'neon', mood: 'mysterious', width: 640, height: 360, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+        if (!mounted) break
+        setItemPreviews(prev => ({ ...prev, [it.id]: dataUrl }))
+      }
+    }
+    run()
+    return () => { mounted = false }
+  }, [query])
+
+  useEffect(() => {
+    let mounted = true
+    async function run() {
+      for (const s of filteredStories) {
+        if (!mounted) break
+        if (storyPreviews[s.id]) continue
+        const { dataUrl } = await generateImage({ category: 'SCENE', title: s.name, theme: 'neon', mood: 'mysterious', width: 640, height: 360, transparentBackground: false, watermarkText: 'Mestre 3D&T', gridOverlay: false })
+        if (!mounted) break
+        setStoryPreviews(prev => ({ ...prev, [s.id]: dataUrl }))
+      }
+    }
+    run()
+    return () => { mounted = false }
+  }, [filteredStories])
 
   const importCharacter = (c: Character) => {
     const base = {
@@ -296,6 +349,9 @@ export function Catalog() {
             const scenes = variant?.scenes ?? []
             return (
               <div key={s.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm">
+                <div className="h-40 w-full bg-black/30 overflow-hidden">
+                  <img src={storyPreviews[s.id] || loginBg} alt={s.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                </div>
                 <div className="p-4">
                   <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{s.name}</h3>
                   <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">Dificuldade {variant?.difficulty ?? s.variants[0].difficulty}</p>
@@ -329,6 +385,9 @@ export function Catalog() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {catalog.items.filter((it) => it.name.toLowerCase().includes(query.toLowerCase())).map((it) => (
               <div key={it.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm">
+                <div className="h-40 w-full bg-black/30 overflow-hidden">
+                  <img src={it.imageUri || itemPreviews[it.id] || loginBg} alt={it.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                </div>
                 <div className="p-4">
                   <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{it.name}</h3>
                   <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">{it.type}</p>
@@ -353,7 +412,9 @@ export function Catalog() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredChars.map((c) => (
             <div key={c.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm">
-              <div className="h-40 w-full bg-black/30" />
+              <div className="h-40 w-full bg-black/30 overflow-hidden">
+                <img src={c.imageUri || charPreviews[c.id] || loginBg} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              </div>
               <div className="p-4">
                 <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{c.name}</h3>
                 <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">{c.role}</p>

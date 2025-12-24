@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "generatedAt": "2025-12-22T00:00:00Z",
+  "project": "Mestre 3D&T",
+  "designGuidelines": {
+    "theme": "neon",
+    "style": "glassmorphism",
+    "palette": ["#0b0d12", "#7a00ff", "#00e5ff", "#00ffa2", "#ffd400", "#ffffff"],
+    "notes": "Manter alto contraste com fundos escuros e acentos neon. Tipografia Rajdhani para títulos."
+  },
+  "autoGeneration": {
+    "engine": "src/lib/imageGen.ts",
+    "defaults": {
+      "watermarkText": "Mestre 3D&T",
+      "gridOverlay": false,
+      "mood": "mysterious",
+      "theme": "neon"
+    },
+    "categories": [
+      {
+        "id": "character-avatar",
+        "fields": ["Character.imageUri"],
+        "recommendedSize": { "width": 640, "height": 360 },
+        "usage": [
+          { "ref": "src/pages/CharacterList.tsx:148-153", "context": "Card de personagem" },
+          { "ref": "src/pages/SessionRunner.tsx:239-243", "context": "Lista de personagens da cena" },
+          { "ref": "src/components/game/CombatTracker.tsx:73-80", "context": "Avatar em combate" },
+          { "ref": "src/components/game/InteractiveMap.tsx:463-468", "context": "Token na tela do mapa" }
+        ],
+        "notes": "Para tokens, fundo transparente é preferível; para cards, object-cover."
+      },
+      {
+        "id": "character-portrait",
+        "fields": ["Character.portraitUri"],
+        "recommendedSize": { "width": 512, "height": 512 },
+        "usage": [ { "ref": "(planejado)", "context": "Perfil detalhado / ficha" } ]
+      },
+      {
+        "id": "equipment-item",
+        "fields": ["EquipmentItem.imageUri"],
+        "recommendedSize": { "width": 640, "height": 360 },
+        "usage": [ { "ref": "src/pages/Catalog.tsx:387-399", "context": "Card de item no catálogo" } ]
+      },
+      {
+        "id": "scene-background",
+        "fields": ["Scene.backgroundImageDataUrl"],
+        "recommendedSize": { "width": 1920, "height": 1080 },
+        "usage": [ { "ref": "src/components/game/InteractiveMap.tsx:169-177", "context": "Camada de plano de fundo da cena" } ]
+      },
+      {
+        "id": "scene-map",
+        "fields": ["Scene.mapImageDataUrl"],
+        "recommendedSize": { "width": 1920, "height": 1080 },
+        "usage": [ { "ref": "src/components/game/InteractiveMap.tsx:169-176", "context": "Camada de mapa com grade" } ],
+        "notes": "Usar overlay de grade quando sistema for D&D 5e."
+      },
+      {
+        "id": "story-card",
+        "fields": ["storyPreviews[*] (gerado)"],
+        "recommendedSize": { "width": 640, "height": 360 },
+        "usage": [ { "ref": "src/pages/Catalog.tsx:351-358", "context": "Thumbnail de aventura" } ]
+      },
+      {
+        "id": "campaign-cover",
+        "fields": ["Campaign.coverDataUrl"],
+        "recommendedSize": { "width": 1920, "height": 1080 },
+        "usage": [
+          { "ref": "src/components/campaign/CampaignCard.tsx:20-27", "context": "Capa no card de campanha" },
+          { "ref": "src/pages/SessionRunner.tsx:71-75", "context": "Seleção de campanha para sessão" }
+        ]
+      }
+    ],
+    "constraints": {
+      "minSceneResolution": "1920x1080",
+      "minAvatarResolution": "256x256",
+      "maxFileSizeKB": 5120,
+      "acceptedFormats": ["PNG", "JPEG", "WEBP"],
+      "preferredFormat": "PNG",
+      "compression": { "quality": 0.85 }
+    }
+  },
+  "manual": [
+    {
+      "id": "app-favicon",
+      "name": "Favicon principal",
+      "description": "Ícone da plataforma com símbolo estilizado (marca Mestre 3D&T). Versão SVG com variações raster para múltiplos tamanhos.",
+      "dimensions": { "width": 512, "height": 512 },
+      "format": "SVG",
+      "palette": ["#0b0d12", "#7a00ff", "#00e5ff", "#00ffa2", "#ffd400", "#ffffff"],
+      "transparency": true,
+      "referenceExamples": [],
+      "usage": "Favicon e ícone PWA",
+      "codeReferences": ["index.html:5"],
+      "technical": {
+        "minResolution": "256x256",
+        "maxFileSizeKB": 100,
+        "variants": ["favicon-16.png", "favicon-32.png", "favicon-48.png", "favicon-64.png", "favicon-128.png", "favicon-512.png"],
+        "maskablePwa": true
+      }
+    },
+    {
+      "id": "logo-wordmark",
+      "name": "Logo wordmark",
+      "description": "Logotipo textual 'Mestre 3D&T' em SVG, com traços neon e legibilidade em fundo escuro.",
+      "dimensions": { "width": 1024, "height": 256 },
+      "format": "SVG",
+      "palette": ["#7a00ff", "#00e5ff", "#ffffff"],
+      "transparency": true,
+      "referenceExamples": [],
+      "usage": "Topo de navegação (substituir texto), splash, materiais",
+      "codeReferences": ["src/components/ui/NavBar.tsx:11-14"],
+      "technical": {
+        "minResolution": "800x200",
+        "maxFileSizeKB": 150,
+        "exportVariants": ["SVG", "PNG@2x"],
+        "viewBox": "0 0 1024 256"
+      }
+    },
+    {
+      "id": "logo-mark",
+      "name": "Logo símbolo",
+      "description": "Símbolo compacto da marca (sem texto) para avatares e badges.",
+      "dimensions": { "width": 512, "height": 512 },
+      "format": "SVG",
+      "palette": ["#7a00ff", "#00e5ff", "#00ffa2", "#ffffff"],
+      "transparency": true,
+      "referenceExamples": [],
+      "usage": "Avatares de app, cartões compactos",
+      "codeReferences": ["(geral)"],
+      "technical": {
+        "minResolution": "256x256",
+        "maxFileSizeKB": 120,
+        "safePadding": "24px"
+      }
+    },
+    {
+      "id": "og-image",
+      "name": "Open Graph / Social Share",
+      "description": "Imagem de compartilhamento social com título da plataforma e fundo neon/glass.",
+      "dimensions": { "width": 1200, "height": 630 },
+      "format": "PNG",
+      "palette": ["#0b0d12", "#7a00ff", "#00e5ff", "#00ffa2", "#ffd400", "#ffffff"],
+      "transparency": false,
+      "referenceExamples": [],
+      "usage": "Meta OG/Twitter Card",
+      "codeReferences": ["index.html:7-11"],
+      "technical": {
+        "minResolution": "1200x630",
+        "maxFileSizeKB": 300,
+        "textSafeArea": "60px margem"
+      }
+    },
+    {
+      "id": "login-bg",
+      "name": "Background de sessão/dashboard",
+      "description": "Plano de fundo hero com textura suave e acentos neon; usado como capa padrão e fallback visual.",
+      "dimensions": { "width": 1920, "height": 1080 },
+      "format": "PNG",
+      "palette": ["#0b0d12", "#7a00ff", "#00e5ff", "#ffffff"],
+      "transparency": false,
+      "referenceExamples": [],
+      "usage": "Hero da Dashboard, fallback em cards",
+      "codeReferences": [
+        "src/components/Dashboard.tsx:75-83",
+        "src/components/Dashboard.tsx:148-153",
+        "src/pages/Catalog.tsx:353-358",
+        "src/pages/Catalog.tsx:389-391",
+        "src/pages/Catalog.tsx:416-417",
+        "src/store/defaultData.ts:4,38,62"
+      ],
+      "technical": {
+        "minResolution": "1920x1080",
+        "maxFileSizeKB": 1024,
+        "safeOverlay": "gradiente superior para legibilidade de texto"
+      }
+    }
+  ],
+  "quality": {
+    "minPpi": 72,
+    "maxFileSizeKB": 5120,
+    "avatarMaxKB": 256,
+    "sceneMaxKB": 2048,
+    "itemMaxKB": 512,
+    "notes": "Usar WEBP quando viável para reduzir tamanho, manter PNG para transparência."
+  }
+}
+
