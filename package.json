@@ -5,10 +5,28 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:public": "vite --host 0.0.0.0 --port 4173",
     "build": "tsc && vite build",
+    "postbuild": "node ./.tools/postbuild-pages.mjs",
     "preview": "vite preview",
+    "preview:public": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
+    "publish:test": "powershell -ExecutionPolicy Bypass -File ./.tools/publish-ssh.ps1",
+    "publish:watch": "powershell -ExecutionPolicy Bypass -File ./.tools/publish-watch.ps1",
+    "publish:url": "powershell -Command \"if (Test-Path '.tools/public-url.txt') { Get-Content '.tools/public-url.txt' } else { Write-Output 'URL publica ainda nao registrada.' }\"",
     "test": "vitest",
-    "sync": "powershell -ExecutionPolicy Bypass -File ./.tools/sync-github.ps1"
+    "test:regression": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:performance": "vitest run src/qa/performance.qa.test.ts",
+    "test:load": "vitest run src/qa/multi-table.load.test.tsx",
+    "test:degraded": "node ./.tools/qa-degraded-sim.mjs",
+    "test:security": "vitest run src/admin/AdminAccessContext.test.tsx src/lib/adminSecurity.test.ts src/security/integrity.test.ts",
+    "test:qa": "npm run test:regression && npm run test:coverage && npm run test:performance && npm run test:security",
+    "qa:browser-smoke": "node ./.tools/qa-browser-smoke.mjs",
+    "deploy:docker:build": "docker compose -f docker-compose.production.yml build",
+    "deploy:docker:up": "docker compose -f docker-compose.production.yml up -d",
+    "audit:prod": "npm audit --omit=dev --json",
+    "sync": "powershell -ExecutionPolicy Bypass -File ./.tools/sync-github.ps1",
+    "catalog:build": "node ./.tools/build-catalog.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
@@ -16,7 +34,7 @@
     "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
+    "react-router-dom": "^6.30.3",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
@@ -26,13 +44,16 @@
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.18",
     "jsdom": "^27.3.0",
+    "playwright": "^1.58.2",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "yaml": "^2.8.2"
   }
 }

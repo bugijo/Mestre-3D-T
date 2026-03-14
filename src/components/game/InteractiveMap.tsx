@@ -4,6 +4,7 @@ import type { Scene, Character } from '@/domain/models'
 import { cn } from '@/lib/cn'
 import { ImageUpload } from '@/components/ui/ImageUpload'
 import { Plus, Minus, RotateCcw, Upload, Download, Layers, Grid, MousePointer2 } from 'lucide-react'
+import { isDndCampaignSystem } from '@/lib/campaignSystems'
 
 type Viewport = { zoom: number; offsetX: number; offsetY: number }
 type MapToken = {
@@ -119,7 +120,7 @@ function hitTestToken(mx: number, my: number, token: MapToken, viewport: Viewpor
 export function InteractiveMap({ scene }: { scene: Scene }) {
   const { state, updateScene } = useAppStore()!
   const activeCampaign = state.campaigns.find(c => c.id === state.session.activeCampaignId)
-  const isDnd = !!activeCampaign && activeCampaign.system?.toLowerCase().includes('5e')
+  const isDnd = !!activeCampaign && isDndCampaignSystem(activeCampaign.system)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mapImg, setMapImg] = useState<HTMLImageElement | null>(null)
   const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null)

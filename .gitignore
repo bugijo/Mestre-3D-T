@@ -13,6 +13,11 @@ dist-ssr
 dev-dist
 coverage
 *.local
+.tools/public-url.txt
+.tools/publish-mode.flag
+.tools/*.log
+.tools/*.err.log
+.agent/skills/
 
 # Editor directories and files
 .vscode/*

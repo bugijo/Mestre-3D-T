@@ -109,8 +109,8 @@ export function ImageGenerator({ initialCategory, onGenerated }: { initialCatego
       </div>
 
       <div className="flex gap-2">
-        <button disabled={isGenerating} onClick={runOnce} className="px-4 py-2 rounded-lg bg-neon-green text-black font-bold disabled:opacity-50">Gerar</button>
-        <button disabled={isGenerating} onClick={runBatch} className="px-4 py-2 rounded-lg bg-neon-purple text-white font-bold disabled:opacity-50">Gerar Lote</button>
+        <button disabled={isGenerating} onClick={runOnce} className="px-4 py-2 rounded-lg bg-accent text-black font-bold disabled:opacity-50">Gerar</button>
+        <button disabled={isGenerating} onClick={runBatch} className="px-4 py-2 rounded-lg bg-secondary text-white font-bold disabled:opacity-50">Gerar Lote</button>
       </div>
 
       {preview && (

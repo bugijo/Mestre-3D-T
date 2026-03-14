@@ -31,7 +31,7 @@ export function InGameNotifications() {
       {items.map(n => (
         <div key={n.id} className={cn(
           'pointer-events-auto text-sm p-3 rounded-lg border shadow-lg animate-in fade-in slide-in-from-right-4 duration-300',
-          n.type === 'success' && 'bg-neon-green/15 border-neon-green/40 text-neon-green',
+          n.type === 'success' && 'bg-primary/15 border-primary/40 text-primary',
           n.type === 'warning' && 'bg-yellow-500/15 border-yellow-500/40 text-yellow-300',
           n.type === 'error' && 'bg-red-500/15 border-red-500/40 text-red-400',
           (!n.type || n.type === 'info') && 'bg-white/10 border-white/20 text-white'
@@ -42,4 +42,3 @@ export function InGameNotifications() {
     </div>
   )
 }
-

@@ -1,32 +1,49 @@
+import { Suspense, lazy, type ReactNode } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom'
 import App from '@/App'
-import { Dashboard } from '@/components/Dashboard'
-import { Playground } from '@/pages/Playground'
-import { CampaignList } from '@/pages/CampaignList'
-import { CampaignForm } from '@/pages/CampaignForm'
-import { CampaignDetails } from '@/pages/CampaignDetails'
-import { CharacterList } from '@/pages/CharacterList'
-import { CharacterForm } from '@/pages/CharacterForm'
-import { SessionRunner } from '@/pages/SessionRunner'
-import { Catalog } from '@/pages/Catalog'
+import { AppShellFallback } from '@/components/ui/AppShellFallback'
+import { RouteErrorPage } from '@/pages/RouteErrorPage'
+import { NotFound } from '@/pages/NotFound'
+
+const Dashboard = lazy(() => import('@/components/Dashboard').then((module) => ({ default: module.Dashboard })))
+const Playground = lazy(() => import('@/pages/Playground').then((module) => ({ default: module.Playground })))
+const CampaignList = lazy(() => import('@/pages/CampaignList').then((module) => ({ default: module.CampaignList })))
+const CampaignForm = lazy(() => import('@/pages/CampaignForm').then((module) => ({ default: module.CampaignForm })))
+const CampaignDetails = lazy(() => import('@/pages/CampaignDetails').then((module) => ({ default: module.CampaignDetails })))
+const CharacterList = lazy(() => import('@/pages/CharacterList').then((module) => ({ default: module.CharacterList })))
+const CharacterForm = lazy(() => import('@/pages/CharacterForm').then((module) => ({ default: module.CharacterForm })))
+const SessionRunner = lazy(() => import('@/pages/SessionRunner').then((module) => ({ default: module.SessionRunner })))
+const Catalog = lazy(() => import('@/pages/Catalog').then((module) => ({ default: module.Catalog })))
+const SessionReports = lazy(() => import('@/pages/SessionReports').then((module) => ({ default: module.SessionReports })))
+const PlayerConsole = lazy(() => import('@/pages/PlayerConsole').then((module) => ({ default: module.PlayerConsole })))
+const AdminPortal = lazy(() => import('@/pages/AdminPortal').then((module) => ({ default: module.AdminPortal })))
+
+function withFallback(node: ReactNode, label?: string) {
+  return <Suspense fallback={<AppShellFallback label={label} />}>{node}</Suspense>
+}
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
-      <Route index element={<Dashboard />} />
-      <Route path="playground" element={<Playground />} />
-      <Route path="campaigns" element={<CampaignList />} />
-      <Route path="campaigns/new" element={<CampaignForm />} />
-      <Route path="campaigns/:id" element={<CampaignDetails />} />
-      <Route path="campaigns/:id/edit" element={<CampaignForm />} />
-      <Route path="characters" element={<CharacterList />} />
-      <Route path="characters/new" element={<CharacterForm />} />
-      <Route path="characters/:id" element={<CharacterForm />} />
-      <Route path="catalog" element={<Catalog />} />
-      <Route path="session" element={<SessionRunner />} />
-    </Route>
+    <Route path="/" element={<App />} errorElement={<RouteErrorPage />}>
+      <Route index element={withFallback(<Dashboard />, 'Carregando dashboard...')} />
+      <Route path="playground" element={withFallback(<Playground />, 'Carregando playground...')} />
+      <Route path="campaigns" element={withFallback(<CampaignList />, 'Carregando campanhas...')} />
+      <Route path="campaigns/new" element={withFallback(<CampaignForm />, 'Carregando formulario...')} />
+      <Route path="campaigns/:id" element={withFallback(<CampaignDetails />, 'Carregando campanha...')} />
+      <Route path="campaigns/:id/edit" element={withFallback(<CampaignForm />, 'Carregando formulario...')} />
+      <Route path="characters" element={withFallback(<CharacterList />, 'Carregando personagens...')} />
+      <Route path="characters/new" element={withFallback(<CharacterForm />, 'Carregando personagem...')} />
+      <Route path="characters/:id" element={withFallback(<CharacterForm />, 'Carregando personagem...')} />
+      <Route path="catalog" element={withFallback(<Catalog />, 'Carregando catalogo...')} />
+      <Route path="session" element={withFallback(<SessionRunner />, 'Carregando sessao...')} />
+      <Route path="reports" element={withFallback(<SessionReports />, 'Carregando relatorios...')} />
+      <Route path="admin" element={withFallback(<AdminPortal />, 'Carregando painel administrativo...')} />
+      <Route path="player" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
+      <Route path="player/:characterId" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
+      <Route path="*" element={<NotFound />} />
+    </Route>,
   ),
   {
     basename: import.meta.env.BASE_URL,
-  }
+  },
 )

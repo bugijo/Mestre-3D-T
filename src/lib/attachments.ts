@@ -1,3 +1,5 @@
+import { logError, logInfo, logWarn } from '@/lib/logger'
+
 export type AttachmentConfig = {
   allowedTypes: string[]
   maxSizeInBytes: number
@@ -16,90 +18,113 @@ export type AttachmentResult = {
 
 const DEFAULT_CONFIG: AttachmentConfig = {
   allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-  maxSizeInBytes: 5 * 1024 * 1024, // 5MB
+  maxSizeInBytes: 5 * 1024 * 1024,
   compressionQuality: 0.8,
 }
 
-/**
- * Processa um arquivo para anexo seguindo as regras de validação.
- * @param file O arquivo a ser processado
- * @param config Configurações opcionais (sobrescrevem o padrão)
- * @returns Promise com o resultado da operação
- */
+const MAX_CACHE_ENTRIES = 24
+const imageSizeCache = new Map<string, Promise<{ width: number; height: number }>>()
+const compressionCache = new Map<string, Promise<string>>()
+
+function hashString(value: string) {
+  let hash = 0
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0
+  }
+  return hash.toString(16)
+}
+
+function setBoundedCache<T>(cache: Map<string, T>, key: string, value: T) {
+  if (!cache.has(key) && cache.size >= MAX_CACHE_ENTRIES) {
+    const firstKey = cache.keys().next().value
+    if (firstKey) cache.delete(firstKey)
+  }
+  cache.set(key, value)
+}
+
+function buildErrorResult(message: string, timestamp: number, context?: unknown) {
+  logWarn('attachments:validation', message, context)
+  return { success: false, error: message, timestamp } satisfies AttachmentResult
+}
+
 export async function processAttachment(
   file: File,
-  config: Partial<AttachmentConfig> = {}
+  config: Partial<AttachmentConfig> = {},
 ): Promise<AttachmentResult> {
   const finalConfig = { ...DEFAULT_CONFIG, ...config }
   const timestamp = Date.now()
+  logInfo('attachments:start', 'Processando anexo', {
+    fileName: file.name,
+    mime: file.type,
+    size: file.size,
+  })
 
-  // 1. Log de tentativa
-  console.log(`[Attachment] Iniciando processamento: ${file.name} (${file.type}, ${file.size} bytes)`)
-
-  // 2. Validação de Tipo
   if (!finalConfig.allowedTypes.includes(file.type)) {
-    const error = `Tipo de arquivo não permitido: ${file.type}. Tipos aceitos: ${finalConfig.allowedTypes.join(', ')}`
-    console.error(`[Attachment] Falha: ${error}`)
-    return { success: false, error, timestamp }
+    return buildErrorResult(
+      `Tipo de arquivo nao permitido: ${file.type}. Tipos aceitos: ${finalConfig.allowedTypes.join(', ')}`,
+      timestamp,
+      { fileName: file.name },
+    )
   }
 
-  // 3. Validação de Tamanho
   if (file.size > finalConfig.maxSizeInBytes) {
-    const error = `Arquivo muito grande: ${(file.size / 1024 / 1024).toFixed(2)}MB. Máximo permitido: ${(finalConfig.maxSizeInBytes / 1024 / 1024).toFixed(2)}MB`
-    console.error(`[Attachment] Falha: ${error}`)
-    return { success: false, error, timestamp }
+    return buildErrorResult(
+      `Arquivo muito grande: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximo permitido: ${(finalConfig.maxSizeInBytes / 1024 / 1024).toFixed(2)}MB`,
+      timestamp,
+      { fileName: file.name },
+    )
   }
 
-  // 4. Conversão e Compressão
   try {
     let dataUrl = await fileToDataUrl(file)
 
     if (file.size === 0) {
-      const error = 'Arquivo vazio'
-      console.error(`[Attachment] Falha: ${error}`)
-      return { success: false, error, timestamp }
+      return buildErrorResult('Arquivo vazio', timestamp, { fileName: file.name })
     }
 
     if (file.type.startsWith('image/')) {
       const dims = await getImageSize(dataUrl)
-      if (
-        (finalConfig.maxWidth && dims.width > finalConfig.maxWidth) ||
-        (finalConfig.maxHeight && dims.height > finalConfig.maxHeight)
-      ) {
-        const error = `Dimensão excedida: ${dims.width}x${dims.height}. Máximo: ${finalConfig.maxWidth ?? '∞'}x${finalConfig.maxHeight ?? '∞'}`
-        console.error(`[Attachment] Falha: ${error}`)
-        return { success: false, error, timestamp }
+      const widthExceeded = finalConfig.maxWidth != null && dims.width > finalConfig.maxWidth
+      const heightExceeded = finalConfig.maxHeight != null && dims.height > finalConfig.maxHeight
+
+      if (widthExceeded || heightExceeded) {
+        return buildErrorResult(
+          `Dimensao excedida: ${dims.width}x${dims.height}. Maximo: ${finalConfig.maxWidth ?? 'sem limite'}x${finalConfig.maxHeight ?? 'sem limite'}`,
+          timestamp,
+          { fileName: file.name },
+        )
       }
     }
 
-    // Se for imagem e tiver qualidade definida, tenta comprimir
     if (
       file.type.startsWith('image/') &&
       file.type !== 'image/gif' &&
       finalConfig.compressionQuality &&
-      finalConfig.compressionQuality < 1.0
+      finalConfig.compressionQuality < 1
     ) {
       try {
-        console.log(`[Attachment] Comprimindo imagem com qualidade ${finalConfig.compressionQuality}...`)
-        const compressedDataUrl = await compressImage(dataUrl, file.type, finalConfig.compressionQuality)
-        // Só usa o comprimido se ficou menor (embora dataUrl base64 seja string, o tamanho importa)
+        const compressedDataUrl = await compressImageCached(dataUrl, file.type, finalConfig.compressionQuality)
         if (compressedDataUrl.length < dataUrl.length) {
-            console.log(`[Attachment] Compressão efetiva: ${(dataUrl.length / 1024).toFixed(2)}KB -> ${(compressedDataUrl.length / 1024).toFixed(2)}KB`)
-            dataUrl = compressedDataUrl
-        } else {
-            console.log('[Attachment] Compressão não reduziu tamanho, mantendo original.')
+          dataUrl = compressedDataUrl
         }
-      } catch (compErr) {
-        console.warn('[Attachment] Falha na compressão, usando original:', compErr)
+      } catch (error) {
+        logWarn('attachments:compression', 'Falha ao comprimir imagem, mantendo original', {
+          fileName: file.name,
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
-    console.log(`[Attachment] Sucesso: ${file.name} processado.`)
+    logInfo('attachments:success', 'Anexo processado com sucesso', {
+      fileName: file.name,
+      size: file.size,
+      outputLength: dataUrl.length,
+    })
     return { success: true, dataUrl, file, timestamp }
-  } catch (err) {
-    const error = `Erro ao ler arquivo: ${err instanceof Error ? err.message : String(err)}`
-    console.error(`[Attachment] Erro crítico: ${error}`)
-    return { success: false, error, timestamp }
+  } catch (error) {
+    const message = `Erro ao ler arquivo: ${error instanceof Error ? error.message : String(error)}`
+    logError('attachments:critical', error, { fileName: file.name })
+    return { success: false, error: message, timestamp }
   }
 }
 
@@ -113,20 +138,40 @@ function fileToDataUrl(file: File): Promise<string> {
 }
 
 function getImageSize(dataUrl: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve) => {
+  const key = hashString(dataUrl)
+  const cached = imageSizeCache.get(key)
+  if (cached) return cached
+
+  const pending = new Promise<{ width: number; height: number }>((resolve) => {
     const img = new Image()
     let settled = false
     const done = (dims: { width: number; height: number }) => {
-      if (!settled) {
-        settled = true
-        resolve(dims)
-      }
+      if (settled) return
+      settled = true
+      resolve(dims)
     }
     img.onload = () => done({ width: img.width, height: img.height })
     img.onerror = () => done({ width: 1, height: 1 })
     img.src = dataUrl
     setTimeout(() => done({ width: 1, height: 1 }), 100)
   })
+
+  setBoundedCache(imageSizeCache, key, pending)
+  return pending
+}
+
+function compressImageCached(dataUrl: string, type: string, quality: number): Promise<string> {
+  const key = `${type}:${quality}:${hashString(dataUrl)}`
+  const cached = compressionCache.get(key)
+  if (cached) return cached
+
+  const pending = compressImage(dataUrl, type, quality).catch((error) => {
+    compressionCache.delete(key)
+    throw error
+  })
+
+  setBoundedCache(compressionCache, key, pending)
+  return pending
 }
 
 function compressImage(dataUrl: string, type: string, quality: number): Promise<string> {
@@ -134,34 +179,28 @@ function compressImage(dataUrl: string, type: string, quality: number): Promise<
     const img = new Image()
     img.onload = () => {
       const canvas = document.createElement('canvas')
-      // Mantém proporção, limitando largura máxima para otimização (opcional, mas bom para performance)
-      const MAX_WIDTH = 1920
+      const maxWidth = 1920
       let width = img.width
       let height = img.height
 
-      if (width > MAX_WIDTH) {
-        height = Math.round((height * MAX_WIDTH) / width)
-        width = MAX_WIDTH
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width)
+        width = maxWidth
       }
 
       canvas.width = width
       canvas.height = height
-      
+
       const ctx = canvas.getContext('2d')
       if (!ctx) {
-        reject(new Error('Não foi possível obter contexto 2D do canvas'))
+        reject(new Error('Nao foi possivel obter contexto 2D do canvas'))
         return
       }
 
-      // Fundo branco para imagens com transparência convertidas para jpeg (se necessário)
-      // Mas aqui vamos manter o tipo original se suportado pelo browser
       ctx.drawImage(img, 0, 0, width, height)
-      
-      // O browser tenta converter para o tipo solicitado. Se não suportar (ex: gif), pode cair pra png.
-      // 'image/webp' é uma boa opção moderna se quisermos forçar, mas vamos respeitar o type original.
       resolve(canvas.toDataURL(type, quality))
     }
-    img.onerror = (err) => reject(err)
+    img.onerror = (error) => reject(error)
     img.src = dataUrl
   })
 }

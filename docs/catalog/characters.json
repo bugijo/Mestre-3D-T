@@ -1,0 +1,1402 @@
+[
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Ranger",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.90m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Luna Stormborn",
+    "class": "Paladin",
+    "occupation": "Clérigo",
+    "physicalDescription": "Luna Stormborn tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kai Silverleaf",
+    "class": "Cleric",
+    "occupation": "Druida",
+    "physicalDescription": "Kai Silverleaf tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Druida Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Mara Nightfall",
+    "class": "Rogue",
+    "occupation": "Bardo",
+    "physicalDescription": "Mara Nightfall tem cerca de 1.90m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Orion Ashenvale",
+    "class": "Druid",
+    "occupation": "Paladino",
+    "physicalDescription": "Orion Ashenvale tem cerca de 1.77m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Selene Ironheart",
+    "class": "Bard",
+    "occupation": "Warlock",
+    "physicalDescription": "Selene Ironheart tem cerca de 1.68m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Darius Sunspire",
+    "class": "Barbarian",
+    "occupation": "Warlock",
+    "physicalDescription": "Darius Sunspire tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aria Frostbane",
+    "class": "Sorcerer",
+    "occupation": "Rogue",
+    "physicalDescription": "Aria Frostbane tem cerca de 1.93m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Rogue Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Riven Starcrest",
+    "class": "Rogue",
+    "occupation": "Monge",
+    "physicalDescription": "Riven Starcrest tem cerca de 1.84m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nyx Shadowmere",
+    "class": "Druid",
+    "occupation": "Warlock",
+    "physicalDescription": "Nyx Shadowmere tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kellan Dawnhollow",
+    "class": "Sorcerer",
+    "occupation": "Monge",
+    "physicalDescription": "Kellan Dawnhollow tem cerca de 1.90m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Eira Emberwild",
+    "class": "Ranger",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Eira Emberwild tem cerca de 1.83m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Rogue",
+    "occupation": "Guardião",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.67m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guardião Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Lyra Moonblade",
+    "class": "Barbarian",
+    "occupation": "Bardo",
+    "physicalDescription": "Lyra Moonblade tem cerca de 1.74m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Cassian Skysong",
+    "class": "Barbarian",
+    "occupation": "Ranger",
+    "physicalDescription": "Cassian Skysong tem cerca de 1.75m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Elara Flameborn",
+    "class": "Paladin",
+    "occupation": "Monge",
+    "physicalDescription": "Elara Flameborn tem cerca de 1.92m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Rowan Mistwalker",
+    "class": "Bard",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Rowan Mistwalker tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Zara Oakenshield",
+    "class": "Rogue",
+    "occupation": "Mago",
+    "physicalDescription": "Zara Oakenshield tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Drake Stonehelm",
+    "class": "Warlock",
+    "occupation": "Mago",
+    "physicalDescription": "Drake Stonehelm tem cerca de 1.75m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nia Brightwind",
+    "class": "Wizard",
+    "occupation": "Paladino",
+    "physicalDescription": "Nia Brightwind tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aiden Blackwood",
+    "class": "Sorcerer",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Aiden Blackwood tem cerca de 1.89m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Luna Stormborn",
+    "class": "Wizard",
+    "occupation": "Warlock",
+    "physicalDescription": "Luna Stormborn tem cerca de 1.87m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kai Silverleaf",
+    "class": "Warlock",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Kai Silverleaf tem cerca de 1.71m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Mara Nightfall",
+    "class": "Barbarian",
+    "occupation": "Guerreiro",
+    "physicalDescription": "Mara Nightfall tem cerca de 1.67m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guerreiro Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Orion Ashenvale",
+    "class": "Fighter",
+    "occupation": "Clérigo",
+    "physicalDescription": "Orion Ashenvale tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Fighter em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Selene Ironheart",
+    "class": "Monk",
+    "occupation": "Paladino",
+    "physicalDescription": "Selene Ironheart tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Darius Sunspire",
+    "class": "Fighter",
+    "occupation": "Clérigo",
+    "physicalDescription": "Darius Sunspire tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Fighter em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aria Frostbane",
+    "class": "Sorcerer",
+    "occupation": "Rogue",
+    "physicalDescription": "Aria Frostbane tem cerca de 1.68m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Rogue Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Riven Starcrest",
+    "class": "Sorcerer",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Riven Starcrest tem cerca de 1.67m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nyx Shadowmere",
+    "class": "Warlock",
+    "occupation": "Monge",
+    "physicalDescription": "Nyx Shadowmere tem cerca de 1.89m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kellan Dawnhollow",
+    "class": "Warlock",
+    "occupation": "Mago",
+    "physicalDescription": "Kellan Dawnhollow tem cerca de 1.70m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Eira Emberwild",
+    "class": "Bard",
+    "occupation": "Paladino",
+    "physicalDescription": "Eira Emberwild tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Cleric",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.86m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Lyra Moonblade",
+    "class": "Paladin",
+    "occupation": "Mago",
+    "physicalDescription": "Lyra Moonblade tem cerca de 1.85m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Cassian Skysong",
+    "class": "Bard",
+    "occupation": "Bardo",
+    "physicalDescription": "Cassian Skysong tem cerca de 1.72m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Elara Flameborn",
+    "class": "Bard",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Elara Flameborn tem cerca de 1.77m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Rowan Mistwalker",
+    "class": "Druid",
+    "occupation": "Warlock",
+    "physicalDescription": "Rowan Mistwalker tem cerca de 1.84m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Zara Oakenshield",
+    "class": "Monk",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Zara Oakenshield tem cerca de 1.86m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Drake Stonehelm",
+    "class": "Sorcerer",
+    "occupation": "Warlock",
+    "physicalDescription": "Drake Stonehelm tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nia Brightwind",
+    "class": "Barbarian",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Nia Brightwind tem cerca de 1.71m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aiden Blackwood",
+    "class": "Cleric",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Aiden Blackwood tem cerca de 1.68m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Luna Stormborn",
+    "class": "Ranger",
+    "occupation": "Guardião",
+    "physicalDescription": "Luna Stormborn tem cerca de 1.93m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guardião Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kai Silverleaf",
+    "class": "Monk",
+    "occupation": "Monge",
+    "physicalDescription": "Kai Silverleaf tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Mara Nightfall",
+    "class": "Sorcerer",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Mara Nightfall tem cerca de 1.78m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Orion Ashenvale",
+    "class": "Warlock",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Orion Ashenvale tem cerca de 1.69m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Selene Ironheart",
+    "class": "Sorcerer",
+    "occupation": "Alquimista",
+    "physicalDescription": "Selene Ironheart tem cerca de 1.91m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Alquimista Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Darius Sunspire",
+    "class": "Cleric",
+    "occupation": "Paladino",
+    "physicalDescription": "Darius Sunspire tem cerca de 1.73m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aria Frostbane",
+    "class": "Wizard",
+    "occupation": "Mago",
+    "physicalDescription": "Aria Frostbane tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Riven Starcrest",
+    "class": "Bard",
+    "occupation": "Guerreiro",
+    "physicalDescription": "Riven Starcrest tem cerca de 1.81m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guerreiro Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nyx Shadowmere",
+    "class": "Wizard",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Nyx Shadowmere tem cerca de 1.76m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kellan Dawnhollow",
+    "class": "Druid",
+    "occupation": "Clérigo",
+    "physicalDescription": "Kellan Dawnhollow tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Eira Emberwild",
+    "class": "Monk",
+    "occupation": "Bardo",
+    "physicalDescription": "Eira Emberwild tem cerca de 1.70m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Rogue",
+    "occupation": "Bardo",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Lyra Moonblade",
+    "class": "Sorcerer",
+    "occupation": "Bardo",
+    "physicalDescription": "Lyra Moonblade tem cerca de 1.66m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Cassian Skysong",
+    "class": "Paladin",
+    "occupation": "Mago",
+    "physicalDescription": "Cassian Skysong tem cerca de 1.68m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Elara Flameborn",
+    "class": "Monk",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Elara Flameborn tem cerca de 1.74m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Rowan Mistwalker",
+    "class": "Barbarian",
+    "occupation": "Druida",
+    "physicalDescription": "Rowan Mistwalker tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Druida Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Zara Oakenshield",
+    "class": "Wizard",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Zara Oakenshield tem cerca de 1.67m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Drake Stonehelm",
+    "class": "Warlock",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Drake Stonehelm tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nia Brightwind",
+    "class": "Monk",
+    "occupation": "Ranger",
+    "physicalDescription": "Nia Brightwind tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aiden Blackwood",
+    "class": "Druid",
+    "occupation": "Druida",
+    "physicalDescription": "Aiden Blackwood tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Druida Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Luna Stormborn",
+    "class": "Rogue",
+    "occupation": "Warlock",
+    "physicalDescription": "Luna Stormborn tem cerca de 1.66m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kai Silverleaf",
+    "class": "Warlock",
+    "occupation": "Mago",
+    "physicalDescription": "Kai Silverleaf tem cerca de 1.94m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Mara Nightfall",
+    "class": "Barbarian",
+    "occupation": "Clérigo",
+    "physicalDescription": "Mara Nightfall tem cerca de 1.70m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Barbarian em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Orion Ashenvale",
+    "class": "Monk",
+    "occupation": "Ranger",
+    "physicalDescription": "Orion Ashenvale tem cerca de 1.68m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Selene Ironheart",
+    "class": "Cleric",
+    "occupation": "Bardo",
+    "physicalDescription": "Selene Ironheart tem cerca de 1.70m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Darius Sunspire",
+    "class": "Ranger",
+    "occupation": "Rogue",
+    "physicalDescription": "Darius Sunspire tem cerca de 1.92m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Rogue Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aria Frostbane",
+    "class": "Monk",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Aria Frostbane tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Riven Starcrest",
+    "class": "Rogue",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Riven Starcrest tem cerca de 1.90m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nyx Shadowmere",
+    "class": "Paladin",
+    "occupation": "Ranger",
+    "physicalDescription": "Nyx Shadowmere tem cerca de 1.91m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kellan Dawnhollow",
+    "class": "Ranger",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Kellan Dawnhollow tem cerca de 1.66m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Eira Emberwild",
+    "class": "Ranger",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Eira Emberwild tem cerca de 1.77m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Wizard",
+    "occupation": "Ranger",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Lyra Moonblade",
+    "class": "Druid",
+    "occupation": "Mago",
+    "physicalDescription": "Lyra Moonblade tem cerca de 1.70m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Mago Druid em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Cassian Skysong",
+    "class": "Wizard",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Cassian Skysong tem cerca de 1.90m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Elara Flameborn",
+    "class": "Rogue",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Elara Flameborn tem cerca de 1.73m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Rowan Mistwalker",
+    "class": "Bard",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Rowan Mistwalker tem cerca de 1.91m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Zara Oakenshield",
+    "class": "Monk",
+    "occupation": "Clérigo",
+    "physicalDescription": "Zara Oakenshield tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Drake Stonehelm",
+    "class": "Wizard",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Drake Stonehelm tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nia Brightwind",
+    "class": "Wizard",
+    "occupation": "Bardo",
+    "physicalDescription": "Nia Brightwind tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aiden Blackwood",
+    "class": "Paladin",
+    "occupation": "Ranger",
+    "physicalDescription": "Aiden Blackwood tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Ranger Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Luna Stormborn",
+    "class": "Cleric",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Luna Stormborn tem cerca de 1.85m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kai Silverleaf",
+    "class": "Cleric",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Kai Silverleaf tem cerca de 1.77m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Mara Nightfall",
+    "class": "Sorcerer",
+    "occupation": "Paladino",
+    "physicalDescription": "Mara Nightfall tem cerca de 1.72m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Paladino Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Orion Ashenvale",
+    "class": "Rogue",
+    "occupation": "Arqueiro",
+    "physicalDescription": "Orion Ashenvale tem cerca de 1.66m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Arqueiro Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Selene Ironheart",
+    "class": "Rogue",
+    "occupation": "Bardo",
+    "physicalDescription": "Selene Ironheart tem cerca de 1.80m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Darius Sunspire",
+    "class": "Monk",
+    "occupation": "Clérigo",
+    "physicalDescription": "Darius Sunspire tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Aria Frostbane",
+    "class": "Rogue",
+    "occupation": "Monge",
+    "physicalDescription": "Aria Frostbane tem cerca de 1.77m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Rogue em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Riven Starcrest",
+    "class": "Paladin",
+    "occupation": "Guerreiro",
+    "physicalDescription": "Riven Starcrest tem cerca de 1.72m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guerreiro Paladin em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nyx Shadowmere",
+    "class": "Wizard",
+    "occupation": "Druida",
+    "physicalDescription": "Nyx Shadowmere tem cerca de 1.88m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Druida Wizard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Kellan Dawnhollow",
+    "class": "Fighter",
+    "occupation": "Bardo",
+    "physicalDescription": "Kellan Dawnhollow tem cerca de 1.80m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Bardo Fighter em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Eira Emberwild",
+    "class": "Sorcerer",
+    "occupation": "Clérigo",
+    "physicalDescription": "Eira Emberwild tem cerca de 1.73m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Thorne Rivenguard",
+    "class": "Ranger",
+    "occupation": "Rogue",
+    "physicalDescription": "Thorne Rivenguard tem cerca de 1.69m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Rogue Ranger em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Lyra Moonblade",
+    "class": "Bard",
+    "occupation": "Guardião",
+    "physicalDescription": "Lyra Moonblade tem cerca de 1.78m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Guardião Bard em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Cassian Skysong",
+    "class": "Cleric",
+    "occupation": "Monge",
+    "physicalDescription": "Cassian Skysong tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Monge Cleric em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Elara Flameborn",
+    "class": "Sorcerer",
+    "occupation": "Alquimista",
+    "physicalDescription": "Elara Flameborn tem cerca de 1.82m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Alquimista Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Rowan Mistwalker",
+    "class": "Warlock",
+    "occupation": "Vanguarda",
+    "physicalDescription": "Rowan Mistwalker tem cerca de 1.85m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Vanguarda Warlock em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Zara Oakenshield",
+    "class": "Monk",
+    "occupation": "Warlock",
+    "physicalDescription": "Zara Oakenshield tem cerca de 1.65m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Warlock Monk em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Drake Stonehelm",
+    "class": "Sorcerer",
+    "occupation": "Clérigo",
+    "physicalDescription": "Drake Stonehelm tem cerca de 1.79m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Clérigo Sorcerer em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  },
+  {
+    "name": "Nia Brightwind",
+    "class": "Fighter",
+    "occupation": "Feiticeiro",
+    "physicalDescription": "Nia Brightwind tem cerca de 1.66m de altura, porte atlético e postura alerta. Traços marcantes nos olhos e mandíbula firme sugerem disciplina e anos de treino. Veste peças de couro reforçado e tecido escuro com detalhes rúnicos discretos, mantendo mobilidade sem perder proteção. O cabelo, bem aparado ou preso, acompanha um semblante atento, pronto para reagir em instantes.",
+    "personality": "Reservado, observador e pragmático, evita desperdícios e age com precisão. Leal ao grupo, valoriza planejamento e mantém calma sob pressão, usando humor contido para aliviar a tensão quando necessário.",
+    "background": "Cresceu em vilas entre bosques antigos, aprendendo rastreamento e sobrevivência com guardiões locais. Após conflitos com saqueadores e criaturas da mata, desenvolveu responsabilidade com as fronteiras, aceitando missões que protegem rotas comerciais e aldeias sob risco constante.",
+    "specialSkills": [
+      "Percepção aguçada e leitura de pistas no terreno",
+      "Movimentação silenciosa e posicionamento tático",
+      "Tiro preciso ou golpe oportuno em pontos vitais"
+    ],
+    "visualPrompt": "Feiticeiro Fighter em cenário de castelo iluminado por tochas, couro escuro com detalhes metálicos discretos, postura pronta, arco ou lâmina leve, estilo neon/arcano, luz fria em contraste com fundo âmbar."
+  }
+]

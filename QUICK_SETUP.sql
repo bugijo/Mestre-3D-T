@@ -37,6 +37,14 @@ CREATE TABLE IF NOT EXISTS npcs (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS mestre_snapshots (
+  id BIGSERIAL PRIMARY KEY,
+  slot TEXT NOT NULL UNIQUE,
+  payload JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- 2. CRIAR INDEXES
 -- =====================================================
 
@@ -44,12 +52,14 @@ CREATE INDEX IF NOT EXISTS campaigns_user_id_idx ON campaigns(user_id);
 CREATE INDEX IF NOT EXISTS campaigns_created_at_idx ON campaigns(created_at DESC);
 CREATE INDEX IF NOT EXISTS npcs_user_id_idx ON npcs(user_id);
 CREATE INDEX IF NOT EXISTS npcs_campaign_id_idx ON npcs(campaign_id);
+CREATE INDEX IF NOT EXISTS mestre_snapshots_updated_at_idx ON mestre_snapshots(updated_at DESC);
 
 -- 3. HABILITAR ROW LEVEL SECURITY
 -- =====================================================
 
 ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE npcs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mestre_snapshots ENABLE ROW LEVEL SECURITY;
 
 -- 4. CRIAR POLICIES - CAMPAIGNS
 -- =====================================================
@@ -101,11 +111,67 @@ CREATE POLICY "npcs_delete_policy"
   ON npcs FOR DELETE
   USING (auth.uid() = user_id);
 
+-- 6. CRIAR POLICIES - SNAPSHOTS
+-- =====================================================
+
+DROP POLICY IF EXISTS "mestre_snapshots_select_policy" ON mestre_snapshots;
+DROP POLICY IF EXISTS "mestre_snapshots_insert_policy" ON mestre_snapshots;
+DROP POLICY IF EXISTS "mestre_snapshots_update_policy" ON mestre_snapshots;
+DROP POLICY IF EXISTS "mestre_snapshots_delete_policy" ON mestre_snapshots;
+
+CREATE POLICY "mestre_snapshots_select_policy"
+  ON mestre_snapshots FOR SELECT
+  USING (true);
+
+CREATE POLICY "mestre_snapshots_insert_policy"
+  ON mestre_snapshots FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "mestre_snapshots_update_policy"
+  ON mestre_snapshots FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "mestre_snapshots_delete_policy"
+  ON mestre_snapshots FOR DELETE
+  USING (true);
+
+-- 7. TRIGGER DE UPDATED_AT
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS campaigns_set_updated_at ON campaigns;
+CREATE TRIGGER campaigns_set_updated_at
+BEFORE UPDATE ON campaigns
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS npcs_set_updated_at ON npcs;
+CREATE TRIGGER npcs_set_updated_at
+BEFORE UPDATE ON npcs
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS mestre_snapshots_set_updated_at ON mestre_snapshots;
+CREATE TRIGGER mestre_snapshots_set_updated_at
+BEFORE UPDATE ON mestre_snapshots
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
 -- =====================================================
 -- SETUP COMPLETO! ✅
 -- 
 -- Próximo passo:
 -- 1. Copiar Project URL + anon key
--- 2. Atualizar web/src/main.js
--- 3. Reload app e testar!
+-- 2. Definir VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY e VITE_SUPABASE_TABLE
+-- 3. Rodar npm run dev, abrir Dashboard e testar upload/download do slot remoto
+-- Observacao: sem login Supabase, o sync remoto funciona por "slot" publico.
+-- Use nomes de slot dificilmente adivinhaveis se for compartilhar snapshots reais.
 -- =====================================================

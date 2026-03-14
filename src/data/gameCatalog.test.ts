@@ -1,43 +1,44 @@
-import { describe, it, expect } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { buildGameCatalog } from './gameCatalog'
 
-describe('Catálogo do Jogo', () => {
-  it('constrói listas completas de personagens, itens e mapas', async () => {
-    const cat = await buildGameCatalog()
-    expect(cat.characters.length).toBe(200)
-    expect(cat.items.length).toBe(100)
-    expect(cat.maps.length).toBe(100)
-    expect(cat.system.mechanics.length).toBeGreaterThanOrEqual(5)
-    expect(cat.system.missions.length).toBeGreaterThanOrEqual(5)
-    expect(cat.system.secrets.length).toBeGreaterThanOrEqual(5)
+let catalog: Awaited<ReturnType<typeof buildGameCatalog>>
+
+describe('Catalogo do Jogo', () => {
+  beforeAll(async () => {
+    catalog = await buildGameCatalog()
+  }, 30000)
+
+  it('constroi listas completas de personagens, itens e mapas', () => {
+    expect(catalog.characters.length).toBe(200)
+    expect(catalog.items.length).toBe(100)
+    expect(catalog.maps.length).toBe(100)
+    expect(catalog.system.mechanics.length).toBeGreaterThanOrEqual(5)
+    expect(catalog.system.missions.length).toBeGreaterThanOrEqual(5)
+    expect(catalog.system.secrets.length).toBeGreaterThanOrEqual(5)
   })
 
-  it('personagens possuem imagem válida e relações mapeadas', async () => {
-    const cat = await buildGameCatalog()
-    const c = cat.characters[0]
-    expect(typeof c.image).toBe('string')
-    expect((c.image as string)).toMatch(/^data:image\/png;base64,/)
-    expect(c.relationships.length).toBeGreaterThanOrEqual(1)
-    const allowed = ['aliado','rival','mentor','inimigo']
-    expect(allowed.includes(c.relationships[0].type)).toBe(true)
+  it('personagens possuem imagem valida e relacoes mapeadas', () => {
+    const character = catalog.characters[0]
+    expect(typeof character.image).toBe('string')
+    expect(character.image as string).toMatch(/^data:image\/png;base64,/)
+    expect(character.relationships.length).toBeGreaterThanOrEqual(1)
+    const allowed = ['aliado', 'rival', 'mentor', 'inimigo']
+    expect(allowed.includes(character.relationships[0].type)).toBe(true)
   })
 
-  it('itens possuem ícone quando disponível e raridade válida', async () => {
-    const cat = await buildGameCatalog()
-    const anyWithIcon = cat.items.find(i => !!i.icon)
-    expect(anyWithIcon && (anyWithIcon.icon as string)).toMatch(/^data:image\/png;base64,/)
-    const allowed = ['comum','incomum','raro','épico','lendário']
-    expect(allowed.includes(cat.items[0].rarity)).toBe(true)
+  it('itens possuem icone quando disponivel e raridade valida', () => {
+    const withIcon = catalog.items.find((item) => !!item.icon)
+    expect(withIcon && (withIcon.icon as string)).toMatch(/^data:image\/png;base64,/)
+    const allowed = ['comum', 'incomum', 'raro', 'epico', 'lendario']
+    expect(allowed.includes(catalog.items[0].rarity)).toBe(true)
   })
 
-  it('mapas vinculam NPCs, itens escondidos e inimigos com fundo válido', async () => {
-    const cat = await buildGameCatalog()
-    const m = cat.maps[0]
-    expect(m.npcIds.length).toBeGreaterThanOrEqual(1)
-    expect(m.hiddenItemIds.length).toBeGreaterThanOrEqual(1)
-    expect(m.enemyIds.length).toBeGreaterThanOrEqual(1)
-    expect(typeof m.background).toBe('string')
-    expect((m.background as string)).toMatch(/^data:image\/png;base64,/)
+  it('mapas vinculam NPCs, itens escondidos e inimigos com fundo valido', () => {
+    const map = catalog.maps[0]
+    expect(map.npcIds.length).toBeGreaterThanOrEqual(1)
+    expect(map.hiddenItemIds.length).toBeGreaterThanOrEqual(1)
+    expect(map.enemyIds.length).toBeGreaterThanOrEqual(1)
+    expect(typeof map.background).toBe('string')
+    expect(map.background as string).toMatch(/^data:image\/png;base64,/)
   })
 })
-

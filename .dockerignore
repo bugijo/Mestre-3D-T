@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.git
+.github
+.agent
+.tools/publish-live.log
+.tools/publish-live.err.log
+.tools/publish-watch.log
+.tools/publish-watch.stdout.log
+.tools/publish-watch.stderr.log
+npm-debug.log*

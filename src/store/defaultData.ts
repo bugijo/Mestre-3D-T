@@ -1,7 +1,8 @@
-import loginBg from '@/assets/login-bg.png'
+import loginBg from '@/assets/login-bg.webp'
 import type { AppSnapshot, Campaign, Character, Scene, Arc } from '@/domain/models'
 import { calcMaxHp, calcMaxMp } from '@/domain/models'
 import { createId } from '@/lib/id'
+import { DEFAULT_CAMPAIGN_SYSTEM } from '@/lib/campaignSystems'
 
 function now() {
   return Date.now()
@@ -15,7 +16,7 @@ export function createDefaultSnapshot(): AppSnapshot {
   const campaign: Campaign = {
     id: campaignId,
     title: 'A Guerra das Sombras',
-    system: '3D&T Alpha',
+    system: DEFAULT_CAMPAIGN_SYSTEM,
     description: 'Uma campanha sombria de investigação e horror fantástico.',
     coverDataUrl: loginBg,
     createdAt: now(),
@@ -117,6 +118,7 @@ export function createDefaultSnapshot(): AppSnapshot {
       isPlaying: false,
       isMuted: false,
     },
+    sessionHistory: [],
     rewardTables: [
       { id: createId(), name: 'Padrão', criteria: 'Vitória comum', xp: 50, gold: 20 },
       { id: createId(), name: 'Difícil', criteria: 'Encontro difícil', xp: 100, gold: 50 },

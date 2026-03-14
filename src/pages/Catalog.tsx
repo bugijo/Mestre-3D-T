@@ -6,7 +6,8 @@ import type { Character, Mood, EquipmentItem } from '@/domain/models'
 import { cn } from '@/lib/cn'
 import { createId } from '@/lib/id'
 import { generateImage } from '@/lib/imageGen'
-import loginBg from '@/assets/login-bg.png'
+import loginBg from '@/assets/login-bg.webp'
+import { DEFAULT_CAMPAIGN_SYSTEM, DND5E_CAMPAIGN_SYSTEM, normalizeCampaignSystem } from '@/lib/campaignSystems'
 
 type SystemKey = 'ALL' | '3DT' | 'DND5E'
 type TypeKey = 'ALL' | 'HERO' | 'NPC' | 'VILLAIN' | 'STORY' | 'ITEM'
@@ -58,9 +59,12 @@ export function Catalog() {
   }, [system, query])
 
   const targetCampaignId = useMemo(() => {
-    if (state.session.activeCampaignId) return state.session.activeCampaignId
-    if (state.campaigns[0]?.id) return state.campaigns[0].id
-    const sysName = system === 'DND5E' ? 'D&D 5e' : '3D&T'
+    const sysName = system === 'DND5E' ? DND5E_CAMPAIGN_SYSTEM : DEFAULT_CAMPAIGN_SYSTEM
+    const activeCampaign = state.campaigns.find((campaign) => campaign.id === state.session.activeCampaignId)
+    if (activeCampaign && normalizeCampaignSystem(activeCampaign.system) === sysName) return activeCampaign.id
+
+    const compatibleCampaign = state.campaigns.find((campaign) => normalizeCampaignSystem(campaign.system) === sysName)
+    if (compatibleCampaign) return compatibleCampaign.id
     const c = createCampaign({ title: 'Catálogo', system: sysName, description: 'Conteúdo importado do catálogo' })
     return c.id
   }, [state.session.activeCampaignId, state.campaigns, system])
@@ -135,7 +139,7 @@ export function Catalog() {
       portraitUri: null,
       tags: [],
       currentHp: Math.max(1, c.resistance * 5),
-      currentMp: Math.max(1, c.resistance * 5),
+      currentMp: Math.max(1, c.skill * 5),
       personality: c.personality,
       speechStyle: c.speechStyle,
       mannerisms: c.mannerisms,
@@ -303,10 +307,10 @@ export function Catalog() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-rajdhani font-bold text-white mb-2">Catálogo</h1>
-          <p className="text-text-muted">Opções prontas para 3D&T e D&D 5e.</p>
+          <p className="text-text-muted">Opções prontas para 3DeT Victory e D&D 5e.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={generateAllMedia} disabled={isGeneratingAll} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-purple text-white font-bold disabled:opacity-50">
+          <button onClick={generateAllMedia} disabled={isGeneratingAll} className="btn-secondary px-4 py-2 text-sm disabled:opacity-50">
             <Plus size={16} /> {isGeneratingAll ? 'Gerando...' : 'Gerar Imagens'}
           </button>
         </div>
@@ -320,14 +324,14 @@ export function Catalog() {
             placeholder="Buscar por nome ou tag..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white focus:border-neon-purple outline-none transition-all"
+            className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white focus:border-secondary outline-none transition-all"
           />
         </div>
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-text-muted" />
           <select value={system} onChange={(e) => setSystem(e.target.value as SystemKey)} className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-3 text-white">
             <option value="ALL">Todos sistemas</option>
-            <option value="3DT">3D&T</option>
+            <option value="3DT">3DeT Victory</option>
             <option value="DND5E">D&D 5e</option>
           </select>
         </div>
@@ -361,7 +365,7 @@ export function Catalog() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{s.name}</h3>
-                  <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">Dificuldade {variant?.difficulty ?? s.variants[0].difficulty}</p>
+                  <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">Dificuldade {variant?.difficulty ?? s.variants[0].difficulty}</p>
                   <p className="text-sm text-text-muted mb-3">{s.summary}</p>
                   <div className="space-y-1 mb-3">
                     {scenes.map((sc) => (
@@ -369,7 +373,7 @@ export function Catalog() {
                     ))}
                   </div>
                   <div className="flex justify-end">
-                    <button onClick={() => importStory(s.name, scenes)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-green text-black font-bold">
+                    <button onClick={() => importStory(s.name, scenes)} className="btn-primary px-4 py-2 text-sm">
                       <Plus size={16} /> Adicionar
                     </button>
                   </div>
@@ -397,7 +401,7 @@ export function Catalog() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{it.name}</h3>
-                  <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">{it.type}</p>
+                  <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">{it.type}</p>
                   <div className="grid grid-cols-5 gap-1 mb-3">
                     <Attr label="F" value={it.bonusF} />
                     <Attr label="H" value={it.bonusH} />
@@ -406,7 +410,7 @@ export function Catalog() {
                     <Attr label="PdF" value={it.bonusPdF} />
                   </div>
                   <div className="flex justify-end">
-                    <button onClick={() => importItem(it)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-green text-black font-bold">
+                    <button onClick={() => importItem(it)} className="btn-primary px-4 py-2 text-sm">
                       <Plus size={16} /> Adicionar ao personagem
                     </button>
                   </div>
@@ -424,7 +428,7 @@ export function Catalog() {
               </div>
               <div className="p-4">
                 <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{c.name}</h3>
-                <p className="text-xs text-neon-cyan uppercase tracking-wider font-bold mb-2">{c.role}</p>
+                <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">{c.role}</p>
                 <div className="grid grid-cols-5 gap-1 mb-3">
                   <Attr label="F" value={c.strength} />
                   <Attr label="H" value={c.skill} />
@@ -440,7 +444,7 @@ export function Catalog() {
                   </div>
                 ) : null}
                 <div className="flex justify-end">
-                  <button onClick={() => importCharacter(c as any)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-green text-black font-bold">
+                  <button onClick={() => importCharacter(c as any)} className="btn-primary px-4 py-2 text-sm">
                     <Plus size={16} /> Adicionar
                   </button>
                 </div>
@@ -459,7 +463,7 @@ function TabButton({ active, onClick, label, icon }: { active: boolean; onClick:
       onClick={onClick}
       className={cn(
         'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all border',
-        active ? 'bg-neon-purple/20 border-neon-purple text-white shadow-[0_0_10px_rgba(208,0,255,0.2)]' : 'bg-white/5 border-white/10 text-text-muted hover:bg-white/10 hover:text-white'
+        active ? 'bg-secondary/20 border-secondary text-white shadow-soft-md' : 'bg-white/5 border-white/10 text-text-muted hover:bg-white/10 hover:text-white'
       )}
     >
       {icon}

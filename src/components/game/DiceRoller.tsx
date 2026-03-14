@@ -44,7 +44,7 @@ export function DiceRoller({ className, onRoll }: { className?: string, onRoll?:
     <div className={cn("bg-black/40 border border-white/10 rounded-xl p-4 flex flex-col gap-4", className)}>
       <div className="flex items-center justify-between border-b border-white/5 pb-2">
         <h3 className="font-rajdhani font-bold text-white flex items-center gap-2">
-          <Dices className="text-neon-purple" size={20} />
+          <Dices className="text-secondary" size={20} />
           Rolador 3D&T
         </h3>
         {history.length > 0 && (
@@ -81,7 +81,7 @@ export function DiceRoller({ className, onRoll }: { className?: string, onRoll?:
                   {roll.results.map((r, i) => (
                     <div key={i} className={cn(
                       "w-6 h-6 rounded flex items-center justify-center text-xs font-bold border",
-                      r === 6 ? "bg-neon-green/20 border-neon-green text-neon-green" :
+                      r === 6 ? "bg-accent/20 border-accent text-accent" :
                       r === 1 ? "bg-red-500/20 border-red-500 text-red-500" :
                       "bg-black/40 border-white/10 text-white"
                     )}>
@@ -89,7 +89,7 @@ export function DiceRoller({ className, onRoll }: { className?: string, onRoll?:
                     </div>
                   ))}
                 </div>
-                <div className="text-xl font-bold font-rajdhani text-neon-cyan">
+                <div className="text-xl font-bold font-rajdhani text-primary">
                   {roll.total}
                 </div>
               </div>
@@ -97,7 +97,7 @@ export function DiceRoller({ className, onRoll }: { className?: string, onRoll?:
                   6 is always good, 1 is bad. 
               */}
               {roll.diceCount > 1 && roll.results.every(r => r === 6) && (
-                <div className="text-[10px] text-neon-green font-bold mt-1 text-center animate-pulse">CRÍTICO!</div>
+                <div className="text-[10px] text-accent font-bold mt-1 text-center animate-pulse">CRÍTICO!</div>
               )}
               {roll.diceCount > 1 && roll.results.every(r => r === 1) && (
                 <div className="text-[10px] text-red-500 font-bold mt-1 text-center">FALHA CRÍTICA!</div>
@@ -115,10 +115,10 @@ function RollButton({ count, onClick, disabled }: { count: number, onClick: () =
     <button
       onClick={onClick}
       disabled={disabled}
-      className="group relative overflow-hidden bg-white/5 hover:bg-neon-purple/20 border border-white/10 hover:border-neon-purple rounded-lg p-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      className="group relative overflow-hidden bg-white/5 hover:bg-secondary/20 border border-white/10 hover:border-secondary rounded-lg p-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <div className="flex flex-col items-center gap-1">
-        <span className="text-lg font-bold font-rajdhani text-white group-hover:text-neon-purple transition-colors">
+        <span className="text-lg font-bold font-rajdhani text-white group-hover:text-secondary transition-colors">
           {count}d6
         </span>
       </div>

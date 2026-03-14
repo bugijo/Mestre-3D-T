@@ -21,7 +21,7 @@ body {
   justify-content: center;
 
   /* Direct Background - The most robust way */
-  background-image: url('../assets/login-bg.png') !important;
+  background-image: url('../assets/login-bg.webp') !important;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;

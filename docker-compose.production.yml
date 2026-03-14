@@ -1,0 +1,9 @@
+services:
+  mestre3dt-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mestre3dt-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped

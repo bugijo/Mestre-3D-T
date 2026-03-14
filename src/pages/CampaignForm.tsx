@@ -1,35 +1,59 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Save } from 'lucide-react'
 import { useAppStore } from '@/store/AppStore'
 import { ImageUpload } from '@/components/ui/ImageUpload'
+import { PageHero } from '@/components/ui/PageHero'
+import {
+  DEFAULT_CAMPAIGN_SYSTEM,
+  SUPPORTED_CAMPAIGN_SYSTEMS,
+  type SupportedCampaignSystem,
+  isSupportedCampaignSystem,
+  normalizeCampaignSystem,
+} from '@/lib/campaignSystems'
 
 export function CampaignForm() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const { state, createCampaign, updateCampaign } = useAppStore()!
-  
+
   const [title, setTitle] = useState('')
-  const [system, setSystem] = useState('3D&T Alpha')
+  const [system, setSystem] = useState<SupportedCampaignSystem | ''>(DEFAULT_CAMPAIGN_SYSTEM)
   const [description, setDescription] = useState('')
   const [cover, setCover] = useState<string>('')
-  
+  const [systemNotice, setSystemNotice] = useState<string | null>(null)
+
   const isEditing = !!id
+  const campaignCharacterCount = id ? state.characters.filter((character) => character.campaignId === id).length : 0
+  const canEditSystem = !isEditing || campaignCharacterCount === 0
 
   useEffect(() => {
-    if (id) {
-      const campaign = state.campaigns.find(c => c.id === id)
-      if (campaign) {
-        setTitle(campaign.title)
-        setSystem(campaign.system)
-        setDescription(campaign.description)
-        setCover(campaign.coverDataUrl || '')
-      }
+    if (!id) {
+      setSystem(DEFAULT_CAMPAIGN_SYSTEM)
+      setSystemNotice(null)
+      return
     }
+    const campaign = state.campaigns.find((entry) => entry.id === id)
+    if (!campaign) return
+    const normalizedSystem = normalizeCampaignSystem(campaign.system)
+    setTitle(campaign.title)
+    setSystem(isSupportedCampaignSystem(normalizedSystem) ? normalizedSystem : '')
+    setDescription(campaign.description)
+    setCover(campaign.coverDataUrl || '')
+    if (!isSupportedCampaignSystem(normalizedSystem)) {
+      setSystemNotice(`A campanha usa "${campaign.system}", que nao possui criacao guiada suportada nesta versao. Escolha uma base oficial antes de salvar.`)
+      return
+    }
+    if (normalizedSystem !== campaign.system) {
+      setSystemNotice(`Sistema legado detectado: "${campaign.system}". Ao salvar, a campanha sera alinhada para "${normalizedSystem}".`)
+      return
+    }
+    setSystemNotice(null)
   }, [id, state.campaigns])
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!title.trim() || !system) return
 
     if (isEditing && id) {
       updateCampaign(id, {
@@ -46,61 +70,67 @@ export function CampaignForm() {
         coverDataUrl: cover,
       })
     }
-    
+
     navigate(isEditing ? `/campaigns/${id}` : '/campaigns')
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-surface/50 backdrop-blur-md rounded-2xl border border-white/10 p-8 shadow-2xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-rajdhani font-bold text-white">{isEditing ? 'Editar Campanha' : 'Nova Campanha'}</h1>
-          <p className="text-gray-400">{isEditing ? 'Atualize os detalhes da sua aventura' : 'Prepare o cenário para sua próxima aventura'}</p>
-        </div>
+    <div className="space-y-8 pb-12">
+      <PageHero
+        eyebrow="Configuracao narrativa"
+        title={isEditing ? 'Editar campanha' : 'Nova campanha'}
+        description={isEditing ? 'Atualize os detalhes da sua aventura sem quebrar a consistencia visual da mesa.' : 'Configure o cenario da proxima jornada com estrutura clara e pronta para jogo.'}
+        actions={
+          <button type="button" onClick={() => navigate('/campaigns')} className="btn-ghost">
+            <ArrowLeft size={16} />
+            Voltar para campanhas
+          </button>
+        }
+      />
 
+      <div className="app-panel mx-auto w-full max-w-3xl p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-neon-cyan font-rajdhani">Título da Campanha</label>
-            <input 
-              type="text" 
+            <label className="field-label">Titulo da campanha</label>
+            <input
+              type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(event) => setTitle(event.target.value)}
               placeholder="Ex: A Lenda de Arton"
-              className="w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-neon-purple focus:ring-1 focus:ring-neon-purple outline-none transition-all placeholder:text-gray-600"
+              className="field"
               required
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neon-cyan font-rajdhani">Sistema de Regras</label>
-              <select 
-                value={system}
-                onChange={(e) => setSystem(e.target.value)}
-                className="w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-neon-purple outline-none appearance-none"
-              >
-                <option value="3D&T Alpha">3D&T Alpha</option>
-                <option value="3D&T Victory">3D&T Victory</option>
-                <option value="Tormenta20">Tormenta20</option>
-                <option value="D&D 5e">D&D 5e</option>
-                <option value="Outro">Outro</option>
+              <label className="field-label">Sistema de regras</label>
+              <select value={system} onChange={(event) => setSystem(event.target.value as SupportedCampaignSystem | '')} className="field" disabled={!canEditSystem}>
+                {!system ? <option value="">Selecione um sistema suportado</option> : null}
+                {SUPPORTED_CAMPAIGN_SYSTEMS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
+              {systemNotice ? <p className="text-sm text-amber-200">{systemNotice}</p> : null}
+              {!canEditSystem ? <p className="text-sm text-text-muted">O sistema fica travado depois que a campanha recebe personagens.</p> : null}
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-neon-cyan font-rajdhani">Descrição / Sinopse</label>
-            <textarea 
+            <label className="field-label">Descricao / Sinopse</label>
+            <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(event) => setDescription(event.target.value)}
               placeholder="Descreva brevemente o enredo principal..."
               rows={4}
-              className="w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-neon-purple outline-none transition-all placeholder:text-gray-600 resize-none"
+              className="field resize-none"
             />
           </div>
 
           <div className="space-y-2">
-            <ImageUpload 
+            <ImageUpload
               label="Capa da Campanha"
               currentImage={cover}
               onImageSelected={setCover}
@@ -108,19 +138,13 @@ export function CampaignForm() {
             />
           </div>
 
-          <div className="pt-4 flex gap-4">
-            <button 
-              type="button" 
-              onClick={() => navigate('/campaigns')}
-              className="flex-1 px-6 py-3 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors font-rajdhani font-bold"
-            >
+          <div className="flex flex-col gap-4 pt-4 sm:flex-row">
+            <button type="button" onClick={() => navigate('/campaigns')} className="btn-ghost flex-1">
               Cancelar
             </button>
-            <button 
-              type="submit" 
-              className="flex-1 px-6 py-3 rounded-lg bg-neon-purple text-white font-rajdhani font-bold hover:bg-neon-purple/80 hover:shadow-[0_0_20px_rgba(208,0,255,0.4)] transition-all"
-            >
-              {isEditing ? 'Salvar Alterações' : 'Criar Campanha'}
+            <button type="submit" className="btn-primary flex-1">
+              <Save size={16} />
+              {isEditing ? 'Salvar alteracoes' : 'Criar campanha'}
             </button>
           </div>
         </form>

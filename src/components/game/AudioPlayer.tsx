@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Play, Pause, Volume2, VolumeX, Music, Square } from 'lucide-react'
 import { useAppStore } from '@/store/AppStore'
 import { cn } from '@/lib/cn'
+import { logError } from '@/lib/logger'
 
 export function AudioPlayer() {
   const { state, playTrack, pauseTrack, resumeTrack, stopTrack, setVolume, toggleMute } = useAppStore()
@@ -22,7 +23,7 @@ export function AudioPlayer() {
             const r = audioRef.current.play()
             if (r && typeof (r as any).catch === 'function') {
               ;(r as any).catch((err: unknown) => {
-                console.error("Audio playback failed:", err)
+                logError('audio:playback', err, { currentTrackUrl })
                 if (isPlaying) pauseTrack()
               })
             }

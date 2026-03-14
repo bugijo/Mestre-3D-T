@@ -1,16 +1,19 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppStore } from '@/store/AppStore'
 import { Plus, Search, Users, User, Skull, Crown, Sword, Heart } from 'lucide-react'
+import { useAppStore } from '@/store/AppStore'
 import { cn } from '@/lib/cn'
-import type { Character, CharacterType } from '@/domain/models'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { PageHero } from '@/components/ui/PageHero'
+import { MetricTile } from '@/components/ui/MetricTile'
+import { getCharacterMaxHp, getCharacterMaxMp, type Character, type CharacterType } from '@/domain/models'
 
 const TYPE_LABELS: Record<CharacterType, string> = {
   PLAYER: 'Jogador',
   NPC: 'NPC',
   ENEMY: 'Inimigo',
   BOSS: 'Chefe',
-  COMPANION: 'Aliado'
+  COMPANION: 'Aliado',
 }
 
 const TYPE_ICONS: Record<CharacterType, React.ElementType> = {
@@ -18,137 +21,169 @@ const TYPE_ICONS: Record<CharacterType, React.ElementType> = {
   NPC: Users,
   ENEMY: Skull,
   BOSS: Crown,
-  COMPANION: Heart
+  COMPANION: Heart,
 }
 
 const TYPE_COLORS: Record<CharacterType, string> = {
-  PLAYER: 'text-neon-blue',
-  NPC: 'text-neon-purple',
+  PLAYER: 'text-accent',
+  NPC: 'text-secondary',
   ENEMY: 'text-red-500',
   BOSS: 'text-yellow-500',
-  COMPANION: 'text-neon-green'
+  COMPANION: 'text-primary',
 }
 
 export function CharacterList() {
-  const { state, deleteCharacter } = useAppStore()!
+  const { state, deleteCharacter } = useAppStore()
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<CharacterType | 'ALL'>('ALL')
+  const [pendingDelete, setPendingDelete] = useState<Character | null>(null)
 
   const filteredCharacters = useMemo(() => {
-    return state.characters.filter(char => {
-      const matchesSearch = char.name.toLowerCase().includes(search.toLowerCase()) || 
-                           char.role.toLowerCase().includes(search.toLowerCase())
-      const matchesType = typeFilter === 'ALL' || char.type === typeFilter
-      return matchesSearch && matchesType
-    }).sort((a, b) => b.updatedAt - a.updatedAt)
+    return state.characters
+      .filter((character) => {
+        const normalizedSearch = search.toLowerCase()
+        const matchesSearch =
+          character.name.toLowerCase().includes(normalizedSearch) ||
+          character.role.toLowerCase().includes(normalizedSearch)
+        const matchesType = typeFilter === 'ALL' || character.type === typeFilter
+        return matchesSearch && matchesType
+      })
+      .sort((a, b) => b.updatedAt - a.updatedAt)
   }, [state.characters, search, typeFilter])
 
+  const playerCount = state.characters.filter((entry) => entry.type === 'PLAYER').length
+  const npcCount = state.characters.filter((entry) => entry.type === 'NPC').length
+  const hostileCount = state.characters.filter((entry) => entry.type === 'ENEMY' || entry.type === 'BOSS').length
+
   return (
-    <div className="h-full overflow-y-auto p-6 pb-20">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-rajdhani font-bold text-white mb-2">Bestiário & NPCs</h1>
-          <p className="text-text-muted">Gerencie todos os personagens, inimigos e criaturas.</p>
-        </div>
-        
-        <Link 
-          to="/characters/new"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-purple text-white font-rajdhani font-bold hover:bg-neon-purple/80 hover:shadow-[0_0_15px_rgba(208,0,255,0.4)] transition-all"
-        >
-          <Plus size={20} />
-          Novo Personagem
-        </Link>
-      </div>
+    <div className="space-y-8 pb-20">
+      <PageHero
+        eyebrow="Gestao de entidades"
+        title={
+          <>
+            Bestiario e <span className="text-gradient-secondary">personagens</span>
+          </>
+        }
+        description="Controle jogadores, NPCs, aliados e ameacas com filtros rapidos, visualizacao clara de atributos e acesso direto ao editor."
+        actions={
+          <Link to="/characters/new" className="btn-primary">
+            <Plus size={18} />
+            Novo Personagem
+          </Link>
+        }
+      />
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
-          <input 
-            type="text" 
-            placeholder="Buscar por nome ou função..." 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white focus:border-neon-purple outline-none transition-all"
-          />
+      <section className="grid gap-4 md:grid-cols-3">
+        <MetricTile icon={Users} label="Jogadores" value={`${playerCount}`} detail="Personagens de participante" tone="success" />
+        <MetricTile icon={User} label="NPCs" value={`${npcCount}`} detail="Atores de narrativa e suporte" tone="secondary" />
+        <MetricTile icon={Skull} label="Ameacas" value={`${hostileCount}`} detail="Inimigos e chefes cadastrados" tone="primary" />
+      </section>
+
+      <div className="app-panel p-4 md:p-5">
+        <div className="mb-4 text-sm text-text-muted">
+          Filtre por tipo e busque por nome ou funcao para localizar rapidamente qualquer ficha da campanha.
         </div>
-        
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          <FilterButton 
-            active={typeFilter === 'ALL'} 
-            onClick={() => setTypeFilter('ALL')}
-            label="Todos"
-          />
-          {(Object.keys(TYPE_LABELS) as CharacterType[]).map(type => (
-            <FilterButton 
-              key={type}
-              active={typeFilter === type}
-              onClick={() => setTypeFilter(type)}
-              label={TYPE_LABELS[type]}
-              icon={TYPE_ICONS[type]}
+        <div className="flex flex-col gap-4 md:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+            <input
+              type="text"
+              placeholder="Buscar por nome ou funcao..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="field pl-10"
             />
-          ))}
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+            <FilterButton active={typeFilter === 'ALL'} onClick={() => setTypeFilter('ALL')} label="Todos" />
+            {(Object.keys(TYPE_LABELS) as CharacterType[]).map((type) => (
+              <FilterButton
+                key={type}
+                active={typeFilter === type}
+                onClick={() => setTypeFilter(type)}
+                label={TYPE_LABELS[type]}
+                icon={TYPE_ICONS[type]}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredCharacters.map(char => (
-          <CharacterCard key={char.id} character={char} onDelete={() => deleteCharacter(char.id)} />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        {filteredCharacters.map((character) => (
+          <CharacterCard key={character.id} character={character} onDelete={() => setPendingDelete(character)} />
         ))}
-        
-        {filteredCharacters.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-text-muted border border-dashed border-white/10 rounded-2xl bg-white/5">
+
+        {filteredCharacters.length === 0 ? (
+          <div className="app-panel-muted col-span-full flex flex-col items-center justify-center py-20 text-text-muted">
             <Users size={48} className="mb-4 opacity-50" />
             <p className="text-lg font-medium">Nenhum personagem encontrado</p>
             <p className="text-sm">Tente ajustar os filtros ou crie um novo personagem.</p>
           </div>
-        )}
+        ) : null}
       </div>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Excluir personagem"
+        description={
+          pendingDelete
+            ? `O personagem ${pendingDelete.name} sera removido e desvinculado de cenas e combates relacionados.`
+            : ''
+        }
+        confirmLabel="Excluir personagem"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (!pendingDelete) return
+          deleteCharacter(pendingDelete.id)
+          setPendingDelete(null)
+        }}
+      />
     </div>
   )
 }
 
-function FilterButton({ active, onClick, label, icon: Icon }: { active: boolean, onClick: () => void, label: string, icon?: React.ElementType }) {
+function FilterButton({
+  active,
+  onClick,
+  label,
+  icon: Icon,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  icon?: React.ElementType
+}) {
   return (
-    <button 
+    <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all border",
-        active 
-          ? "bg-neon-purple/20 border-neon-purple text-white shadow-[0_0_10px_rgba(208,0,255,0.2)]" 
-          : "bg-white/5 border-white/10 text-text-muted hover:bg-white/10 hover:text-white"
+        'flex items-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-medium transition-all',
+        active
+          ? 'border-secondary/35 bg-secondary/15 text-white shadow-neon-purple'
+          : 'border-white/10 bg-white/[0.03] text-text-muted hover:bg-white/[0.08] hover:text-white',
       )}
     >
-      {Icon && <Icon size={14} />}
+      {Icon ? <Icon size={14} /> : null}
       {label}
     </button>
   )
 }
 
-function CharacterCard({ character, onDelete }: { character: Character, onDelete: () => void }) {
+function CharacterCard({ character, onDelete }: { character: Character; onDelete: () => void }) {
   const Icon = TYPE_ICONS[character.type]
-  
-  const handleDelete = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (confirm(`Tem certeza que deseja excluir ${character.name}?`)) {
-      onDelete()
-    }
-  }
 
   return (
-    <Link 
+    <Link
       to={`/characters/${character.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface/40 backdrop-blur-sm transition-all hover:border-neon-cyan/50 hover:bg-surface/60 hover:-translate-y-1"
+      className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[rgba(15,27,45,0.72)] shadow-soft-md backdrop-blur-md transition-all hover:-translate-y-1 hover:border-secondary/30"
     >
-      {/* Image / Avatar */}
-      <div className="relative h-48 w-full overflow-hidden bg-black/40">
+      <div className="relative h-52 w-full overflow-hidden bg-black/40">
         {character.imageUri ? (
-          <img 
-            src={character.imageUri} 
-            alt={character.name} 
+          <img
+            src={character.imageUri}
+            alt={character.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
@@ -156,46 +191,45 @@ function CharacterCard({ character, onDelete }: { character: Character, onDelete
             <User size={48} className="text-white/10" />
           </div>
         )}
-        
-        {/* Type Badge */}
-        <div className="absolute top-3 left-3 px-2 py-1 rounded bg-black/60 backdrop-blur border border-white/10 text-xs font-bold text-white flex items-center gap-1.5">
+
+        <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-xs font-bold text-white backdrop-blur">
           <Icon size={12} className={TYPE_COLORS[character.type]} />
           {TYPE_LABELS[character.type]}
         </div>
 
-        {/* Delete Button (Hover) */}
-        <button 
-          onClick={handleDelete}
-          className="absolute top-3 right-3 p-2 rounded bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
+        <button
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            onDelete()
+          }}
+          className="absolute right-3 top-3 rounded-xl bg-black/60 p-2 text-white opacity-0 transition-opacity hover:bg-red-500 hover:text-white group-hover:opacity-100"
           title="Excluir"
         >
           <Skull size={14} />
         </button>
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col p-4 flex-1">
-        <h3 className="font-rajdhani font-bold text-lg text-white mb-1 truncate">{character.name}</h3>
-        <p className="text-xs text-neon-cyan mb-3 uppercase tracking-wider font-bold">{character.role || 'Sem função definida'}</p>
-        
-        {/* Attributes Mini-Grid */}
-        <div className="grid grid-cols-5 gap-1 mb-4">
-          <AttributeBox label="F" value={character.strength} />
-          <AttributeBox label="H" value={character.skill} />
-          <AttributeBox label="R" value={character.resistance} />
-          <AttributeBox label="A" value={character.armor} />
-          <AttributeBox label="PdF" value={character.firepower} />
-        </div>
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="mb-1 truncate font-rajdhani text-lg font-bold text-white">{character.name}</h3>
+        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-secondary">
+          {character.role || 'Sem funcao definida'}
+        </p>
 
-        {/* Stats */}
-        <div className="mt-auto flex justify-between items-center text-xs font-bold text-text-muted bg-white/5 rounded-lg p-2">
+        {character.dnd ? <DndAttributeGrid character={character} /> : <ThreeDetAttributeGrid character={character} />}
+
+        <div className="mt-auto flex items-center justify-between rounded-xl bg-white/[0.06] p-2 text-xs font-bold text-text-muted">
           <div className="flex items-center gap-1">
             <Heart size={12} className="text-red-500" />
-            <span>{character.currentHp}/{Math.max(1, character.resistance * 5)} PV</span>
+            <span>
+              {character.currentHp}/{getCharacterMaxHp(character)} PV
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <Sword size={12} className="text-blue-500" />
-            <span>{character.currentMp}/{Math.max(1, character.resistance * 5)} PM</span>
+            <span>
+              {character.dnd ? `CA ${character.dnd.armorClass}` : `${character.currentMp}/${getCharacterMaxMp(character)} PM`}
+            </span>
           </div>
         </div>
       </div>
@@ -203,11 +237,37 @@ function CharacterCard({ character, onDelete }: { character: Character, onDelete
   )
 }
 
-function AttributeBox({ label, value }: { label: string, value: number }) {
+function AttributeBox({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="flex flex-col items-center bg-black/30 rounded border border-white/5 p-1">
-      <span className="text-[10px] text-text-muted font-bold">{label}</span>
+    <div className="flex flex-col items-center rounded-lg border border-white/10 bg-black/30 p-1">
+      <span className="text-[10px] font-bold text-text-muted">{label}</span>
       <span className="text-sm font-bold text-white">{value}</span>
+    </div>
+  )
+}
+
+function ThreeDetAttributeGrid({ character }: { character: Character }) {
+  return (
+    <div className="mb-4 grid grid-cols-5 gap-1">
+      <AttributeBox label="P" value={character.strength} />
+      <AttributeBox label="H" value={character.skill} />
+      <AttributeBox label="R" value={character.resistance} />
+      <AttributeBox label="A" value={character.armor} />
+      <AttributeBox label="PdF" value={character.firepower} />
+    </div>
+  )
+}
+
+function DndAttributeGrid({ character }: { character: Character }) {
+  if (!character.dnd) return null
+  return (
+    <div className="mb-4 grid grid-cols-3 gap-1">
+      <AttributeBox label="STR" value={character.dnd.abilityScores.STR} />
+      <AttributeBox label="DEX" value={character.dnd.abilityScores.DEX} />
+      <AttributeBox label="CON" value={character.dnd.abilityScores.CON} />
+      <AttributeBox label="INT" value={character.dnd.abilityScores.INT} />
+      <AttributeBox label="WIS" value={character.dnd.abilityScores.WIS} />
+      <AttributeBox label="CHA" value={character.dnd.abilityScores.CHA} />
     </div>
   )
 }

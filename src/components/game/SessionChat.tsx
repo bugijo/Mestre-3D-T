@@ -69,7 +69,7 @@ export function SessionChat({ sessionKey, className }: { sessionKey: string, cla
           type="text"
           aria-label="Nome do usuário"
           placeholder="Seu nome"
-          className="text-xs bg-black/30 border border-white/10 rounded px-2 py-1 text-white w-32 focus:border-neon-purple outline-none"
+          className="text-xs bg-black/30 border border-white/10 rounded px-2 py-1 text-white w-32 focus:border-secondary outline-none"
           value={user}
           onChange={(e) => setUser(e.target.value)}
         />
@@ -98,12 +98,12 @@ export function SessionChat({ sessionKey, className }: { sessionKey: string, cla
           type="text"
           aria-label="Mensagem"
           placeholder="Escreva uma mensagem..."
-          className="flex-1 bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:border-neon-purple outline-none"
+          className="flex-1 bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:border-secondary outline-none"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
         />
-        <button onClick={send} aria-label="Enviar mensagem" className="p-2 bg-white/5 hover:bg-neon-purple/20 hover:text-neon-purple rounded-lg transition-colors border border-white/10">
+        <button onClick={send} aria-label="Enviar mensagem" className="p-2 bg-white/5 hover:bg-secondary/20 hover:text-secondary rounded-lg transition-colors border border-white/10">
           <Send size={16} />
         </button>
       </div>

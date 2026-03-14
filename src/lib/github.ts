@@ -1,3 +1,5 @@
+import { logError, logInfo } from '@/lib/logger'
+
 type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 
 type GithubRepoTarget = { owner: string; repo: string; branch?: string }
@@ -42,8 +44,11 @@ function resolveToken() {
 
 function notify(msg: string, kind: 'success' | 'error' | 'info' = 'info') {
   if (SETTINGS.notifications?.console) {
-    const tag = kind === 'error' ? '[GitHub][Erro]' : kind === 'success' ? '[GitHub][OK]' : '[GitHub]'
-    console[kind === 'error' ? 'error' : 'log'](`${tag} ${msg}`)
+    if (kind === 'error') {
+      logError('github:notify', msg)
+    } else {
+      logInfo('github:notify', msg, { kind })
+    }
   }
   if (SETTINGS.notifications?.inGame) {
     ;(window as any).notifyInGame?.(msg, kind)

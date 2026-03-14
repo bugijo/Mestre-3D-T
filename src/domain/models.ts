@@ -101,6 +101,7 @@ export type Character = {
   disadvantages: string[]
   equipment: EquipmentItem[]
   powers: Power[]
+  threeDet?: ThreeDetCharacterData
   dnd?: DndCharacterData
 
   campaignId: string | null
@@ -198,6 +199,19 @@ export type SessionState = {
   notes: SessionNote[]
 }
 
+export type SessionSummary = {
+  id: string
+  campaignId: string | null
+  campaignTitle: string
+  startedAt: number | null
+  endedAt: number
+  durationMs: number
+  sceneNames: string[]
+  npcNames: string[]
+  defeatedEnemyNames: string[]
+  importantNotes: string[]
+}
+
 export type SettingsState = {
   nextSessionAt: number
 }
@@ -211,6 +225,52 @@ export type AudioState = {
 
 export type GameSystem = 'DND5E' | '3DT'
 export type DndAbilityKey = 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA'
+export type ThreeDetSkillId =
+  | 'ARTES'
+  | 'ESPORTE'
+  | 'INFLUENCIA'
+  | 'LUTA'
+  | 'MANHA'
+  | 'MISTICA'
+  | 'PERCEPCAO'
+  | 'SABER'
+  | 'SUSTENTO'
+
+export type ThreeDetTraitId =
+  | 'AGIL'
+  | 'ARTEFATO'
+  | 'ATAQUE_ESPECIAL'
+  | 'CARISMATICO'
+  | 'FORTE'
+  | 'GENIO'
+  | 'ILUSAO'
+  | 'MAGIA'
+  | 'RESOLUTO'
+  | 'SENTIDO'
+  | 'VIGOROSO'
+  | 'ANTIPATICO'
+  | 'ATRAPALHADO'
+  | 'DIFERENTE'
+  | 'FRACOTE'
+  | 'FRAGIL'
+  | 'INDECISO'
+  | 'TAPADO'
+
+export type ThreeDetArchetypeId = 'HUMANO' | 'ELFO' | 'KEMONO' | 'OSTEON'
+
+export type ThreeDetCharacterData = {
+  edition: 'VICTORY'
+  archetypeId: ThreeDetArchetypeId | null
+  skillIds: ThreeDetSkillId[]
+  advantageIds: ThreeDetTraitId[]
+  disadvantageIds: ThreeDetTraitId[]
+  pointsBudget: number
+  pointsSpent: number
+  disadvantagePoints: number
+  maxHp: number
+  maxMp: number
+}
+
 export type DndCharacterData = {
   level: number
   class: string
@@ -220,6 +280,7 @@ export type DndCharacterData = {
   proficiencyBonus: number
   armorClass: number
   maxHp: number
+  startingEquipment?: string[]
 }
 
 export type RewardRule = {
@@ -256,6 +317,7 @@ export type AppSnapshot = {
   session: SessionState
   settings: SettingsState
   audio: AudioState
+  sessionHistory: SessionSummary[]
   rewardTables: RewardRule[]
   rewardEvents: RewardEvent[]
 }
@@ -266,5 +328,33 @@ export function calcMaxHp(resistance: number) {
 
 export function calcMaxMp(resistance: number) {
   return Math.max(0, Math.floor(resistance) * 5)
+}
+
+export function calcVictoryMaxHp(resistance: number) {
+  return Math.max(1, Math.floor(resistance) * 5)
+}
+
+export function calcVictoryMaxMp(skill: number) {
+  return Math.max(1, Math.floor(skill) * 5)
+}
+
+export function isDndCharacter(character: Pick<Character, 'dnd'>) {
+  return Boolean(character.dnd)
+}
+
+export function isThreeDetVictoryCharacter(character: Pick<Character, 'threeDet'>) {
+  return character.threeDet?.edition === 'VICTORY'
+}
+
+export function getCharacterMaxHp(character: Pick<Character, 'currentHp' | 'resistance' | 'dnd' | 'threeDet'>) {
+  if (character.dnd?.maxHp != null) return Math.max(1, character.dnd.maxHp)
+  if (character.threeDet?.maxHp != null) return Math.max(1, character.threeDet.maxHp)
+  return Math.max(1, calcMaxHp(character.resistance) || character.currentHp || 1)
+}
+
+export function getCharacterMaxMp(character: Pick<Character, 'currentMp' | 'resistance' | 'dnd' | 'threeDet'>) {
+  if (character.threeDet?.maxMp != null) return Math.max(1, character.threeDet.maxMp)
+  if (character.dnd) return 0
+  return Math.max(0, calcMaxMp(character.resistance) || character.currentMp || 0)
 }
 

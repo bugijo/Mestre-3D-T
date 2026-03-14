@@ -1,0 +1,1302 @@
+[
+  {
+    "name": "Espada Curta do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 104,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 485,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Sussurro",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 340,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Tempestade",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 185,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 147,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Tempestade",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 192,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada da Aurora",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 225,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 303,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas do Crepúsculo",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 398,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco da Tempestade",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 174,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta do Véu",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 247,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto do Sussurro",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 200,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Sussurro",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 461,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Vigília",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 395,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico da Aurora",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 377,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada do Véu",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 433,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 288,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Sussurro",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 384,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Tempestade",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 388,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco da Aurora",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 357,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta da Aurora",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 433,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 394,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 102,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro do Sussurro",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 172,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 55,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada do Véu",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 301,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 102,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília da Vigília",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 279,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 320,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Véu",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 306,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta da Aurora",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 178,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 185,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve da Vigília",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 156,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 294,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 481,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 101,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada da Vigília",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 103,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Sussurro",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 83,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas do Sussurro",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 431,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Sussurro",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 301,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta do Crepúsculo",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 321,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto do Sussurro",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 127,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Véu",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 315,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro do Véu",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 471,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 388,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 419,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada da Tempestade",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 192,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Véu",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 414,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Vigília",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 457,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Véu",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 297,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta do Sussurro",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 146,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 300,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve da Tempestade",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 158,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Aurora",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 493,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Sussurro",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 90,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Vigília",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 477,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 199,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Véu",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 241,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 467,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco da Vigília",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 364,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 372,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto do Véu",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 225,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Crepúsculo",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 256,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 61,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 254,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 135,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada da Vigília",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 372,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 150,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Vigília",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 363,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Sussurro",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 270,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 321,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto da Aurora",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 147,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Sussurro",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 158,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Aurora",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 442,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 254,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada do Crepúsculo",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 109,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 93,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília da Aurora",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 226,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Aurora",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 317,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Véu",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 432,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 71,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto do Sussurro",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 115,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve da Aurora",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 458,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Aurora",
+    "type": "WEAPON",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 307,
+    "visualPrompt": "Item weapon com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Sussurro",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 147,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Vigília",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 425,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 227,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília do Sussurro",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 223,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas da Vigília",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 329,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco do Sussurro",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 194,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Espada Curta do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 381,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Arco Composto da Tempestade",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 421,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Escudo Leve do Crepúsculo",
+    "type": "CONSUMABLE",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 385,
+    "visualPrompt": "Item consumable com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Armadura de Couro da Aurora",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 139,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Cajado Rúnico do Crepúsculo",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "épico",
+    "estimatedValue": 436,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Adaga Enfeitiçada da Vigília",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "incomum",
+    "estimatedValue": 244,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Lança Equilibrada do Crepúsculo",
+    "type": "ACCESSORY",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "comum",
+    "estimatedValue": 94,
+    "visualPrompt": "Item accessory com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Elmo da Vigília da Tempestade",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 207,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Botas Silenciosas do Crepúsculo",
+    "type": "SHIELD",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "raro",
+    "estimatedValue": 269,
+    "visualPrompt": "Item shield com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  },
+  {
+    "name": "Amuleto do Foco da Tempestade",
+    "type": "ARMOR",
+    "visualDescription": "Peça de artesanato robusto com acabamento polido e runas tênues próximas às arestas. Linhas angulares e proporções equilibradas sugerem manufatura precisa, com leve brilho quando exposta à chama, indicando liga especial ou encantamento sutil.",
+    "properties": [
+      "Bônus moderado a manuseio e precisão",
+      "Resistência a intempéries e desgaste",
+      "Compatível com alquimia leve para manutenção"
+    ],
+    "rarity": "lendário",
+    "estimatedValue": 193,
+    "visualPrompt": "Item armor com metal escuro e detalhes luminosos em azul, sobre mesa de madeira em salão medieval, iluminação quente, estilo neon/arcano, foco no objeto com fundo suavemente desfocado."
+  }
+]

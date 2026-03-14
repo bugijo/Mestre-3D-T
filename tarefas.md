@@ -3,7 +3,7 @@
 ## 1. Visão Geral
 Migração e evolução do "Mestre 3D&T" para uma plataforma **Web/PWA** moderna, substituindo o app Android original. O foco é manter a identidade visual (Glassmorphism) e as funcionalidades de gestão de RPG, garantindo acessibilidade e performance em navegadores.
 
-**Status Atual:** 🟡 Em Migração (Fase 1)
+**Status Atual:** 🟡 Em Migração (Fase 5)
 - Código Android original recuperado parcialmente em `/reference` para consulta de lógica.
 - Estrutura Web (Vite/React) inicializada na raiz.
 
@@ -25,11 +25,11 @@ Migração e evolução do "Mestre 3D&T" para uma plataforma **Web/PWA** moderna
     - [x] Documentação de Anexos (`docs/regras-de-anexos.md`).
 
 ### 📜 Fase 2: Gestão Narrativa (CRUDs)
-- [ ] **Campanhas e Arcos**
+- [x] **Campanhas e Arcos**
     - [x] UI: Cards de Campanha (Grid responsivo).
     - [x] Form: Criar/Editar Campanha (Integrar `ImageUpload`).
     - [x] Hierarquia: Campanha -> Arcos -> Cenas.
-- [ ] **Bestiário e NPCs**
+- [x] **Bestiário e NPCs**
     - [x] UI: Lista de NPCs com filtros (Tipo, Nível).
     - [x] Form: Ficha de NPC com atributos 3D&T (Cálculo auto de PV/PM).
     - [x] Importação de dados legados (Skipped - Sem dados fonte).
@@ -51,6 +51,13 @@ Migração e evolução do "Mestre 3D&T" para uma plataforma **Web/PWA** moderna
 - [x] **Persistência**
     - [x] Implementar IndexedDB (Nativo) para dados offline (URGENTE para imagens).
     - [ ] Sync opcional com Supabase (Requer credenciais/setup futuro).
+- [x] **Polimento do Dashboard**
+    - [x] Dados reais de campanhas e progresso.
+    - [x] Controle de data da próxima sessão.
+- [x] **Design System e Identidade Visual**
+    - [x] Definir tokens semânticos (Primary, Secondary, Accent).
+    - [x] Remover referências hardcoded a cores neon.
+    - [x] Padronizar componentes de UI (Botões, Cards, Inputs).
 - [x] **PWA Features**
     - [x] Manifesto (`manifest.json`) e Ícones (Gerado via Plugin).
     - [x] Service Worker para cache de assets e funcionamento offline (vite-plugin-pwa).

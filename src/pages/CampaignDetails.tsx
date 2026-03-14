@@ -1,351 +1,817 @@
-import { useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Image as ImageIcon,
+  Link2,
+  Play,
+  Plus,
+  Save,
+  ShieldAlert,
+  Sparkles,
+} from 'lucide-react'
 import { useAppStore } from '@/store/AppStore'
-import { Plus, Edit2, Trash2, ChevronDown, ChevronRight, Map, Play, Image as ImageIcon } from 'lucide-react'
-import { ImageUpload } from '@/components/ui/ImageUpload'
 import { ImageGenerator } from '@/components/ui/ImageGenerator'
+import { ImageUpload } from '@/components/ui/ImageUpload'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { cn } from '@/lib/cn'
-import type { Arc, Scene } from '@/domain/models'
+import type { Arc, Character, Mood, RollTrigger, Scene } from '@/domain/models'
+import { createId } from '@/lib/id'
+import { isDndCampaignSystem } from '@/lib/campaignSystems'
+
+const MOODS: Mood[] = ['neutral', 'calm', 'tense', 'epic', 'mysterious']
+const DEFAULT_TRIGGER = {
+  situation: '',
+  testType: 'Teste',
+  attribute: 'Habilidade',
+  difficulty: 'Normal',
+  onSuccess: '',
+  onFailure: '',
+}
+
+type PendingDelete =
+  | { type: 'campaign'; campaignId: string; label: string }
+  | { type: 'arc'; arcId: string; label: string }
+  | { type: 'scene'; sceneId: string; label: string }
+  | null
 
 export function CampaignDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { state, deleteCampaign, createArc, updateArc, deleteArc, createScene } = useAppStore()!
-  
-  const campaign = state.campaigns.find(c => c.id === id)
-  const arcs = state.arcs.filter(a => a.campaignId === id).sort((a, b) => a.orderIndex - b.orderIndex)
-  
+  const {
+    state,
+    createArc,
+    createScene,
+    deleteArc,
+    deleteCampaign,
+    deleteScene,
+    linkCharacterToScene,
+    setActiveScene,
+    startSession,
+    unlinkCharacterFromScene,
+    updateArc,
+    updateScene,
+  } = useAppStore()
+
+  const campaign = state.campaigns.find((entry) => entry.id === id)
+  const arcs = useMemo(
+    () => state.arcs.filter((entry) => entry.campaignId === id).sort((a, b) => a.orderIndex - b.orderIndex),
+    [id, state.arcs],
+  )
+  const campaignScenes = useMemo(
+    () => state.scenes.filter((entry) => entry.campaignId === id).sort((a, b) => a.orderIndex - b.orderIndex),
+    [id, state.scenes],
+  )
+  const campaignCharacters = useMemo(
+    () => state.characters.filter((entry) => entry.campaignId === id),
+    [id, state.characters],
+  )
+
   const [expandedArcs, setExpandedArcs] = useState<Record<string, boolean>>({})
-  
+  const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null)
+  const [newArcName, setNewArcName] = useState('')
+  const [newArcDescription, setNewArcDescription] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null)
+
+  useEffect(() => {
+    if (!campaignScenes.length) {
+      setSelectedSceneId(null)
+      return
+    }
+    setSelectedSceneId((current) =>
+      current && campaignScenes.some((scene) => scene.id === current) ? current : campaignScenes[0].id,
+    )
+  }, [campaignScenes])
+
   if (!campaign) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 text-text-muted">
-        <h2 className="text-xl">Campaign not found</h2>
-        <Link to="/campaigns" className="text-neon-purple hover:underline">Back to Campaigns</Link>
+        <h2 className="text-xl">Campanha não encontrada</h2>
+        <Link to="/campaigns" className="text-secondary hover:underline">
+          Voltar para campanhas
+        </Link>
       </div>
     )
   }
 
+  const selectedScene = campaignScenes.find((scene) => scene.id === selectedSceneId) ?? null
+
   const handleDeleteCampaign = () => {
-    if (confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
-      deleteCampaign(campaign.id)
-      navigate('/campaigns')
-    }
+    setPendingDelete({ type: 'campaign', campaignId: campaign.id, label: campaign.title })
   }
 
   const handleCreateArc = () => {
-    const name = prompt('Enter Arc Name:')
-    if (name) {
-      const arc = createArc(campaign.id, name, '')
-      setExpandedArcs(prev => ({ ...prev, [arc.id]: true }))
-    }
+    const name = newArcName.trim()
+    if (!name) return
+    const arc = createArc(campaign.id, name, newArcDescription.trim())
+    setExpandedArcs((current) => ({ ...current, [arc.id]: true }))
+    setNewArcName('')
+    setNewArcDescription('')
   }
 
   const handleCreateScene = (arcId: string) => {
-    const name = prompt('Enter Scene Name:')
-    if (name) {
-      const isDnd = campaign.system?.toLowerCase().includes('5e')
-      const data = isDnd
-        ? {
-            description: 'Gancho inicial com pista clara e NPC relevante.',
-            objective: 'Explorar a área, obter pistas e decidir próximo passo.',
-            mood: 'mysterious' as const,
-            opening: 'Um mensageiro exausto chega com um mapa marcado e um pedido urgente.'
-          }
-        : {
-            description: 'Ação direta com foco em desafio e narrativa leve.',
-            objective: 'Superar o obstáculo com estilo e improviso.',
-            mood: 'epic' as const,
-            opening: 'Explosões ecoam à distância; é hora de agir sem hesitar.'
-          }
-      createScene(campaign.id, arcId, {
-        name,
-        description: data.description,
-        objective: data.objective,
-        mood: data.mood,
-        opening: data.opening,
-      })
-    }
-  }
-
-  const toggleArc = (arcId: string) => {
-    setExpandedArcs(prev => ({ ...prev, [arcId]: !prev[arcId] }))
+    const template = isDndCampaignSystem(campaign.system)
+      ? {
+          name: 'Nova Cena 5e',
+          description: 'Encontro com gancho claro, espaço para exploração e resolução em grupo.',
+          objective: 'Investigar o local, obter pistas e decidir a próxima ação.',
+          mood: 'mysterious' as const,
+          opening: 'As tochas tremulam quando uma nova presença entra no cenário.',
+        }
+      : {
+          name: 'Nova Cena 3D&T',
+          description: 'Cena dinâmica com conflito direto, pistas visuais e espaço para improviso.',
+          objective: 'Superar o obstáculo e avançar a narrativa com estilo.',
+          mood: 'epic' as const,
+          opening: 'Um clarão corta o horizonte e todos percebem que a ação começou.',
+        }
+    const scene = createScene(campaign.id, arcId, template)
+    setExpandedArcs((current) => ({ ...current, [arcId]: true }))
+    setSelectedSceneId(scene.id)
   }
 
   return (
-    <div className="h-full overflow-y-auto pb-20">
-      {/* Hero Header */}
-      <div className="relative h-64 w-full overflow-hidden">
+    <div className="space-y-8 pb-20">
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10">
         {campaign.coverDataUrl ? (
-          <img 
-            src={campaign.coverDataUrl} 
-            alt={campaign.title} 
-            className="h-full w-full object-cover opacity-60"
-          />
+          <img src={campaign.coverDataUrl} alt={campaign.title} className="h-72 w-full object-cover opacity-55" />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-purple-900 to-black opacity-60" />
+          <div className="h-72 w-full bg-[radial-gradient(circle_at_top,_rgba(0,255,157,0.18),_transparent_35%),linear-gradient(135deg,#14081f,#04060c)]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        
-        <div className="absolute bottom-0 left-0 w-full p-6">
-          <div className="container mx-auto max-w-4xl flex justify-between items-end">
-            <div>
-              <h1 className="text-4xl font-display font-bold text-white mb-2 text-shadow-neon">{campaign.title}</h1>
-              <p className="text-text-muted max-w-2xl">{campaign.description}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/65 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="mb-2 text-xs uppercase tracking-[0.35em] text-text-muted">Workspace Narrativo</p>
+              <h1 className="text-4xl font-display font-bold text-white">{campaign.title}</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-text-muted">
+                {campaign.description || 'Campanha sem sinopse. Use os campos abaixo para estruturar arcos, cenas e gatilhos.'}
+              </p>
             </div>
-            <div className="flex gap-2">
-              <button 
+            <div className="flex flex-wrap gap-2">
+              <button
                 onClick={() => navigate(`/campaigns/${campaign.id}/edit`)}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors"
-                title="Edit Campaign"
+                className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/15"
               >
-                <Edit2 size={20} />
+                Editar campanha
               </button>
-              <button 
+              <button
                 onClick={handleDeleteCampaign}
-                className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors"
-                title="Delete Campaign"
+                className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20"
               >
-                <Trash2 size={20} />
+                Excluir
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Content */}
-      <div className="container mx-auto max-w-4xl p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-rajdhani font-semibold text-neon-blue">Story Arcs</h2>
-          <button 
-            onClick={handleCreateArc}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-purple/20 text-neon-purple border border-neon-purple/50 hover:bg-neon-purple/30 transition-all"
-          >
-            <Plus size={18} />
-            New Arc
-          </button>
-        </div>
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.35fr]">
+        <aside className="space-y-6">
+          <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <BookOpen size={16} className="text-accent" />
+              <h2 className="text-sm font-bold uppercase tracking-[0.24em] text-white">Arcos</h2>
+            </div>
 
-        <div className="space-y-4">
-          {arcs.map(arc => (
-            <ArcItem 
-              key={arc.id} 
-              arc={arc} 
-              isExpanded={!!expandedArcs[arc.id]} 
-              onToggle={() => toggleArc(arc.id)}
-              onAddScene={() => handleCreateScene(arc.id)}
-              onDelete={() => deleteArc(arc.id)}
-              onRename={(name) => updateArc(arc.id, { name })}
-            />
-          ))}
-          
-          {arcs.length === 0 && (
-            <div className="text-center py-12 border border-dashed border-white/10 rounded-xl bg-white/5">
-              <p className="text-text-muted mb-4">No arcs created yet.</p>
-              <button 
+            <div className="mb-4 space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <input
+                type="text"
+                value={newArcName}
+                onChange={(event) => setNewArcName(event.target.value)}
+                placeholder="Nome do novo arco"
+                className="field"
+              />
+              <textarea
+                value={newArcDescription}
+                onChange={(event) => setNewArcDescription(event.target.value)}
+                rows={3}
+                placeholder="Objetivo e tom do arco"
+                className="field"
+              />
+              <button
                 onClick={handleCreateArc}
-                className="text-neon-blue hover:underline"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-secondary/40 bg-secondary/15 px-3 py-2 text-sm text-white transition hover:bg-secondary/25"
               >
-                Create your first story arc
+                <Plus size={14} />
+                Criar arco
               </button>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
 
-function ArcItem({ 
-  arc, 
-  isExpanded, 
-  onToggle, 
-  onAddScene, 
-  onDelete,
-  onRename
-}: { 
-  arc: Arc
-  isExpanded: boolean
-  onToggle: () => void
-  onAddScene: () => void
-  onDelete: () => void
-  onRename: (name: string) => void
-}) {
-  const { state } = useAppStore()!
-  const scenes = state.scenes.filter(s => s.arcId === arc.id).sort((a, b) => a.orderIndex - b.orderIndex)
-  const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState(arc.name)
+            <div className="space-y-3">
+              {arcs.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-6 text-center text-sm text-text-muted">
+                  Nenhum arco criado ainda.
+                </div>
+              ) : (
+                arcs.map((arc) => (
+                  <ArcWorkspaceCard
+                    key={arc.id}
+                    arc={arc}
+                    expanded={!!expandedArcs[arc.id]}
+                    onToggle={() => setExpandedArcs((current) => ({ ...current, [arc.id]: !current[arc.id] }))}
+                    onCreateScene={() => handleCreateScene(arc.id)}
+                    onDelete={() => {
+                      setPendingDelete({ type: 'arc', arcId: arc.id, label: arc.name })
+                    }}
+                    onSave={(patch) => updateArc(arc.id, patch)}
+                    scenes={campaignScenes.filter((scene) => scene.arcId === arc.id)}
+                    selectedSceneId={selectedSceneId}
+                    onSelectScene={(sceneId) => setSelectedSceneId(sceneId)}
+                  />
+                ))
+              )}
+            </div>
+          </section>
 
-  const handleSave = () => {
-    if (name.trim()) {
-      onRename(name)
-      setIsEditing(false)
-    }
-  }
+          <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <Link2 size={16} className="text-primary" />
+              <h2 className="text-sm font-bold uppercase tracking-[0.24em] text-white">Preparação Rápida</h2>
+            </div>
+            <div className="space-y-2 text-sm text-text-muted">
+              <p>{arcs.length} arcos</p>
+              <p>{campaignScenes.length} cenas</p>
+              <p>{campaignCharacters.length} personagens vinculados</p>
+              <p>{campaignScenes.filter((scene) => scene.isCompleted).length} cenas concluídas</p>
+            </div>
+          </section>
+        </aside>
 
-  return (
-    <div className="rounded-xl border border-white/10 bg-surface overflow-hidden transition-all hover:border-white/20">
-      <div className="flex items-center p-4 gap-4 bg-white/5">
-        <button onClick={onToggle} className="text-text-muted hover:text-white transition-colors">
-          {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-        </button>
-        
-        <div className="flex-1">
-          {isEditing ? (
-            <input 
-              autoFocus
-              type="text" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)}
-              onBlur={handleSave}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-              className="bg-background px-2 py-1 rounded text-white border border-neon-blue w-full max-w-md outline-none"
+        <main>
+          {selectedScene ? (
+            <SceneEditor
+              key={selectedScene.id}
+              campaignId={campaign.id}
+              characters={campaignCharacters}
+              onDelete={() => {
+                setPendingDelete({ type: 'scene', sceneId: selectedScene.id, label: selectedScene.name })
+              }}
+              onLaunch={() => {
+                setActiveScene(campaign.id, selectedScene.id)
+                if (!state.session.isActive) startSession()
+                navigate('/session')
+              }}
+              onLinkCharacter={(characterId, kind, enabled) => {
+                if (enabled) {
+                  linkCharacterToScene(selectedScene.id, characterId, kind)
+                  return
+                }
+                unlinkCharacterFromScene(selectedScene.id, characterId, kind)
+              }}
+              onSave={(patch) => updateScene(selectedScene.id, patch)}
+              scene={selectedScene}
             />
           ) : (
-            <h3 
-              className="font-bold text-lg text-white cursor-pointer hover:text-neon-blue transition-colors"
-              onClick={() => setIsEditing(true)}
-            >
-              {arc.name}
-            </h3>
+            <div className="rounded-3xl border border-dashed border-white/10 bg-white/5 px-6 py-16 text-center text-text-muted">
+              Selecione uma cena para editar seus detalhes.
+            </div>
           )}
-          <span className="text-xs text-text-muted uppercase tracking-wider">{scenes.length} Scenes</span>
-        </div>
+        </main>
+      </div>
 
-        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={() => setIsEditing(!isEditing)} className="p-2 text-text-muted hover:text-white">
-            <Edit2 size={16} />
-          </button>
-          <button onClick={onDelete} className="p-2 text-text-muted hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={
+          pendingDelete?.type === 'campaign'
+            ? 'Excluir campanha'
+            : pendingDelete?.type === 'arc'
+              ? 'Excluir arco'
+              : 'Excluir cena'
+        }
+        description={
+          pendingDelete?.type === 'campaign'
+            ? `A campanha ${pendingDelete.label} e todos os seus arcos e cenas serao removidos.`
+            : pendingDelete?.type === 'arc'
+              ? `O arco ${pendingDelete.label} e todas as cenas vinculadas a ele serao removidos.`
+              : pendingDelete
+                ? `A cena ${pendingDelete.label} sera removida permanentemente do workspace.`
+                : ''
+        }
+        confirmLabel="Excluir"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (!pendingDelete) return
+          if (pendingDelete.type === 'campaign') {
+            deleteCampaign(pendingDelete.campaignId)
+            navigate('/campaigns')
+          } else if (pendingDelete.type === 'arc') {
+            deleteArc(pendingDelete.arcId)
+          } else {
+            deleteScene(pendingDelete.sceneId)
+          }
+          setPendingDelete(null)
+        }}
+      />
+    </div>
+  )
+}
+
+function ArcWorkspaceCard({
+  arc,
+  expanded,
+  onCreateScene,
+  onDelete,
+  onSave,
+  onSelectScene,
+  onToggle,
+  scenes,
+  selectedSceneId,
+}: {
+  arc: Arc
+  expanded: boolean
+  onCreateScene: () => void
+  onDelete: () => void
+  onSave: (patch: Partial<Arc>) => void
+  onSelectScene: (sceneId: string) => void
+  onToggle: () => void
+  scenes: Scene[]
+  selectedSceneId: string | null
+}) {
+  const [name, setName] = useState(arc.name)
+  const [description, setDescription] = useState(arc.description)
+
+  useEffect(() => {
+    setName(arc.name)
+    setDescription(arc.description)
+  }, [arc.description, arc.name])
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+      <div className="flex items-start gap-3 p-4">
+        <button onClick={onToggle} className="rounded-lg p-1 text-text-muted transition hover:bg-white/10 hover:text-white">
+          {expanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+        </button>
+        <div className="flex-1 space-y-3">
+          <input
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            onBlur={() => name.trim() && name !== arc.name && onSave({ name: name.trim() })}
+            className="field"
+          />
+          <textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            onBlur={() => description !== arc.description && onSave({ description: description.trim() })}
+            rows={2}
+            className="field text-xs text-text-muted"
+          />
+          <div className="flex items-center justify-between text-xs text-text-muted">
+            <span>{scenes.length} cenas</span>
+            <div className="flex gap-2">
+              <button onClick={onCreateScene} className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white transition hover:bg-white/10">
+                Nova cena
+              </button>
+              <button onClick={onDelete} className="rounded-lg border border-red-500/20 bg-red-500/10 px-2 py-1 text-red-200 transition hover:bg-red-500/20">
+                Excluir
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {isExpanded && (
-        <div className="p-4 bg-black/20 space-y-2 border-t border-white/5">
-          {scenes.map(scene => (
-            <SceneItem key={scene.id} scene={scene} />
-          ))}
-          
-          <button 
-            onClick={onAddScene}
-            className="w-full py-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 text-text-muted hover:text-white hover:bg-white/5 transition-all"
-          >
-            <Plus size={16} />
-            Add Scene
-          </button>
+      {expanded && (
+        <div className="space-y-2 border-t border-white/5 px-4 pb-4 pt-3">
+          {scenes.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-4 text-center text-xs text-text-muted">
+              Nenhuma cena neste arco.
+            </div>
+          ) : (
+            scenes.map((scene) => (
+              <button
+                key={scene.id}
+                onClick={() => onSelectScene(scene.id)}
+                className={cn(
+                  'w-full rounded-xl border px-3 py-3 text-left transition',
+                  selectedSceneId === scene.id
+                    ? 'border-secondary/40 bg-secondary/15'
+                    : 'border-white/10 bg-black/20 hover:border-white/20 hover:bg-black/30',
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">{scene.name}</div>
+                    <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">{scene.mood}</div>
+                  </div>
+                  {scene.isCompleted && <CheckCircle2 size={16} className="text-primary" />}
+                </div>
+              </button>
+            ))
+          )}
         </div>
       )}
     </div>
   )
 }
 
-function SceneItem({ scene }: { scene: Scene }) {
-  const { deleteScene, updateScene } = useAppStore()!
-  const [editingMedia, setEditingMedia] = useState(false)
-  const [bg, setBg] = useState<string>(scene.backgroundImageDataUrl || '')
-  const [mapImg, setMapImg] = useState<string>(scene.mapImageDataUrl || '')
+function SceneEditor({
+  campaignId,
+  characters,
+  onDelete,
+  onLaunch,
+  onLinkCharacter,
+  onSave,
+  scene,
+}: {
+  campaignId: string
+  characters: Character[]
+  onDelete: () => void
+  onLaunch: () => void
+  onLinkCharacter: (characterId: string, kind: 'npc' | 'enemy', enabled: boolean) => void
+  onSave: (patch: Partial<Scene>) => void
+  scene: Scene
+}) {
+  const [draft, setDraft] = useState(scene)
+  const [hookInput, setHookInput] = useState('')
+  const [triggerDraft, setTriggerDraft] = useState(DEFAULT_TRIGGER)
   const [showBgGen, setShowBgGen] = useState(false)
   const [showMapGen, setShowMapGen] = useState(false)
-  
-  return (
-    <div className="group p-3 rounded-lg bg-background hover:bg-white/5 border border-transparent hover:border-white/10 transition-all">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded bg-surface-highlight flex items-center justify-center text-text-muted">
-          <Map size={16} />
-        </div>
-        
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h4 className="font-medium text-white">{scene.name}</h4>
-            <span className={cn(
-              "text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider font-bold",
-              {
-                'bg-blue-500/20 text-blue-400': scene.mood === 'calm',
-                'bg-red-500/20 text-red-400': scene.mood === 'tense',
-                'bg-purple-500/20 text-purple-400': scene.mood === 'mysterious',
-                'bg-yellow-500/20 text-yellow-400': scene.mood === 'epic',
-                'bg-gray-500/20 text-gray-400': scene.mood === 'neutral',
-              }
-            )}>
-              {scene.mood}
-            </span>
-          </div>
-          <p className="text-xs text-text-muted truncate max-w-md">{scene.description || 'No description'}</p>
-        </div>
 
-        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="p-2 text-text-muted hover:text-neon-green" title="Play Scene">
-            <Play size={16} />
+  useEffect(() => {
+    setDraft(scene)
+    setHookInput('')
+    setTriggerDraft(DEFAULT_TRIGGER)
+  }, [scene])
+
+  const sceneCharacters = useMemo(
+    () => characters.filter((character) => character.campaignId === campaignId),
+    [campaignId, characters],
+  )
+  const npcs = sceneCharacters.filter((character) => character.type === 'NPC' || character.type === 'COMPANION')
+  const enemies = sceneCharacters.filter((character) => character.type === 'ENEMY' || character.type === 'BOSS')
+
+  const persist = (patch: Partial<Scene>) => {
+    const next = { ...draft, ...patch }
+    setDraft(next)
+    onSave(patch)
+  }
+
+  const addHook = () => {
+    const value = hookInput.trim()
+    if (!value || draft.hooks.includes(value)) return
+    persist({ hooks: [...draft.hooks, value] })
+    setHookInput('')
+  }
+
+  const addTrigger = () => {
+    if (!triggerDraft.situation.trim()) return
+    const trigger: RollTrigger = {
+      id: createId(),
+      situation: triggerDraft.situation.trim(),
+      testType: triggerDraft.testType.trim(),
+      attribute: triggerDraft.attribute.trim(),
+      difficulty: triggerDraft.difficulty.trim(),
+      onSuccess: triggerDraft.onSuccess.trim(),
+      onFailure: triggerDraft.onFailure.trim(),
+    }
+    persist({ triggers: [...draft.triggers, trigger] })
+    setTriggerDraft(DEFAULT_TRIGGER)
+  }
+
+  return (
+    <div className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="text-xs uppercase tracking-[0.28em] text-text-muted">Cena selecionada</p>
+          <h2 className="mt-2 text-3xl font-rajdhani font-bold text-white">{draft.name}</h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={onLaunch}
+            className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/15 px-4 py-2 text-sm text-white transition hover:bg-primary/25"
+          >
+            <Play size={15} />
+            Preparar na sessão
           </button>
-          <button onClick={() => setEditingMedia(v => !v)} className="p-2 text-text-muted hover:text-neon-purple" title="Editar Mídia">
-            <ImageIcon size={16} />
-          </button>
-          <button onClick={() => deleteScene(scene.id)} className="p-2 text-text-muted hover:text-red-500" title="Delete Scene">
-            <Trash2 size={16} />
+          <button
+            onClick={onDelete}
+            className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20"
+          >
+            Excluir cena
           </button>
         </div>
       </div>
 
-      {editingMedia && (
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <ImageUpload 
-              label="Fundo da Cena" 
-              currentImage={bg}
-              onImageSelected={(val: string) => { setBg(val); updateScene(scene.id, { backgroundImageDataUrl: val || null }) }}
-              config={{ compressionQuality: 0.7, maxSizeInBytes: 3 * 1024 * 1024, maxWidth: 1920, maxHeight: 1080 }}
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+          <Field label="Nome da cena">
+            <input
+              type="text"
+              value={draft.name}
+              onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
+              onBlur={() => draft.name.trim() && onSave({ name: draft.name.trim() })}
+              className="field"
             />
-            <div className="flex items-center justify-between">
-              <button type="button" onClick={()=>setShowBgGen(v=>!v)} className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15">
-                {showBgGen ? 'Ocultar Gerador' : 'Gerar Fundo'}
-              </button>
-              {bg && (
-                <span className="text-[10px] text-text-muted">{Math.round((bg.length/4)*3/1024)} KB</span>
+          </Field>
+          <Field label="Objetivo">
+            <textarea
+              value={draft.objective}
+              onChange={(event) => setDraft((current) => ({ ...current, objective: event.target.value }))}
+              onBlur={() => onSave({ objective: draft.objective.trim() })}
+              rows={3}
+              className="field"
+            />
+          </Field>
+          <Field label="Clima">
+            <select
+              value={draft.mood}
+              onChange={(event) => persist({ mood: event.target.value as Mood })}
+              className="field"
+            >
+              {MOODS.map((mood) => (
+                <option key={mood} value={mood}>
+                  {mood}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => persist({ isCompleted: !draft.isCompleted, completedAt: draft.isCompleted ? null : Date.now() })}
+              className={cn(
+                'rounded-xl border px-3 py-2 text-sm transition',
+                draft.isCompleted
+                  ? 'border-primary/30 bg-primary/15 text-white'
+                  : 'border-white/10 bg-white/5 text-text-muted hover:text-white',
               )}
-            </div>
-            {showBgGen && (
-              <div className="mt-2">
-                <ImageGenerator
-                  initialCategory={'SCENE'}
-                  onGenerated={(dataUrl)=>{
-                    setBg(dataUrl)
-                    updateScene(scene.id, { backgroundImageDataUrl: dataUrl })
-                  }}
-                />
-              </div>
-            )}
+            >
+              {draft.isCompleted ? 'Marcar como pendente' : 'Concluir cena'}
+            </button>
+            <button
+              onClick={() => persist({ soundtrackUrl: draft.soundtrackUrl ? null : 'https://' })}
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-muted transition hover:text-white"
+            >
+              {draft.soundtrackUrl ? 'Remover trilha' : 'Adicionar trilha'}
+            </button>
+          </div>
+          {draft.soundtrackUrl !== null && (
+            <Field label="URL da trilha">
+              <input
+                type="url"
+                value={draft.soundtrackUrl || ''}
+                onChange={(event) => setDraft((current) => ({ ...current, soundtrackUrl: event.target.value }))}
+                onBlur={() => onSave({ soundtrackUrl: draft.soundtrackUrl?.trim() || null })}
+                className="field"
+              />
+            </Field>
+          )}
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+          <Field label="Descrição / leitura">
+            <textarea
+              value={draft.description}
+              onChange={(event) => setDraft((current) => ({ ...current, description: event.target.value }))}
+              onBlur={() => onSave({ description: draft.description.trim() })}
+              rows={6}
+              className="field"
+            />
+          </Field>
+          <Field label="Abertura">
+            <textarea
+              value={draft.opening}
+              onChange={(event) => setDraft((current) => ({ ...current, opening: event.target.value }))}
+              onBlur={() => onSave({ opening: draft.opening.trim() })}
+              rows={4}
+              className="field"
+            />
+          </Field>
+        </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        <MediaEditorCard
+          image={draft.backgroundImageDataUrl}
+          label="Fundo da cena"
+          onChange={(value) => persist({ backgroundImageDataUrl: value || null })}
+          onToggleGenerator={() => setShowBgGen((current) => !current)}
+          showGenerator={showBgGen}
+          onGenerated={(value) => persist({ backgroundImageDataUrl: value })}
+        />
+        <MediaEditorCard
+          image={draft.mapImageDataUrl}
+          label="Mapa da cena"
+          onChange={(value) => persist({ mapImageDataUrl: value || null })}
+          onToggleGenerator={() => setShowMapGen((current) => !current)}
+          showGenerator={showMapGen}
+          onGenerated={(value) => persist({ mapImageDataUrl: value })}
+        />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="mb-4 flex items-center gap-2">
+            <Sparkles size={15} className="text-secondary" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-white">Hooks</h3>
+          </div>
+          <div className="mb-3 flex gap-2">
+            <input
+              type="text"
+              value={hookInput}
+              onChange={(event) => setHookInput(event.target.value)}
+              onKeyDown={(event) => event.key === 'Enter' && (event.preventDefault(), addHook())}
+              placeholder="Adicionar gancho narrativo"
+              className="field"
+            />
+            <button onClick={addHook} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white transition hover:bg-white/10">
+              Adicionar
+            </button>
           </div>
           <div className="space-y-2">
-            <ImageUpload 
-              label="Mapa da Cena" 
-              currentImage={mapImg}
-              onImageSelected={(val: string) => { setMapImg(val); updateScene(scene.id, { mapImageDataUrl: val || null }) }}
-              config={{ compressionQuality: 0.7, maxSizeInBytes: 3 * 1024 * 1024, maxWidth: 2048, maxHeight: 2048 }}
-            />
-            <div className="flex items-center justify-between">
-              <button type="button" onClick={()=>setShowMapGen(v=>!v)} className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15">
-                {showMapGen ? 'Ocultar Gerador' : 'Gerar Mapa'}
-              </button>
-              {mapImg && (
-                <span className="text-[10px] text-text-muted">{Math.round((mapImg.length/4)*3/1024)} KB</span>
-              )}
-            </div>
-            {showMapGen && (
-              <div className="mt-2">
-                <ImageGenerator
-                  initialCategory={'SCENE'}
-                  onGenerated={(dataUrl)=>{
-                    setMapImg(dataUrl)
-                    updateScene(scene.id, { mapImageDataUrl: dataUrl })
-                  }}
-                />
-              </div>
+            {draft.hooks.length === 0 ? (
+              <EmptyState text="Nenhum hook cadastrado." />
+            ) : (
+              draft.hooks.map((hook) => (
+                <div key={hook} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white">
+                  <span>{hook}</span>
+                  <button
+                    onClick={() => persist({ hooks: draft.hooks.filter((entry) => entry !== hook) })}
+                    className="rounded-lg bg-red-500/15 px-2 py-1 text-xs text-red-200 transition hover:bg-red-500/25"
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))
             )}
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="mb-4 flex items-center gap-2">
+            <ShieldAlert size={15} className="text-amber-300" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-white">Gatilhos de Rolagem</h3>
+          </div>
+          <div className="grid gap-2 md:grid-cols-2">
+            <input value={triggerDraft.situation} onChange={(event) => setTriggerDraft((current) => ({ ...current, situation: event.target.value }))} placeholder="Situação" className="field" />
+            <input value={triggerDraft.attribute} onChange={(event) => setTriggerDraft((current) => ({ ...current, attribute: event.target.value }))} placeholder="Atributo" className="field" />
+            <input value={triggerDraft.testType} onChange={(event) => setTriggerDraft((current) => ({ ...current, testType: event.target.value }))} placeholder="Tipo de teste" className="field" />
+            <input value={triggerDraft.difficulty} onChange={(event) => setTriggerDraft((current) => ({ ...current, difficulty: event.target.value }))} placeholder="Dificuldade" className="field" />
+            <textarea value={triggerDraft.onSuccess} onChange={(event) => setTriggerDraft((current) => ({ ...current, onSuccess: event.target.value }))} placeholder="Resultado em sucesso" rows={2} className="field md:col-span-2" />
+            <textarea value={triggerDraft.onFailure} onChange={(event) => setTriggerDraft((current) => ({ ...current, onFailure: event.target.value }))} placeholder="Resultado em falha" rows={2} className="field md:col-span-2" />
+          </div>
+          <button onClick={addTrigger} className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white transition hover:bg-white/10">
+            Salvar gatilho
+          </button>
+
+          <div className="mt-4 space-y-2">
+            {draft.triggers.length === 0 ? (
+              <EmptyState text="Nenhum gatilho cadastrado." />
+            ) : (
+              draft.triggers.map((trigger) => (
+                <article key={trigger.id} className="rounded-xl border border-white/10 bg-black/30 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-semibold text-white">{trigger.situation}</div>
+                      <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                        {trigger.attribute} • {trigger.testType} • {trigger.difficulty}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => persist({ triggers: draft.triggers.filter((entry) => entry.id !== trigger.id) })}
+                      className="rounded-lg bg-red-500/15 px-2 py-1 text-xs text-red-200 transition hover:bg-red-500/25"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                  <div className="mt-3 space-y-1 text-xs text-text-muted">
+                    <p><span className="text-primary">Sucesso:</span> {trigger.onSuccess || 'Sem descrição.'}</p>
+                    <p><span className="text-red-300">Falha:</span> {trigger.onFailure || 'Sem descrição.'}</p>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        <CharacterLinkCard
+          characters={npcs}
+          label="NPCs e aliados"
+          linkedIds={draft.npcIds}
+          onToggle={(characterId, enabled) => onLinkCharacter(characterId, 'npc', enabled)}
+        />
+        <CharacterLinkCard
+          characters={enemies}
+          label="Inimigos e chefes"
+          linkedIds={draft.enemyIds}
+          onToggle={(characterId, enabled) => onLinkCharacter(characterId, 'enemy', enabled)}
+        />
+      </section>
+
+      <div className="flex justify-end">
+        <button
+          onClick={() => onSave(draft)}
+          className="btn-primary px-4 py-2 text-sm"
+        >
+          <Save size={14} />
+          Salvar tudo
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function Field({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <label className="block space-y-2">
+      <span className="text-xs uppercase tracking-[0.22em] text-text-muted">{label}</span>
+      {children}
+    </label>
+  )
+}
+
+function MediaEditorCard({
+  image,
+  label,
+  onChange,
+  onGenerated,
+  onToggleGenerator,
+  showGenerator,
+}: {
+  image: string | null
+  label: string
+  onChange: (value: string) => void
+  onGenerated: (value: string) => void
+  onToggleGenerator: () => void
+  showGenerator: boolean
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <div className="mb-4 flex items-center gap-2">
+        <ImageIcon size={15} className="text-accent" />
+        <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-white">{label}</h3>
+      </div>
+      <ImageUpload
+        label={label}
+        currentImage={image || ''}
+        onImageSelected={onChange}
+        config={{ compressionQuality: 0.7, maxSizeInBytes: 3 * 1024 * 1024, maxWidth: 2048, maxHeight: 2048 }}
+      />
+      <div className="mt-3 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={onToggleGenerator}
+          className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white transition hover:bg-white/10"
+        >
+          {showGenerator ? 'Ocultar gerador' : 'Gerar imagem'}
+        </button>
+        <span className="text-[11px] text-text-muted">{image ? `${Math.round((image.length / 4) * 3 / 1024)} KB` : 'Sem imagem'}</span>
+      </div>
+      {showGenerator && (
+        <div className="mt-3">
+          <ImageGenerator initialCategory="SCENE" onGenerated={onGenerated} />
         </div>
       )}
     </div>
   )
+}
+
+function CharacterLinkCard({
+  characters,
+  label,
+  linkedIds,
+  onToggle,
+}: {
+  characters: Character[]
+  label: string
+  linkedIds: string[]
+  onToggle: (characterId: string, enabled: boolean) => void
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.24em] text-white">{label}</h3>
+      <div className="space-y-2">
+        {characters.length === 0 ? (
+          <EmptyState text="Nenhum personagem compatível encontrado." />
+        ) : (
+          characters.map((character) => {
+            const checked = linkedIds.includes(character.id)
+            return (
+              <label key={character.id} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
+                <div>
+                  <div className="text-sm font-semibold text-white">{character.name}</div>
+                  <div className="text-xs text-text-muted">{character.role || character.type}</div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(event) => onToggle(character.id, event.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-black/40 text-secondary focus:ring-secondary"
+                />
+              </label>
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
+}
+
+function EmptyState({ text }: { text: string }) {
+  return <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-5 text-center text-sm text-text-muted">{text}</div>
 }

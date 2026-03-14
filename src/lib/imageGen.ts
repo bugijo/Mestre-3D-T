@@ -32,6 +32,23 @@ function rng(seed: number) {
   }
 }
 
+const __IMG_CACHE = new Map<string, { dataUrl: string; meta: ImageMeta }>()
+
+function cacheKey(opts: ImageGenOptions) {
+  return JSON.stringify({
+    c: opts.category,
+    t: opts.title || '',
+    th: opts.theme || 'classic',
+    m: opts.mood || 'mysterious',
+    s: opts.seed || 0,
+    w: opts.width || 0,
+    h: opts.height || 0,
+    tb: !!opts.transparentBackground,
+    wm: opts.watermarkText || '',
+    go: !!opts.gridOverlay,
+  })
+}
+
 
 function palette(theme: ImageTheme, mood: NonNullable<ImageGenOptions['mood']>) {
   if (theme === 'classic') {
@@ -307,6 +324,9 @@ async function injectTextChunks(pngDataUrl: string, meta: Record<string, string>
 }
 
 export async function generateImage(opts: ImageGenOptions): Promise<{ dataUrl: string; meta: ImageMeta }> {
+  const key = cacheKey(opts)
+  const hit = __IMG_CACHE.get(key)
+  if (hit) return hit
   const w = Math.max(1, opts.width ?? 1920)
   const h = Math.max(1, opts.height ?? 1080)
   const seed = opts.seed ?? Math.floor(Math.random() * 2 ** 31)
@@ -336,7 +356,9 @@ export async function generateImage(opts: ImageGenOptions): Promise<{ dataUrl: s
       Seed: String(meta.seed),
       Theme: meta.theme,
     })
-    return { dataUrl: withText, meta }
+    const out = { dataUrl: withText, meta }
+    __IMG_CACHE.set(key, out)
+    return out
   }
   if (opts.transparentBackground) {
     ctx.clearRect(0, 0, w, h)
@@ -362,7 +384,9 @@ export async function generateImage(opts: ImageGenOptions): Promise<{ dataUrl: s
     Seed: String(meta.seed),
     Theme: meta.theme,
   })
-  return { dataUrl: withText, meta }
+  const out = { dataUrl: withText, meta }
+  __IMG_CACHE.set(key, out)
+  return out
 }
 
 export async function generateBatch(base: ImageGenOptions, count: number, variations?: Partial<ImageGenOptions>) {
@@ -374,4 +398,8 @@ export async function generateBatch(base: ImageGenOptions, count: number, variat
     out.push(img)
   }
   return out
+}
+
+export function __clearImageCache() {
+  __IMG_CACHE.clear()
 }

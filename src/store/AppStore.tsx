@@ -1,10 +1,17 @@
-import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
-import type { AppSnapshot, Arc, Campaign, Character, Combat, CombatParticipant, Scene, SessionNote } from '@/domain/models'
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import type { AppSnapshot, Arc, Campaign, Character, Combat, CombatParticipant, Condition, EquipmentItem, Scene, SessionNote, SessionSummary } from '@/domain/models'
 import type { RewardEvent, RewardGrant, RewardRule } from '@/domain/models'
-import { calcMaxHp, calcMaxMp } from '@/domain/models'
+import { getCharacterMaxHp, getCharacterMaxMp } from '@/domain/models'
 import { loadSnapshot } from '@/lib/storage'
 import { loadSnapshotFromDB, saveSnapshotToDB } from '@/lib/db'
 import { createId } from '@/lib/id'
+import { logError } from '@/lib/logger'
+import {
+  DEFAULT_CAMPAIGN_SYSTEM,
+  getSupportedCharacterSystemForCampaign,
+  isSupportedCampaignSystem,
+  normalizeCampaignSystem,
+} from '@/lib/campaignSystems'
 import { createDefaultSnapshot } from '@/store/defaultData'
 
 type AppState = AppSnapshot
@@ -21,12 +28,18 @@ type Action =
   | { type: 'SESSION/START' }
   | { type: 'SESSION/END' }
   | { type: 'SESSION/ADD_NOTE'; note: SessionNote }
+  | { type: 'SESSION/TOGGLE_NOTE_IMPORTANT'; noteId: string }
   | { type: 'SESSION/DELETE_NOTE'; noteId: string }
   | { type: 'CHARACTER/UPSERT'; character: Character }
   | { type: 'CHARACTER/DELETE'; characterId: string }
   | { type: 'SCENE/LINK_CHARACTER'; sceneId: string; characterId: string; kind: 'npc' | 'enemy' }
   | { type: 'SCENE/UNLINK_CHARACTER'; sceneId: string; characterId: string; kind: 'npc' | 'enemy' }
   | { type: 'CHARACTER/ADJUST_HP_MP'; characterId: string; hpDelta: number; mpDelta: number }
+  | { type: 'CHARACTER/ADD_EQUIPMENT'; characterId: string; item: EquipmentItem }
+  | { type: 'CHARACTER/REMOVE_EQUIPMENT'; characterId: string; itemId: string }
+  | { type: 'CHARACTER/TOGGLE_EQUIPMENT'; characterId: string; itemId: string }
+  | { type: 'CHARACTER/ADD_CONDITION'; characterId: string; condition: Condition }
+  | { type: 'CHARACTER/REMOVE_CONDITION'; characterId: string; conditionId: string }
   | { type: 'COMBAT/START'; sceneId: string; participants: CombatParticipant[] }
   | { type: 'COMBAT/END'; combatId: string }
   | { type: 'COMBAT/NEXT_TURN'; combatId: string }
@@ -57,6 +70,86 @@ function removeById<T extends { id: string }>(list: T[], id: string): T[] {
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
+}
+
+function ensureSupportedCampaignSystem(system: string) {
+  const normalized = normalizeCampaignSystem(system)
+  if (!isSupportedCampaignSystem(normalized)) {
+    throw new Error(`Sistema de campanha nao suportado no motor atual: ${system}.`)
+  }
+  return normalized
+}
+
+function assertCharacterMatchesCampaign(campaigns: Campaign[], character: Pick<Character, 'campaignId'> & Partial<Pick<Character, 'dnd'>>) {
+  if (!character.campaignId) return
+
+  const campaign = campaigns.find((entry) => entry.id === character.campaignId)
+  if (!campaign) return
+
+  const requiredSystem = getSupportedCharacterSystemForCampaign(campaign.system)
+  if (!requiredSystem) {
+    throw new Error(`A campanha "${campaign.title}" usa um sistema sem criacao guiada suportada.`)
+  }
+
+  const characterSystem = character.dnd ? 'DND5E' : '3DT'
+  if (characterSystem !== requiredSystem) {
+    throw new Error(`A ficha precisa usar o sistema ${campaign.system} da campanha vinculada.`)
+  }
+}
+
+function buildSessionSummary(state: AppState, endedAt: number): SessionSummary {
+  const campaign = state.campaigns.find((entry) => entry.id === state.session.activeCampaignId) ?? null
+  const sceneById = new Map(state.scenes.map((scene) => [scene.id, scene]))
+  const startedAt = state.session.startedAt
+  const sceneNames = Array.from(
+    new Set(
+      state.session.notes
+        .filter((note) => note.text.includes('Cena Iniciada:'))
+        .map((note) => note.text.split('Cena Iniciada:')[1]?.trim())
+        .filter(Boolean) as string[],
+    ),
+  )
+  const fallbackScene = state.scenes.find((scene) => scene.id === state.session.activeSceneId)?.name
+  if (sceneNames.length === 0 && fallbackScene) sceneNames.push(fallbackScene)
+
+  const combatsInWindow = state.combats.filter((combat) => {
+    if (!startedAt) return combat.sceneId === state.session.activeSceneId
+    const started = combat.startedAt >= startedAt && combat.startedAt <= endedAt
+    const ended = combat.endedAt != null && combat.endedAt >= startedAt && combat.endedAt <= endedAt
+    const sameCampaign = sceneById.get(combat.sceneId)?.campaignId === state.session.activeCampaignId
+    return sameCampaign && (started || ended || combat.isActive)
+  })
+
+  const npcNames = Array.from(
+    new Set(
+      combatsInWindow
+        .flatMap((combat) => combat.participants)
+        .filter((participant) => !participant.isPlayer)
+        .map((participant) => participant.name),
+    ),
+  )
+
+  const defeatedEnemyNames = Array.from(
+    new Set(
+      combatsInWindow
+        .flatMap((combat) => combat.participants)
+        .filter((participant) => !participant.isPlayer && participant.isDefeated)
+        .map((participant) => participant.name),
+    ),
+  )
+
+  return {
+    id: createId(),
+    campaignId: campaign?.id ?? null,
+    campaignTitle: campaign?.title ?? 'Sem campanha',
+    startedAt,
+    endedAt,
+    durationMs: startedAt ? Math.max(0, endedAt - startedAt) : 0,
+    sceneNames,
+    npcNames,
+    defeatedEnemyNames,
+    importantNotes: state.session.notes.filter((note) => note.important).map((note) => note.text),
+  }
 }
 
 function reducer(state: AppState, action: Action): AppState {
@@ -137,18 +230,32 @@ function reducer(state: AppState, action: Action): AppState {
       }
 
     case 'SESSION/END':
+      const endedAt = Date.now()
+      const summary = buildSessionSummary(state, endedAt)
       return {
         ...state,
         session: {
           ...state.session,
           isActive: false,
-          endedAt: Date.now(),
+          endedAt,
           activeCombatId: null,
         },
+        sessionHistory: [summary, ...state.sessionHistory].slice(0, 20),
       }
 
     case 'SESSION/ADD_NOTE':
       return { ...state, session: { ...state.session, notes: [action.note, ...state.session.notes] } }
+
+    case 'SESSION/TOGGLE_NOTE_IMPORTANT':
+      return {
+        ...state,
+        session: {
+          ...state.session,
+          notes: state.session.notes.map((note) =>
+            note.id === action.noteId ? { ...note, important: !note.important } : note,
+          ),
+        },
+      }
 
     case 'SESSION/DELETE_NOTE':
       return { ...state, session: { ...state.session, notes: state.session.notes.filter((n) => n.id !== action.noteId) } }
@@ -197,8 +304,8 @@ function reducer(state: AppState, action: Action): AppState {
     case 'CHARACTER/ADJUST_HP_MP': {
       const characters = state.characters.map((c) => {
         if (c.id !== action.characterId) return c
-        const maxHp = calcMaxHp(c.resistance)
-        const maxMp = calcMaxMp(c.resistance)
+        const maxHp = getCharacterMaxHp(c)
+        const maxMp = getCharacterMaxMp(c)
         return {
           ...c,
           currentHp: clamp(c.currentHp + action.hpDelta, 0, maxHp),
@@ -206,6 +313,73 @@ function reducer(state: AppState, action: Action): AppState {
           updatedAt: Date.now(),
         }
       })
+      return { ...state, characters }
+    }
+
+    case 'CHARACTER/ADD_EQUIPMENT': {
+      const characters = state.characters.map((c) =>
+        c.id === action.characterId
+          ? {
+              ...c,
+              equipment: [...c.equipment, action.item],
+              updatedAt: Date.now(),
+            }
+          : c,
+      )
+      return { ...state, characters }
+    }
+
+    case 'CHARACTER/REMOVE_EQUIPMENT': {
+      const characters = state.characters.map((c) =>
+        c.id === action.characterId
+          ? {
+              ...c,
+              equipment: c.equipment.filter((item) => item.id !== action.itemId),
+              updatedAt: Date.now(),
+            }
+          : c,
+      )
+      return { ...state, characters }
+    }
+
+    case 'CHARACTER/TOGGLE_EQUIPMENT': {
+      const characters = state.characters.map((c) =>
+        c.id === action.characterId
+          ? {
+              ...c,
+              equipment: c.equipment.map((item) =>
+                item.id === action.itemId ? { ...item, isEquipped: !item.isEquipped } : item,
+              ),
+              updatedAt: Date.now(),
+            }
+          : c,
+      )
+      return { ...state, characters }
+    }
+
+    case 'CHARACTER/ADD_CONDITION': {
+      const characters = state.characters.map((c) =>
+        c.id === action.characterId
+          ? {
+              ...c,
+              activeConditions: [action.condition, ...c.activeConditions],
+              updatedAt: Date.now(),
+            }
+          : c,
+      )
+      return { ...state, characters }
+    }
+
+    case 'CHARACTER/REMOVE_CONDITION': {
+      const characters = state.characters.map((c) =>
+        c.id === action.characterId
+          ? {
+              ...c,
+              activeConditions: c.activeConditions.filter((condition) => condition.id !== action.conditionId),
+              updatedAt: Date.now(),
+            }
+          : c,
+      )
       return { ...state, characters }
     }
 
@@ -387,6 +561,7 @@ function reducer(state: AppState, action: Action): AppState {
   startSession: () => void
   endSession: () => void
   addNote: (text: string, important: boolean) => void
+  toggleNoteImportant: (noteId: string) => void
   deleteNote: (noteId: string) => void
   createCharacter: (data: Omit<Character, 'id' | 'createdAt' | 'updatedAt'>) => Character
   updateCharacter: (id: string, data: Partial<Character>) => void
@@ -394,6 +569,11 @@ function reducer(state: AppState, action: Action): AppState {
   linkCharacterToScene: (sceneId: string, characterId: string, kind: 'npc' | 'enemy') => void
   unlinkCharacterFromScene: (sceneId: string, characterId: string, kind: 'npc' | 'enemy') => void
   adjustCharacterHpMp: (characterId: string, hpDelta: number, mpDelta: number) => void
+  addEquipmentToCharacter: (characterId: string, item: Omit<EquipmentItem, 'id'>) => EquipmentItem
+  removeEquipmentFromCharacter: (characterId: string, itemId: string) => void
+  toggleCharacterEquipment: (characterId: string, itemId: string) => void
+  addConditionToCharacter: (characterId: string, condition: Omit<Condition, 'id' | 'appliedAt'>) => Condition
+  removeConditionFromCharacter: (characterId: string, conditionId: string) => void
   startCombatFromScene: (sceneId: string) => void
   endCombat: (combatId: string) => void
   nextCombatTurn: (combatId: string) => void
@@ -416,6 +596,10 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
   export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, createDefaultSnapshot())
   const [isLoaded, setIsLoaded] = useState(false)
+  const syncChannelRef = useRef<BroadcastChannel | null>(null)
+  const suppressBroadcastRef = useRef(false)
+  const lastSerializedRef = useRef<string>('')
+  const clientIdRef = useRef(createId())
 
   // Initial Load (IndexedDB -> LocalStorage -> Default)
   useEffect(() => {
@@ -432,6 +616,9 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
           }
           if (!dbSnapshot.rewardEvents) {
             dbSnapshot.rewardEvents = []
+          }
+          if (!dbSnapshot.sessionHistory) {
+            dbSnapshot.sessionHistory = []
           }
           if (dbSnapshot.characters) {
             dbSnapshot.characters = dbSnapshot.characters.map((c: Character) => ({
@@ -457,6 +644,9 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
           if (!localSnapshot.rewardEvents) {
             localSnapshot.rewardEvents = []
           }
+          if (!localSnapshot.sessionHistory) {
+            localSnapshot.sessionHistory = []
+          }
           if (localSnapshot.characters) {
             localSnapshot.characters = localSnapshot.characters.map((c: Character) => ({
               ...c,
@@ -473,7 +663,7 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         // 3. Default
         setIsLoaded(true)
       } catch (error) {
-        console.error('Failed to load snapshot:', error)
+        logError('store:load-snapshot', error)
         setIsLoaded(true)
       }
     }
@@ -483,8 +673,49 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
   // Auto-save to IndexedDB
   useEffect(() => {
     if (!isLoaded) return
+    if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') return
+    const channel = new BroadcastChannel('mestre-3dt-app-sync')
+    syncChannelRef.current = channel
+    const onMessage = (event: MessageEvent) => {
+      const payload = event.data as { type?: string; clientId?: string; snapshot?: AppSnapshot } | null
+      if (!payload || payload.type !== 'SNAPSHOT_SYNC' || !payload.snapshot) return
+      if (payload.clientId === clientIdRef.current) return
+      const incoming = JSON.stringify(payload.snapshot)
+      if (incoming === lastSerializedRef.current) return
+      suppressBroadcastRef.current = true
+      lastSerializedRef.current = incoming
+      dispatch({ type: 'SNAPSHOT/REPLACE', snapshot: payload.snapshot })
+    }
+    channel.addEventListener('message', onMessage)
+    return () => {
+      channel.removeEventListener('message', onMessage)
+      channel.close()
+      syncChannelRef.current = null
+    }
+  }, [isLoaded])
+
+  useEffect(() => {
+    if (!isLoaded) return
     const timeout = setTimeout(() => {
-      saveSnapshotToDB(state)
+      const serialized = JSON.stringify(state)
+      if (serialized === lastSerializedRef.current && !suppressBroadcastRef.current) return
+      lastSerializedRef.current = serialized
+
+      saveSnapshotToDB(state).catch((error) => {
+        logError('store:save-snapshot', error)
+      })
+
+      if (syncChannelRef.current) {
+        if (suppressBroadcastRef.current) {
+          suppressBroadcastRef.current = false
+          return
+        }
+        syncChannelRef.current.postMessage({
+          type: 'SNAPSHOT_SYNC',
+          clientId: clientIdRef.current,
+          snapshot: state,
+        })
+      }
     }, 1000)
     return () => clearTimeout(timeout)
   }, [state, isLoaded])
@@ -494,10 +725,11 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
       state,
       replaceSnapshot: (snapshot) => dispatch({ type: 'SNAPSHOT/REPLACE', snapshot }),
       createCampaign: (data) => {
+        const system = ensureSupportedCampaignSystem(data.system)
         const campaign: Campaign = {
           id: createId(),
           title: data.title.trim(),
-          system: data.system.trim() || '3D&T',
+          system: system || DEFAULT_CAMPAIGN_SYSTEM,
           description: data.description.trim(),
           coverDataUrl: data.coverDataUrl ?? null,
           createdAt: Date.now(),
@@ -509,7 +741,15 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
       updateCampaign: (id, data) => {
         const existing = state.campaigns.find((c) => c.id === id)
         if (!existing) return
-        const campaign: Campaign = { ...existing, ...data, updatedAt: Date.now() }
+        const nextSystem = data.system === undefined ? existing.system : ensureSupportedCampaignSystem(data.system)
+        const currentSystem = normalizeCampaignSystem(existing.system)
+        const linkedCharacters = state.characters.filter((character) => character.campaignId === id)
+
+        if (linkedCharacters.length > 0 && nextSystem !== currentSystem) {
+          throw new Error('Nao e permitido trocar o sistema de uma campanha que ja possui personagens vinculados.')
+        }
+
+        const campaign: Campaign = { ...existing, ...data, system: nextSystem, updatedAt: Date.now() }
         dispatch({ type: 'CAMPAIGN/UPSERT', campaign })
       },
       deleteCampaign: (campaignId) => dispatch({ type: 'CAMPAIGN/DELETE', campaignId }),
@@ -575,8 +815,10 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         if (!trimmed) return
         dispatch({ type: 'SESSION/ADD_NOTE', note: { id: createId(), createdAt: Date.now(), text: trimmed, important } })
       },
+      toggleNoteImportant: (noteId) => dispatch({ type: 'SESSION/TOGGLE_NOTE_IMPORTANT', noteId }),
       deleteNote: (noteId) => dispatch({ type: 'SESSION/DELETE_NOTE', noteId }),
       createCharacter: (data) => {
+        assertCharacterMatchesCampaign(state.campaigns, data)
         const base: Character = {
           ...data,
           id: createId(),
@@ -585,12 +827,10 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
           xp: 0,
           gold: 0,
         }
-        const maxHp = calcMaxHp(base.resistance)
-        const maxMp = calcMaxMp(base.resistance)
         const character: Character = {
           ...base,
-          currentHp: clamp(base.currentHp ?? maxHp, 0, maxHp),
-          currentMp: clamp(base.currentMp ?? maxMp, 0, maxMp),
+          currentHp: clamp(base.currentHp ?? getCharacterMaxHp(base as Character), 0, getCharacterMaxHp(base as Character)),
+          currentMp: clamp(base.currentMp ?? getCharacterMaxMp(base as Character), 0, getCharacterMaxMp(base as Character)),
         }
         dispatch({ type: 'CHARACTER/UPSERT', character })
         return character
@@ -599,8 +839,9 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         const existing = state.characters.find((c) => c.id === id)
         if (!existing) return
         const character: Character = { ...existing, ...data, updatedAt: Date.now() }
-        const maxHp = calcMaxHp(character.resistance)
-        const maxMp = calcMaxMp(character.resistance)
+        assertCharacterMatchesCampaign(state.campaigns, character)
+        const maxHp = getCharacterMaxHp(character)
+        const maxMp = getCharacterMaxMp(character)
         dispatch({
           type: 'CHARACTER/UPSERT',
           character: {
@@ -614,17 +855,42 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
       linkCharacterToScene: (sceneId, characterId, kind) => dispatch({ type: 'SCENE/LINK_CHARACTER', sceneId, characterId, kind }),
       unlinkCharacterFromScene: (sceneId, characterId, kind) => dispatch({ type: 'SCENE/UNLINK_CHARACTER', sceneId, characterId, kind }),
       adjustCharacterHpMp: (characterId, hpDelta, mpDelta) => dispatch({ type: 'CHARACTER/ADJUST_HP_MP', characterId, hpDelta, mpDelta }),
+      addEquipmentToCharacter: (characterId, item) => {
+        const nextItem: EquipmentItem = { ...item, id: createId() }
+        dispatch({ type: 'CHARACTER/ADD_EQUIPMENT', characterId, item: nextItem })
+        return nextItem
+      },
+      removeEquipmentFromCharacter: (characterId, itemId) => dispatch({ type: 'CHARACTER/REMOVE_EQUIPMENT', characterId, itemId }),
+      toggleCharacterEquipment: (characterId, itemId) => dispatch({ type: 'CHARACTER/TOGGLE_EQUIPMENT', characterId, itemId }),
+      addConditionToCharacter: (characterId, condition) => {
+        const nextCondition: Condition = {
+          ...condition,
+          id: createId(),
+          appliedAt: Date.now(),
+        }
+        dispatch({ type: 'CHARACTER/ADD_CONDITION', characterId, condition: nextCondition })
+        return nextCondition
+      },
+      removeConditionFromCharacter: (characterId, conditionId) =>
+        dispatch({ type: 'CHARACTER/REMOVE_CONDITION', characterId, conditionId }),
       startCombatFromScene: (sceneId) => {
         const scene = state.scenes.find((s) => s.id === sceneId)
         if (!scene) return
         const characterById = new Map(state.characters.map((c) => [c.id, c]))
-        const ids = [...scene.npcIds, ...scene.enemyIds]
+        const playerIds = state.characters
+          .filter(
+            (character) =>
+              character.campaignId === scene.campaignId &&
+              (character.type === 'PLAYER' || character.type === 'COMPANION'),
+          )
+          .map((character) => character.id)
+        const ids = Array.from(new Set([...playerIds, ...scene.npcIds, ...scene.enemyIds]))
         const participants: CombatParticipant[] = ids
           .map((id) => characterById.get(id))
           .filter(Boolean)
           .map((c) => {
-            const maxHp = calcMaxHp(c!.resistance)
-            const maxMp = calcMaxMp(c!.resistance)
+            const maxHp = getCharacterMaxHp(c!)
+            const maxMp = getCharacterMaxMp(c!)
             return {
               id: createId(),
               characterId: c!.id,
@@ -696,8 +962,8 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
 
   if (!isLoaded) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background text-neon-purple gap-4">
-        <div className="w-12 h-12 border-4 border-neon-purple border-t-transparent rounded-full animate-spin" />
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background text-secondary gap-4">
+        <div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin" />
         <p className="animate-pulse">Carregando Grimório...</p>
       </div>
     )

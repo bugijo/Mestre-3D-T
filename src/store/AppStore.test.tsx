@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, render, waitFor } from '@testing-library/react'
 import { AppStoreProvider, useAppStore } from './AppStore'
 
 vi.mock('@/lib/db', () => ({
@@ -13,19 +13,24 @@ vi.mock('@/lib/storage', () => ({
 
 function Probe({ onChange }: { onChange: (api: ReturnType<typeof useAppStore>) => void }) {
   const api = useAppStore()
-  // Notificar a cada mudança de estado
   onChange(api)
   return null
 }
 
 describe('AppStoreProvider', () => {
-  it('inicia e encerra sessão atualizando flags', async () => {
+  beforeEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it('inicia e encerra sessao atualizando flags', async () => {
     let current: any
     render(
       <AppStoreProvider>
         <Probe onChange={(api) => (current = api)} />
-      </AppStoreProvider>
+      </AppStoreProvider>,
     )
+
     await waitFor(() => expect(!!current).toBe(true))
     current.startSession()
     await waitFor(() => expect(current.state.session.isActive).toBe(true))
@@ -33,18 +38,20 @@ describe('AppStoreProvider', () => {
     current.endSession()
     await waitFor(() => expect(current.state.session.isActive).toBe(false))
     expect(current.state.session.endedAt).not.toBeNull()
+    expect(current.state.sessionHistory.length).toBeGreaterThan(0)
   })
 
-  it('define cena ativa e registra nota automática', async () => {
+  it('define cena ativa e registra nota automatica', async () => {
     let current: any
     render(
       <AppStoreProvider>
         <Probe onChange={(api) => (current = api)} />
-      </AppStoreProvider>
+      </AppStoreProvider>,
     )
+
     await waitFor(() => expect(!!current).toBe(true))
 
-    const campId = current.state.session.activeCampaignId!
+    const campId = current.state.session.activeCampaignId
     const arcId = current.state.arcs[0].id
     const scene = current.createScene(campId, arcId, {
       name: 'Nova Cena',
@@ -54,26 +61,48 @@ describe('AppStoreProvider', () => {
       opening: '',
     })
     current.setActiveScene(campId, scene.id)
+
     await waitFor(() => expect(current.state.session.activeSceneId).toBe(scene.id))
     expect(current.state.session.notes[0].text).toMatch(/Cena Iniciada/)
   })
 
-  it('addNote ignora texto vazio e adiciona texto válido', async () => {
+  it('addNote ignora texto vazio e adiciona texto valido', async () => {
     let current: any
     render(
       <AppStoreProvider>
         <Probe onChange={(api) => (current = api)} />
-      </AppStoreProvider>
+      </AppStoreProvider>,
     )
-    await waitFor(() => expect(!!current).toBe(true))
 
-    const prevLen = current.state.session.notes.length
+    await waitFor(() => expect(!!current).toBe(true))
+    const previousLength = current.state.session.notes.length
+
     current.addNote('   ', false)
-    await waitFor(() => expect(current.state.session.notes.length).toBe(prevLen))
+    await waitFor(() => expect(current.state.session.notes.length).toBe(previousLength))
 
     current.addNote('Nota importante', true)
-    await waitFor(() => expect(current.state.session.notes.length).toBeGreaterThan(prevLen))
+    await waitFor(() => expect(current.state.session.notes.length).toBeGreaterThan(previousLength))
     expect(current.state.session.notes[0].important).toBe(true)
+  })
+
+  it('permite alternar importancia e excluir notas da sessao', async () => {
+    let current: any
+    render(
+      <AppStoreProvider>
+        <Probe onChange={(api) => (current = api)} />
+      </AppStoreProvider>,
+    )
+
+    await waitFor(() => expect(!!current).toBe(true))
+    current.addNote('Nota de teste', false)
+    await waitFor(() => expect(current.state.session.notes.length).toBeGreaterThan(0))
+
+    const noteId = current.state.session.notes[0].id
+    current.toggleNoteImportant(noteId)
+    await waitFor(() => expect(current.state.session.notes[0].important).toBe(true))
+
+    current.deleteNote(noteId)
+    await waitFor(() => expect(current.state.session.notes.some((note: any) => note.id === noteId)).toBe(false))
   })
 
   it('inicia combate a partir da cena e manipula participantes', async () => {
@@ -81,17 +110,12 @@ describe('AppStoreProvider', () => {
     render(
       <AppStoreProvider>
         <Probe onChange={(api) => (current = api)} />
-      </AppStoreProvider>
+      </AppStoreProvider>,
     )
+
     await waitFor(() => expect(!!current).toBe(true))
 
-    const activeSceneId = current.state.session.activeSceneId!
-    // Garantir que há ao menos um personagem vinculado
-    const scene = current.state.scenes.find((s: any) => s.id === activeSceneId)!
-    if (scene.npcIds.length === 0 && current.state.characters.length > 0) {
-      current.linkCharacterToScene(scene.id, current.state.characters[0].id, 'npc')
-    }
-    const campId2 = current.state.session.activeCampaignId!
+    const activeSceneId = current.state.session.activeSceneId
     const player = current.createCharacter({
       name: 'Jogador',
       type: 'PLAYER',
@@ -115,41 +139,174 @@ describe('AppStoreProvider', () => {
       disadvantages: [],
       equipment: [],
       powers: [],
-      campaignId: campId2,
+      campaignId: current.state.session.activeCampaignId,
       isTemplate: false,
     })
-    current.linkCharacterToScene(scene.id, player.id, 'npc')
+
+    await waitFor(() => expect(current.state.characters.some((character: any) => character.id === player.id)).toBe(true))
 
     current.startCombatFromScene(activeSceneId)
     await waitFor(() => expect(current.state.session.activeCombatId).not.toBeNull())
-    const combatId = current.state.session.activeCombatId!
-    const combat = current.state.combats.find((c: any) => c.id === combatId)!
+    await waitFor(() => expect(current.state.combats.length).toBeGreaterThan(0))
+
+    const combatId = current.state.session.activeCombatId
+    const combat = current.state.combats.find((entry: any) => entry.id === combatId)
+    expect(combat).toBeDefined()
+    if (!combat) throw new Error('Combate nao encontrado')
     expect(combat.participants.length).toBeGreaterThan(0)
 
     const first = combat.participants[0]
     current.adjustCombatParticipant(combatId, first.id, -1, -1)
     await waitFor(() => {
-      const c = current.state.combats.find((c: any) => c.id === combatId)!
-      const p = c.participants.find((p: any) => p.id === first.id)!
-      expect(p.currentHp).toBeLessThanOrEqual(first.currentHp)
+      const updatedCombat = current.state.combats.find((entry: any) => entry.id === combatId)
+      const participant = updatedCombat.participants.find((entry: any) => entry.id === first.id)
+      expect(participant.currentHp).toBeLessThanOrEqual(first.currentHp)
     })
 
     current.toggleCombatDefeated(combatId, first.id)
     await waitFor(() => {
-      const c = current.state.combats.find((c: any) => c.id === combatId)!
-      const p = c.participants.find((p: any) => p.id === first.id)!
-      expect(p.isDefeated).toBe(true)
+      const updatedCombat = current.state.combats.find((entry: any) => entry.id === combatId)
+      const participant = updatedCombat.participants.find((entry: any) => entry.id === first.id)
+      expect(participant.isDefeated).toBe(true)
     })
 
     current.nextCombatTurn(combatId)
     await waitFor(() => {
-      const c = current.state.combats.find((c: any) => c.id === combatId)!
-      expect(c.currentTurnIndex).toBe(1 % c.participants.length)
+      const updatedCombat = current.state.combats.find((entry: any) => entry.id === combatId)
+      expect(updatedCombat.currentTurnIndex).toBe(1 % updatedCombat.participants.length)
     })
 
     current.endCombat(combatId)
     await waitFor(() => expect(current.state.session.activeCombatId).toBeNull())
-    expect(current.state.session.notes.some((n: any) => /Combate encerrado/.test(n.text))).toBe(true)
+    expect(current.state.session.notes.some((note: any) => /Combate encerrado/.test(note.text))).toBe(true)
     await waitFor(() => expect(current.state.rewardEvents.length).toBeGreaterThan(0))
+  })
+
+  it('permite gerenciar inventario e condicoes do personagem do jogador', async () => {
+    let current: any
+    render(
+      <AppStoreProvider>
+        <Probe onChange={(api) => (current = api)} />
+      </AppStoreProvider>,
+    )
+
+    await waitFor(() => expect(!!current).toBe(true))
+
+    const player = current.createCharacter({
+      name: 'Ayla',
+      type: 'PLAYER',
+      role: 'Heroina',
+      imageUri: null,
+      portraitUri: null,
+      tags: [],
+      strength: 2,
+      skill: 2,
+      resistance: 2,
+      armor: 1,
+      firepower: 0,
+      activeConditions: [],
+      personality: '',
+      speechStyle: '',
+      mannerisms: [],
+      goal: '',
+      secrets: {},
+      quickPhrases: [],
+      advantages: [],
+      disadvantages: [],
+      equipment: [],
+      powers: [],
+      campaignId: current.state.session.activeCampaignId,
+      isTemplate: false,
+    })
+
+    const item = current.addEquipmentToCharacter(player.id, {
+      name: 'Espada Curta',
+      type: 'WEAPON',
+      description: '',
+      bonusF: 1,
+      bonusH: 0,
+      bonusR: 0,
+      bonusA: 0,
+      bonusPdF: 0,
+      special: '',
+      imageUri: null,
+      isEquipped: false,
+    })
+    await waitFor(() => expect(current.state.characters.find((character: any) => character.id === player.id)?.equipment.length).toBe(1))
+
+    current.toggleCharacterEquipment(player.id, item.id)
+    await waitFor(() => expect(current.state.characters.find((character: any) => character.id === player.id)?.equipment[0].isEquipped).toBe(true))
+
+    const condition = current.addConditionToCharacter(player.id, {
+      type: 'CUSTOM',
+      name: 'Inspirado',
+      description: '',
+      duration: 2,
+      value: 1,
+    })
+    await waitFor(() => expect(current.state.characters.find((character: any) => character.id === player.id)?.activeConditions.length).toBe(1))
+
+    current.removeConditionFromCharacter(player.id, condition.id)
+    current.removeEquipmentFromCharacter(player.id, item.id)
+    await waitFor(() => {
+      expect(
+        current.state.characters.some(
+          (character: any) => character.id === player.id && character.activeConditions.length === 0 && character.equipment.length === 0,
+        ),
+      ).toBe(true)
+    })
+  })
+
+  it('normaliza sistema legado ao criar campanha e bloqueia ficha com sistema divergente', async () => {
+    let current: any
+    render(
+      <AppStoreProvider>
+        <Probe onChange={(api) => (current = api)} />
+      </AppStoreProvider>,
+    )
+
+    await waitFor(() => expect(!!current).toBe(true))
+
+    const created = current.createCampaign({
+      title: 'Campanha Legada',
+      system: '3D&T Alpha',
+      description: 'Teste',
+    })
+    expect(created.system).toBe('3DeT Victory')
+
+    const dndCampaign = current.createCampaign({
+      title: 'Mesa D&D',
+      system: 'D&D 5e',
+      description: 'Teste',
+    })
+    await waitFor(() => expect(current.state.campaigns.some((campaign: any) => campaign.id === dndCampaign.id)).toBe(true))
+    expect(() =>
+      current.createCharacter({
+        name: 'Ficha Invalida',
+        type: 'PLAYER',
+        role: 'Heroi',
+        imageUri: null,
+        portraitUri: null,
+        tags: [],
+        strength: 2,
+        skill: 2,
+        resistance: 2,
+        armor: 0,
+        firepower: 0,
+        activeConditions: [],
+        personality: '',
+        speechStyle: '',
+        mannerisms: [],
+        goal: '',
+        secrets: {},
+        quickPhrases: [],
+        advantages: [],
+        disadvantages: [],
+        equipment: [],
+        powers: [],
+        campaignId: dndCampaign.id,
+        isTemplate: false,
+      }),
+    ).toThrow(/precisa usar o sistema D&D 5e/i)
   })
 })
