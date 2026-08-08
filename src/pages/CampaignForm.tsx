@@ -11,6 +11,7 @@ import {
   isSupportedCampaignSystem,
   normalizeCampaignSystem,
 } from '@/lib/campaignSystems'
+import type { CharacterEntryMode } from '@/domain/v1'
 
 export function CampaignForm() {
   const navigate = useNavigate()
@@ -22,6 +23,9 @@ export function CampaignForm() {
   const [description, setDescription] = useState('')
   const [cover, setCover] = useState<string>('')
   const [systemNotice, setSystemNotice] = useState<string | null>(null)
+  const [entryMode, setEntryMode] = useState<CharacterEntryMode>('new_start')
+  const [minProgression, setMinProgression] = useState(0)
+  const [maxProgression, setMaxProgression] = useState(100)
 
   const isEditing = !!id
   const campaignCharacterCount = id ? state.characters.filter((character) => character.campaignId === id).length : 0
@@ -40,6 +44,9 @@ export function CampaignForm() {
     setSystem(isSupportedCampaignSystem(normalizedSystem) ? normalizedSystem : '')
     setDescription(campaign.description)
     setCover(campaign.coverDataUrl || '')
+    setEntryMode(campaign.entryPolicy?.mode ?? 'new_start')
+    setMinProgression(campaign.entryPolicy?.minProgression ?? 0)
+    setMaxProgression(campaign.entryPolicy?.maxProgression ?? 100)
     if (!isSupportedCampaignSystem(normalizedSystem)) {
       setSystemNotice(`A campanha usa "${campaign.system}", que nao possui criacao guiada suportada nesta versao. Escolha uma base oficial antes de salvar.`)
       return
@@ -61,6 +68,8 @@ export function CampaignForm() {
         system,
         description,
         coverDataUrl: cover || null,
+        entryPolicy: { mode: entryMode, minProgression: entryMode === 'range' ? minProgression : undefined, maxProgression: entryMode === 'range' ? maxProgression : undefined, requiresMasterApproval: true },
+        defaultSessionMode: 'in_person',
       })
     } else {
       createCampaign({
@@ -68,6 +77,8 @@ export function CampaignForm() {
         system,
         description,
         coverDataUrl: cover,
+        entryPolicy: { mode: entryMode, minProgression: entryMode === 'range' ? minProgression : undefined, maxProgression: entryMode === 'range' ? maxProgression : undefined, requiresMasterApproval: true },
+        defaultSessionMode: 'in_person',
       })
     }
 
@@ -101,6 +112,25 @@ export function CampaignForm() {
               required
             />
           </div>
+
+          <fieldset className="space-y-3 rounded-3xl border border-white/10 bg-black/20 p-4">
+            <legend className="px-2 text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Entrada de personagens</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {[
+                ['new_start', 'Novo começo', 'Todos começam na progressão da campanha.'],
+                ['existing', 'Personagens existentes', 'Aceita histórico anterior com aprovação.'],
+                ['range', 'Faixa permitida', 'Restringe a progressão mínima e máxima.'],
+                ['adapted', 'Adaptado à campanha', 'Cria uma versão temporária sem destruir o original.'],
+                ['full_legacy', 'Legado completo', 'Traz progresso e itens, sujeito ao Mestre.'],
+              ].map(([value, label, detail]) => (
+                <button key={value} type="button" onClick={() => setEntryMode(value as CharacterEntryMode)} className={`rounded-2xl border p-3 text-left ${entryMode === value ? 'border-secondary/40 bg-secondary/10 text-white' : 'border-white/10 text-text-muted'}`}>
+                  <div className="text-sm font-semibold">{label}</div><div className="mt-1 text-xs">{detail}</div>
+                </button>
+              ))}
+            </div>
+            {entryMode === 'range' ? <div className="grid grid-cols-2 gap-3"><label><span className="field-label">Mínimo</span><input type="number" min={0} max={100} value={minProgression} onChange={(event) => setMinProgression(Number(event.target.value))} className="field" /></label><label><span className="field-label">Máximo</span><input type="number" min={0} max={100} value={maxProgression} onChange={(event) => setMaxProgression(Number(event.target.value))} className="field" /></label></div> : null}
+            <p className="text-xs text-text-muted">O personagem pertence ao jogador; a aceitação da participação e dos recursos pertence ao Mestre.</p>
+          </fieldset>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-2">

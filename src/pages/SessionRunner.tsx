@@ -14,10 +14,14 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { MasterToolkitPanel } from '@/components/game/MasterToolkitPanel'
 import { useSessionOverview } from '@/hooks/useSessionOverview'
 import { getCharacterMaxHp, getCharacterMaxMp } from '@/domain/models'
+import { LiveSessionHostPanel } from '@/components/live/LiveSessionHostPanel'
+import { DirectorBar } from '@/components/live/DirectorBar'
+import { useOptionalLiveSession } from '@/realtime/LiveSessionContext'
 
 export function SessionRunner() {
   const { state, startSession, endSession, setActiveScene, startCombatFromScene, addNote, deleteNote, toggleNoteImportant } = useAppStore()
   const { campaigns, scenes } = state
+  const live = useOptionalLiveSession()
   const {
     activeCampaign,
     activeCombat,
@@ -32,7 +36,7 @@ export function SessionRunner() {
 
   const [elapsed, setElapsed] = useState(0)
   const [noteInput, setNoteInput] = useState('')
-  const [theme, setTheme] = useState<string>(() => localStorage.getItem('session-theme') || 'neon')
+  const [theme, setTheme] = useState<string>(() => localStorage.getItem('session-theme') || 'paranormal')
   const [isImmersive, setIsImmersive] = useState<boolean>(() => localStorage.getItem('session-immersive') === '1')
   const [showOpsPanel, setShowOpsPanel] = useState<boolean>(true)
   const [recentRolls, setRecentRolls] = useState<RollResult[]>([])
@@ -171,8 +175,8 @@ export function SessionRunner() {
   const sessionKey = session.activeCampaignId || 'global'
 
   return (
-      <div className="h-full flex flex-col bg-background overflow-hidden">
-      <header className="h-16 border-b border-white/10 bg-background/70 backdrop-blur-xl flex items-center justify-between px-6 flex-shrink-0">
+      <div className="min-h-[calc(100vh-7rem)] flex flex-col bg-background overflow-hidden rounded-3xl border border-white/10">
+      <header className="min-h-16 border-b border-white/10 bg-background/70 backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 flex-shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <h2 className="font-display font-bold text-xl text-white">{activeCampaign?.title || 'Sessão Ativa'}</h2>
@@ -212,7 +216,7 @@ export function SessionRunner() {
             value={theme}
             onChange={(event) => setTheme(event.target.value)}
           >
-            <option value="neon">Neon</option>
+            <option value="paranormal">Paranormal</option>
             <option value="classic">Clássico</option>
           </select>
         </div>
@@ -233,8 +237,19 @@ export function SessionRunner() {
         </div>
       ) : null}
 
-      <div className="flex-1 grid grid-cols-12 overflow-hidden">
-        <aside className={cn('border-r border-white/10 bg-black/20 overflow-y-auto custom-scrollbar p-4 space-y-4', isImmersive ? 'hidden' : 'col-span-2')}>
+      <div className="space-y-3 border-b border-white/10 bg-black/15 p-3">
+        <LiveSessionHostPanel />
+        <DirectorBar
+          scene={activeScene}
+          npcs={npcsInScene}
+          combatActive={Boolean(activeCombat)}
+          audioUrl={state.audio.currentTrackUrl}
+          lastReward={state.rewardEvents[0] ?? null}
+        />
+      </div>
+
+      <div className="flex-1 grid grid-cols-1 xl:grid-cols-12 overflow-y-auto xl:overflow-hidden">
+        <aside className={cn('border-r border-white/10 bg-black/20 overflow-y-auto custom-scrollbar p-4 space-y-4', isImmersive ? 'hidden' : 'col-span-1 xl:col-span-2')}>
           <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-2">
             <MapIcon size={14} /> Cenas
           </h3>
@@ -264,7 +279,7 @@ export function SessionRunner() {
         <main
           className={cn(
             'overflow-y-auto custom-scrollbar p-6 relative',
-            isImmersive ? (showOpsPanel ? 'col-span-8' : 'col-span-12') : 'col-span-7',
+            isImmersive ? (showOpsPanel ? 'col-span-1 xl:col-span-8' : 'col-span-1 xl:col-span-12') : 'col-span-1 xl:col-span-7',
           )}
         >
           {activeCombat ? (
@@ -451,13 +466,18 @@ export function SessionRunner() {
         <aside
           className={cn(
             'border-l border-white/10 bg-black/20 p-4 space-y-6 overflow-y-auto custom-scrollbar',
-            isImmersive ? (showOpsPanel ? 'col-span-4' : 'hidden') : 'col-span-3',
+            isImmersive ? (showOpsPanel ? 'col-span-1 xl:col-span-4' : 'hidden') : 'col-span-1 xl:col-span-3',
           )}
         >
           <DiceRoller
             className="flex-shrink-0"
             onRoll={(roll) => {
               setRecentRolls((previous) => [roll, ...previous].slice(0, 20))
+              live?.sendEvent(
+                'dice',
+                { expression: roll.label || `${roll.diceCount}d6`, rolls: roll.results, total: roll.total, context: activeScene?.name || '' },
+                { kind: 'all' },
+              )
               if (roll.diceCount > 1 && roll.results.every((result) => result === 6)) {
                 ;(window as any).notifyInGame?.('Critico!', 'success')
               }
@@ -554,6 +574,7 @@ export function SessionRunner() {
         confirmLabel="Encerrar sessao"
         onCancel={() => setConfirmEndSession(false)}
         onConfirm={() => {
+          live?.endSession()
           endSession()
           setConfirmEndSession(false)
           ;(window as any).notifyInGame?.('Sessao encerrada', 'success')

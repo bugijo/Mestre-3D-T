@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Sora:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,6 +79,16 @@ body[data-theme="classic"] {
   background-image:
     radial-gradient(circle at top left, rgba(245, 158, 11, 0.12), transparent 20%),
     linear-gradient(180deg, rgba(14, 22, 37, 0.98), rgba(8, 14, 24, 1));
+}
+
+body[data-theme="paranormal"] {
+  --app-outline: rgba(169, 92, 97, 0.34);
+  --app-grid: rgba(198, 183, 165, 0.055);
+  background-color: #11100f;
+  background-image:
+    radial-gradient(circle at 12% 5%, rgba(150, 70, 76, 0.16), transparent 27%),
+    radial-gradient(circle at 88% 24%, rgba(131, 103, 75, 0.1), transparent 22%),
+    linear-gradient(180deg, rgba(17, 16, 15, 0.98), rgba(10, 9, 9, 1));
 }
 
 @layer components {
@@ -215,4 +223,125 @@ body[data-theme="classic"] {
   50% {
     box-shadow: 0 0 24px rgba(56, 189, 248, 0.18);
   }
+}
+
+.director-bar {
+  border: 1px solid rgba(169, 92, 97, 0.24);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(37, 29, 28, 0.94), rgba(21, 18, 17, 0.96));
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.director-action {
+  display: inline-flex;
+  min-width: 5.2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.8rem;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.65rem 0.75rem;
+  color: #ded5ca;
+  font-size: 0.72rem;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.director-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(169, 92, 97, 0.5);
+  background: rgba(169, 92, 97, 0.14);
+}
+
+.director-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.dossier-card {
+  border: 1px solid rgba(224, 210, 193, 0.1);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.025), transparent 36%),
+    rgba(29, 26, 24, 0.92);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.25);
+}
+
+.player-session {
+  background:
+    linear-gradient(rgba(198, 183, 165, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(198, 183, 165, 0.025) 1px, transparent 1px),
+    #11100f;
+  background-size: 36px 36px;
+}
+
+.stage-focus {
+  position: relative;
+  min-height: 15rem;
+  overflow: hidden;
+  border: 1px solid rgba(169, 92, 97, 0.3);
+  border-radius: 1.25rem;
+  background: #151210;
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.38);
+  animation-duration: 620ms;
+  animation-fill-mode: both;
+}
+
+.stage-focus-image,
+.stage-focus-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stage-focus-image { object-fit: cover; }
+.stage-focus-shade { background: linear-gradient(90deg, rgba(11, 9, 8, 0.94), rgba(11, 9, 8, 0.45) 68%, rgba(11, 9, 8, 0.15)); }
+.stage-focus-copy { position: relative; z-index: 1; display: flex; min-height: 15rem; flex-direction: column; justify-content: flex-end; padding: 1.5rem; }
+.stage-fade { animation-name: stage-fade; }
+.stage-zoom { animation-name: stage-zoom; }
+.stage-reveal { animation-name: stage-reveal; }
+.stage-reward { animation-name: stage-reward; }
+
+@keyframes stage-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes stage-zoom { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+@keyframes stage-reveal { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
+@keyframes stage-reward { 0% { opacity: 0; transform: translateY(12px) scale(0.96); } 65% { transform: translateY(0) scale(1.015); } 100% { opacity: 1; transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@media print {
+  nav,
+  .director-bar,
+  button,
+  .app-backdrop-grid,
+  .app-spotlight {
+    display: none !important;
+  }
+
+  body,
+  .player-session {
+    background: white !important;
+    color: black !important;
+  }
+
+  .dossier-card {
+    break-inside: avoid;
+    border-color: #999 !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  .dossier-card * { color: black !important; }
 }

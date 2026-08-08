@@ -53,6 +53,17 @@ describe('Rewards', () => {
       powers: [],
       campaignId: cid,
       isTemplate: false,
+      ordem: {
+        origin: '',
+        path: '',
+        progression: 5,
+        attributes: { agility: 1, intellect: 1, presence: 1, strength: 1, vigor: 1 },
+        skills: {},
+        resources: { health: { current: 15, max: 15 }, effort: { current: 10, max: 10 }, sanity: { current: 10, max: 10 } },
+        abilities: [],
+        biography: '',
+        appearance: '',
+      },
     })
 
     const item = {

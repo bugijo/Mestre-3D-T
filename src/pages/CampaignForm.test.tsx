@@ -52,7 +52,19 @@ describe('CampaignForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /Criar campanha/i }))
 
     expect(storeApi.createCampaign).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Nova Saga', system: '3DeT Victory' }),
+      expect.objectContaining({
+        title: 'Nova Saga',
+        system: 'Protocolo Paranormal',
+        description: '',
+        coverDataUrl: '',
+        defaultSessionMode: 'in_person',
+        entryPolicy: {
+          mode: 'new_start',
+          requiresMasterApproval: true,
+          minProgression: undefined,
+          maxProgression: undefined,
+        },
+      }),
     )
   })
 })

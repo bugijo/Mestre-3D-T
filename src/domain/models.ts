@@ -1,3 +1,13 @@
+import type {
+  CampaignEntryPolicy,
+  CharacterHistoryEvent,
+  CharacterLifeStatus,
+  OrdemCompatibleCharacterData,
+  SessionMode,
+  V1DomainState,
+} from '@/domain/v1'
+import type { RulesetId } from '@/rulesets/types'
+
 export type CharacterType = 'PLAYER' | 'NPC' | 'ENEMY' | 'BOSS' | 'COMPANION'
 
 export type ConditionType =
@@ -104,6 +114,21 @@ export type Character = {
   threeDet?: ThreeDetCharacterData
   dnd?: DndCharacterData
 
+  /** V1 multi-ruleset ownership data. Legacy fields above remain as adapters. */
+  rulesetId?: RulesetId
+  ownerUserId?: string
+  lifeStatus?: CharacterLifeStatus
+  history?: CharacterHistoryEvent[]
+  ordem?: OrdemCompatibleCharacterData
+  creationMode?: 'guided' | 'free' | 'imported'
+  sourceAttachment?: {
+    name: string
+    mimeType: string
+    size: number
+    dataUrl?: string
+    reviewedAt: number
+  }
+
   campaignId: string | null
   isTemplate: boolean
   createdAt: number
@@ -126,6 +151,14 @@ export type Scene = {
   npcIds: string[]
   hooks: string[]
   triggers: RollTrigger[]
+  /** Optional narrative graph edges used by the lightweight story editor. */
+  connections?: Array<{
+    id: string
+    toSceneId: string
+    label: string
+    condition: string
+    consequence: string
+  }>
 
   campaignId: string
   arcId: string
@@ -152,6 +185,10 @@ export type Campaign = {
   system: string
   description: string
   coverDataUrl: string | null
+  rulesetId?: RulesetId
+  gameMasterUserId?: string
+  entryPolicy?: CampaignEntryPolicy
+  defaultSessionMode?: SessionMode
   createdAt: number
   updatedAt: number
 }
@@ -221,6 +258,7 @@ export type AudioState = {
   volume: number
   isPlaying: boolean
   isMuted: boolean
+  loop?: boolean
 }
 
 export type GameSystem = 'DND5E' | '3DT'
@@ -320,6 +358,7 @@ export type AppSnapshot = {
   sessionHistory: SessionSummary[]
   rewardTables: RewardRule[]
   rewardEvents: RewardEvent[]
+  v1: V1DomainState
 }
 
 export function calcMaxHp(resistance: number) {
@@ -357,4 +396,3 @@ export function getCharacterMaxMp(character: Pick<Character, 'currentMp' | 'resi
   if (character.dnd) return 0
   return Math.max(0, calcMaxMp(character.resistance) || character.currentMp || 0)
 }
-

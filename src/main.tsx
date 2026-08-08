@@ -5,6 +5,7 @@ import { router } from '@/router'
 import { AppStoreProvider } from '@/store/AppStore'
 import { AppErrorBoundary } from '@/components/ui/AppErrorBoundary'
 import { AdminAccessProvider } from '@/admin/AdminAccessContext'
+import { LiveSessionProvider } from '@/realtime/LiveSessionContext'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -12,7 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <AppErrorBoundary>
       <AdminAccessProvider>
         <AppStoreProvider>
-          <RouterProvider router={router} future={{ v7_startTransition: true }} />
+          <LiveSessionProvider>
+            <RouterProvider router={router} future={{ v7_startTransition: true }} />
+          </LiveSessionProvider>
         </AppStoreProvider>
       </AdminAccessProvider>
     </AppErrorBoundary>

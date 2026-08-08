@@ -18,6 +18,7 @@ coverage
 .tools/*.log
 .tools/*.err.log
 .agent/skills/
+.data/
 
 # Editor directories and files
 .vscode/*

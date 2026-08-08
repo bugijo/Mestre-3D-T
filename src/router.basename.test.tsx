@@ -50,7 +50,7 @@ describe('Roteamento com basename', () => {
       },
     )
     renderWithProvider(router)
-    expect(await screen.findByText('Mestre 3D&T')).toBeInTheDocument()
+    expect(await screen.findByText('Dungeon Keeper')).toBeInTheDocument()
   })
 
   it('resolve index em /Mestre-3D-T/ com basename /Mestre-3D-T/', async () => {
@@ -70,6 +70,6 @@ describe('Roteamento com basename', () => {
       },
     )
     renderWithProvider(router)
-    expect(await screen.findByText('Mestre 3D&T')).toBeInTheDocument()
+    expect(await screen.findByText('Dungeon Keeper')).toBeInTheDocument()
   })
 })

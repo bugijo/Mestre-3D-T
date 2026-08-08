@@ -41,6 +41,33 @@ describe('AppStoreProvider', () => {
     expect(current.state.sessionHistory.length).toBeGreaterThan(0)
   })
 
+  it('encerra combate, registra histórico e separa XP da plataforma e do Mestre', async () => {
+    let current: any
+    render(
+      <AppStoreProvider>
+        <Probe onChange={(api) => (current = api)} />
+      </AppStoreProvider>,
+    )
+    await waitFor(() => expect(!!current).toBe(true))
+    const campaign = current.state.campaigns[0]
+    const player = current.state.characters.find((character: any) => character.type === 'PLAYER')
+    const playerBefore = current.state.v1.users.find((user: any) => user.id === player.ownerUserId)
+    const masterBefore = current.state.v1.users.find((user: any) => user.id === campaign.gameMasterUserId)
+
+    current.startSession()
+    await waitFor(() => expect(current.state.session.isActive).toBe(true))
+    current.startCombatFromScene(current.state.session.activeSceneId)
+    await waitFor(() => expect(current.state.session.activeCombatId).not.toBeNull())
+    current.endSession()
+
+    await waitFor(() => expect(current.state.session.isActive).toBe(false))
+    expect(current.state.combats.every((combat: any) => !combat.isActive)).toBe(true)
+    expect(current.state.characters.find((character: any) => character.id === player.id).history[0].type).toBe('session')
+    expect(current.state.v1.users.find((user: any) => user.id === player.ownerUserId).platformXp).toBe(playerBefore.platformXp + 10)
+    expect(current.state.v1.users.find((user: any) => user.id === campaign.gameMasterUserId).gameMasterXp).toBe(masterBefore.gameMasterXp + 25)
+    expect(current.state.v1.auditLog[0].action).toBe('session.end')
+  })
+
   it('define cena ativa e registra nota automatica', async () => {
     let current: any
     render(
@@ -141,6 +168,17 @@ describe('AppStoreProvider', () => {
       powers: [],
       campaignId: current.state.session.activeCampaignId,
       isTemplate: false,
+      ordem: {
+        origin: '',
+        path: '',
+        progression: 5,
+        attributes: { agility: 1, intellect: 1, presence: 1, strength: 1, vigor: 1 },
+        skills: {},
+        resources: { health: { current: 15, max: 15 }, effort: { current: 10, max: 10 }, sanity: { current: 10, max: 10 } },
+        abilities: [],
+        biography: '',
+        appearance: '',
+      },
     })
 
     await waitFor(() => expect(current.state.characters.some((character: any) => character.id === player.id)).toBe(true))
@@ -217,6 +255,17 @@ describe('AppStoreProvider', () => {
       powers: [],
       campaignId: current.state.session.activeCampaignId,
       isTemplate: false,
+      ordem: {
+        origin: '',
+        path: '',
+        progression: 5,
+        attributes: { agility: 1, intellect: 1, presence: 1, strength: 1, vigor: 1 },
+        skills: {},
+        resources: { health: { current: 15, max: 15 }, effort: { current: 10, max: 10 }, sanity: { current: 10, max: 10 } },
+        abilities: [],
+        biography: '',
+        appearance: '',
+      },
     })
 
     const item = current.addEquipmentToCharacter(player.id, {

@@ -3,12 +3,14 @@ import { useAppStore } from '@/store/AppStore'
 import type { Scene, Character } from '@/domain/models'
 import { cn } from '@/lib/cn'
 import { ImageUpload } from '@/components/ui/ImageUpload'
-import { Plus, Minus, RotateCcw, Upload, Download, Layers, Grid, MousePointer2 } from 'lucide-react'
+import { Plus, Minus, RotateCcw, Upload, Download, Layers, Grid, MousePointer2, Eye, EyeOff } from 'lucide-react'
 import { isDndCampaignSystem } from '@/lib/campaignSystems'
+import { createId } from '@/lib/id'
 
 type Viewport = { zoom: number; offsetX: number; offsetY: number }
 type MapToken = {
   id: string
+  characterId: string
   name: string
   kind: Character['type']
   imageUri: string | null
@@ -18,10 +20,14 @@ type MapToken = {
   rotation: number
 }
 
+type RevealedArea = { id: string; x: number; y: number; radius: number }
+
 type MapState = {
   viewport: Viewport
   tokens: MapToken[]
   showGrid: boolean
+  fogEnabled: boolean
+  revealedAreas: RevealedArea[]
 }
 
 function makeKey(sceneId: string) {
@@ -30,15 +36,17 @@ function makeKey(sceneId: string) {
 
 function loadMapState(sceneId: string): MapState {
   const raw = localStorage.getItem(makeKey(sceneId))
-  if (!raw) return { viewport: { zoom: 1, offsetX: 0, offsetY: 0 }, tokens: [], showGrid: true }
+  if (!raw) return { viewport: { zoom: 1, offsetX: 0, offsetY: 0 }, tokens: [], showGrid: true, fogEnabled: false, revealedAreas: [] }
   try {
     const parsed = JSON.parse(raw)
     if (!parsed.viewport) parsed.viewport = { zoom: 1, offsetX: 0, offsetY: 0 }
     if (!Array.isArray(parsed.tokens)) parsed.tokens = []
     if (typeof parsed.showGrid !== 'boolean') parsed.showGrid = true
+    if (typeof parsed.fogEnabled !== 'boolean') parsed.fogEnabled = false
+    if (!Array.isArray(parsed.revealedAreas)) parsed.revealedAreas = []
     return parsed
   } catch {
-    return { viewport: { zoom: 1, offsetX: 0, offsetY: 0 }, tokens: [], showGrid: true }
+    return { viewport: { zoom: 1, offsetX: 0, offsetY: 0 }, tokens: [], showGrid: true, fogEnabled: false, revealedAreas: [] }
   }
 }
 
@@ -48,7 +56,8 @@ function saveMapState(sceneId: string, state: MapState) {
 
 function createTokenFromCharacter(c: Character, x: number, y: number): MapToken {
   return {
-    id: c.id,
+    id: createId(),
+    characterId: c.id,
     name: c.name,
     kind: c.type,
     imageUri: c.imageUri,
@@ -134,6 +143,7 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
   })
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [dragging, setDragging] = useState<{ id: string; ox: number; oy: number } | null>(null)
+  const [revealMode, setRevealMode] = useState(false)
   const sprites = useRef<Record<string, HTMLImageElement>>({})
   const undoStack = useRef<MapState[]>([])
   const redoStack = useRef<MapState[]>([])
@@ -141,6 +151,15 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
   const sceneChars = useMemo(() => {
     return state.characters.filter(c => scene.npcIds.includes(c.id) || scene.enemyIds.includes(c.id))
   }, [state.characters, scene.npcIds, scene.enemyIds])
+
+  useEffect(() => {
+    const next = loadMapState(scene.id)
+    if (!localStorage.getItem(makeKey(scene.id))) next.showGrid = isDnd
+    setMap(next)
+    setSelectedId(null)
+    undoStack.current = []
+    redoStack.current = []
+  }, [isDnd, scene.id])
 
   useEffect(() => {
     const c = canvasRef.current
@@ -216,6 +235,24 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
           ctx.restore()
         }
       }
+      if (map.fogEnabled) {
+        ctx.save()
+        ctx.fillStyle = 'rgba(4, 4, 4, 0.88)'
+        ctx.fillRect(0, 0, c.width, c.height)
+        ctx.globalCompositeOperation = 'destination-out'
+        for (const area of map.revealedAreas) {
+          const x = area.x * map.viewport.zoom + map.viewport.offsetX
+          const y = area.y * map.viewport.zoom + map.viewport.offsetY
+          const gradient = ctx.createRadialGradient(x, y, area.radius * map.viewport.zoom * 0.65, x, y, area.radius * map.viewport.zoom)
+          gradient.addColorStop(0, 'rgba(0,0,0,1)')
+          gradient.addColorStop(1, 'rgba(0,0,0,0)')
+          ctx.fillStyle = gradient
+          ctx.beginPath()
+          ctx.arc(x, y, area.radius * map.viewport.zoom, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        ctx.restore()
+      }
       if (isDnd && map.showGrid) {
         ctx.save()
         ctx.strokeStyle = 'rgba(255,255,255,0.6)'
@@ -235,7 +272,7 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
     }
     raf = requestAnimationFrame(render)
     return () => cancelAnimationFrame(raf)
-  }, [map.viewport, map.tokens, map.showGrid, mapImg, bgImg, selectedId])
+  }, [map.viewport, map.tokens, map.showGrid, map.fogEnabled, map.revealedAreas, mapImg, bgImg, selectedId])
 
   useEffect(() => {
     saveMapState(scene.id, map)
@@ -260,6 +297,12 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
     const mx = e.clientX - rect.left
     const my = e.clientY - rect.top
+    if (revealMode && map.fogEnabled) {
+      const x = (mx - map.viewport.offsetX) / map.viewport.zoom
+      const y = (my - map.viewport.offsetY) / map.viewport.zoom
+      setWithHistory((current) => ({ ...current, revealedAreas: [...current.revealedAreas, { id: createId(), x, y, radius: 110 }] }))
+      return
+    }
     for (let i = map.tokens.length - 1; i >= 0; i--) {
       const t = map.tokens[i]
       if (hitTestToken(mx, my, t, map.viewport)) {
@@ -391,7 +434,7 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
       try {
         const loaded = JSON.parse(String(reader.result))
         if (!loaded.viewport || !Array.isArray(loaded.tokens)) return
-        setMap({ viewport: loaded.viewport, tokens: loaded.tokens, showGrid: !!loaded.showGrid })
+        setMap({ viewport: loaded.viewport, tokens: loaded.tokens, showGrid: !!loaded.showGrid, fogEnabled: !!loaded.fogEnabled, revealedAreas: Array.isArray(loaded.revealedAreas) ? loaded.revealedAreas : [] })
       } catch {}
     }
     reader.readAsText(file)
@@ -404,6 +447,10 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
           <button onClick={() => setWithHistory(s => ({ ...s, showGrid: !s.showGrid }))} className="p-2 rounded bg-white/5 border border-white/10 text-text-muted hover:text-white">
             <Grid size={16} />
           </button>
+          <button aria-label="Alternar fog of war" onClick={() => setWithHistory(s => ({ ...s, fogEnabled: !s.fogEnabled }))} className="p-2 rounded bg-white/5 border border-white/10 text-text-muted hover:text-white">
+            {map.fogEnabled ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+          <button disabled={!map.fogEnabled} onClick={() => setRevealMode((value) => !value)} className={cn('rounded border px-3 py-2 text-xs', revealMode ? 'border-secondary/40 bg-secondary/15 text-white' : 'border-white/10 bg-white/5 text-text-muted', !map.fogEnabled && 'opacity-40')}>Revelar área</button>
           <button onClick={() => setWithHistory(s => ({ ...s, viewport: { ...s.viewport, zoom: Math.min(4, s.viewport.zoom + 0.1) } }))} className="p-2 rounded bg-white/5 border border-white/10 text-text-muted hover:text-white">
             <Plus size={16} />
           </button>
@@ -426,7 +473,7 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
       </div>
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-9 rounded-xl overflow-hidden border border-white/10 bg-black/40">
+        <div className="col-span-12 lg:col-span-9 rounded-xl overflow-hidden border border-white/10 bg-black/40">
           <div className="h-[480px] w-full">
             <canvas
               ref={canvasRef}
@@ -438,7 +485,7 @@ export function InteractiveMap({ scene }: { scene: Scene }) {
             />
           </div>
         </div>
-        <div className="col-span-3 space-y-4">
+        <div className="col-span-12 lg:col-span-3 space-y-4">
           <div className="bg-white/5 rounded-xl p-3 border border-white/10">
             <div className="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-2"><Layers size={14} /> Camadas</div>
             <ImageUpload label="Plano de Fundo" currentImage={scene.backgroundImageDataUrl || undefined} onImageSelected={(d) => updateScene(scene.id, { backgroundImageDataUrl: d || null })} className="mb-3" />

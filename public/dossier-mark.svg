@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Dungeon Keeper — marca de dossiê</title>
+  <rect width="512" height="512" rx="96" fill="#11100f"/>
+  <path d="M112 84h224l64 64v280H112z" fill="#1d1917" stroke="#a65c61" stroke-width="18"/>
+  <path d="M336 84v72h64" fill="none" stroke="#b89b78" stroke-width="18"/>
+  <circle cx="256" cy="270" r="86" fill="none" stroke="#a65c61" stroke-width="15" opacity=".9"/>
+  <path d="M175 270c42-57 120-57 162 0-42 57-120 57-162 0Z" fill="none" stroke="#eee8df" stroke-width="14"/>
+  <circle cx="256" cy="270" r="29" fill="#b89b78"/>
+  <path d="M155 385h202" stroke="#5d5048" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Swords, Map, BookOpenCheck, Users, Play, Compass, Menu, UserRound, ScrollText, ShieldCheck, Sparkles } from 'lucide-react'
+import { Swords, Map, BookOpenCheck, Users, Play, Compass, Menu, UserRound, ScrollText, ShieldCheck, Sparkles, Archive, Network } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 export function NavBar() {
@@ -23,14 +23,14 @@ export function NavBar() {
             <Compass size={18} className="transition-transform duration-300 group-hover:rotate-12" />
           </span>
           <span className="flex flex-col items-start leading-none">
-            <span className="font-display text-base font-bold tracking-wide">Mestre 3D&T</span>
-            <span className="text-[0.68rem] uppercase tracking-[0.28em] text-text-muted">Mesa Tática</span>
+            <span className="font-display text-base font-bold tracking-wide">Dungeon Keeper</span>
+            <span className="text-[0.68rem] uppercase tracking-[0.28em] text-text-muted">Dossiê da mesa</span>
           </span>
         </button>
 
         <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs uppercase tracking-[0.2em] text-text-muted lg:flex">
           <Sparkles size={14} className="text-primary" />
-          Central de campanha, sessão e governança
+          Campanha, sessão e investigação
         </div>
 
         <button
@@ -52,8 +52,9 @@ export function NavBar() {
         >
           <NavItem to="/" label="Dashboard" icon={<Map size={14} />} />
           <NavItem to="/campaigns" label="Campanhas" icon={<BookOpenCheck size={14} />} />
-          <NavItem to="/characters" label="Bestiario" icon={<Users size={14} />} />
-          <NavItem to="/catalog" label="Catalogo" icon={<BookOpenCheck size={14} />} />
+          <NavItem to="/characters" label="Personagens" icon={<Users size={14} />} />
+          <NavItem to="/studio" label="Estúdio" icon={<Archive size={14} />} />
+          <NavItem to="/story" label="História" icon={<Network size={14} />} />
           <NavItem to="/session" label="Jogar" icon={<Swords size={14} />} highlight />
           <NavItem to="/reports" label="Relatorios" icon={<ScrollText size={14} />} />
           <NavItem to="/admin" label="Admin" icon={<ShieldCheck size={14} />} />

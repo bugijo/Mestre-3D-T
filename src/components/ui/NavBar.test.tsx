@@ -16,6 +16,10 @@ describe('NavBar', () => {
         { path: 'session', element: <div>SessionPage</div> },
         { path: 'reports', element: <div>ReportsPage</div> },
         { path: 'playground', element: <div>DevPage</div> },
+        { path: 'studio', element: <div>StudioPage</div> },
+        { path: 'story', element: <div>StoryPage</div> },
+        { path: 'player', element: <div>PlayerPage</div> },
+        { path: 'admin', element: <div>AdminPage</div> },
       ],
     },
   ]
@@ -38,7 +42,7 @@ describe('NavBar', () => {
       />,
     )
 
-    expect(screen.getByText('Mestre 3D&T')).toBeInTheDocument()
+    expect(screen.getByText('Dungeon Keeper')).toBeInTheDocument()
     const toggle = screen.getAllByRole('button').find((element) => element.getAttribute('aria-label') === 'Abrir menu')
     if (!toggle) throw new Error('Menu mobile nao encontrado')
     fireEvent.click(toggle)
@@ -46,13 +50,17 @@ describe('NavBar', () => {
     const links = screen.getAllByRole('link').map((element) => element.textContent?.trim())
     expect(links).toContain('Dashboard')
     expect(links).toContain('Campanhas')
-    expect(links).toContain('Bestiario')
+    expect(links).toContain('Personagens')
+    expect(links).toContain('Estúdio')
+    expect(links).toContain('História')
+    expect(links).toContain('Jogar')
     expect(links).toContain('Relatorios')
     expect(links).toContain('Admin')
-    expect(links).toContain('Jogar')
+    expect(links).toContain('Jogador')
+    expect(links).toContain('Dev')
   })
 
-  it('navega para Bestiario ao clicar', async () => {
+  it('navega para Personagens ao clicar', async () => {
     const router = createMemoryRouter(routes, {
       initialEntries: ['/'],
       future: {
@@ -74,9 +82,9 @@ describe('NavBar', () => {
     if (!toggle) throw new Error('Menu mobile nao encontrado')
     fireEvent.click(toggle)
 
-    const bestiaryLink = screen.getAllByRole('link').find((element) => element.getAttribute('href') === '/characters')
-    if (!bestiaryLink) throw new Error('Link do bestiario nao encontrado')
-    fireEvent.click(bestiaryLink)
+    const charactersLink = screen.getAllByRole('link').find((element) => element.getAttribute('href') === '/characters')
+    if (!charactersLink) throw new Error('Link de personagens nao encontrado')
+    fireEvent.click(charactersLink)
 
     expect(await screen.findByText('BestiarioPage')).toBeInTheDocument()
   })
@@ -95,6 +103,7 @@ describe('NavBar', () => {
 
     const toggle = screen.getAllByRole('button').find((element) => element.getAttribute('aria-label') === 'Abrir menu')
     if (!toggle) throw new Error('Menu mobile nao encontrado')
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
     fireEvent.click(toggle)
     expect(toggle.getAttribute('aria-expanded')).toBe('true')
   })

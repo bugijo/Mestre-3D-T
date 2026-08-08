@@ -7,10 +7,13 @@ import {
   BookOpen,
   CheckCircle2,
   Heart,
+  FileText,
+  PenLine,
   Save,
   Shield,
   Sparkles,
   User,
+  Upload,
   Wand2,
   Zap,
 } from 'lucide-react'
@@ -46,9 +49,12 @@ import {
   type ThreeDetBuilderState,
 } from '@/lib/characterRules'
 import { calcVictoryMaxHp, calcVictoryMaxMp, type CharacterType } from '@/domain/models'
+import type { Character, EquipmentItem } from '@/domain/models'
+import type { OrdemCompatibleCharacterData } from '@/domain/v1'
 import { getSupportedCharacterSystemForCampaign, normalizeCampaignSystem } from '@/lib/campaignSystems'
 import { cn } from '@/lib/cn'
 import { useAppStore } from '@/store/AppStore'
+import { ordemCompatibleRuleset } from '@/rulesets/registry'
 
 const CHARACTER_TYPES: { value: CharacterType; label: string; detail: string }[] = [
   { value: 'PLAYER', label: 'Jogador', detail: 'Participante controlado por um jogador.' },
@@ -59,6 +65,78 @@ const CHARACTER_TYPES: { value: CharacterType; label: string; detail: string }[]
 ]
 
 const DND_ABILITY_KEYS = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'] as const
+
+type CreationMode = 'guided' | 'free' | 'imported'
+type OrdemBuilderState = OrdemCompatibleCharacterData
+
+function createDefaultOrdemBuilder(): OrdemBuilderState {
+  return {
+    origin: '',
+    path: '',
+    progression: 5,
+    attributes: { agility: 1, intellect: 1, presence: 1, strength: 1, vigor: 1 },
+    skills: {},
+    resources: {
+      health: { current: 15, max: 15 },
+      effort: { current: 8, max: 8 },
+      sanity: { current: 18, max: 18 },
+    },
+    abilities: [],
+    biography: '',
+    appearance: '',
+  }
+}
+
+function deriveOrdemResources(state: OrdemBuilderState): OrdemBuilderState['resources'] {
+  const health = 12 + state.attributes.vigor * 3
+  const effort = 6 + state.attributes.presence * 2
+  const sanity = 15 + state.attributes.presence * 3
+  return { health: { current: health, max: health }, effort: { current: effort, max: effort }, sanity: { current: sanity, max: sanity } }
+}
+
+function buildOrdemPayload(
+  base: { name: string; role: string; type: CharacterType; imageUri: string | null; campaignId: string | null },
+  state: OrdemBuilderState,
+  creationMode: CreationMode,
+  sourceAttachment?: Character['sourceAttachment'],
+): Omit<Character, 'id' | 'createdAt' | 'updatedAt'> {
+  const resources = creationMode === 'guided' ? deriveOrdemResources(state) : state.resources
+  const emptyItemList: EquipmentItem[] = []
+  return {
+    ...base,
+    name: base.name.trim(),
+    role: base.role.trim() || state.path,
+    portraitUri: null,
+    tags: ['paranormal', state.origin, state.path].filter(Boolean),
+    strength: state.attributes.strength,
+    skill: state.attributes.agility,
+    resistance: state.attributes.vigor,
+    armor: 0,
+    firepower: 0,
+    currentHp: resources.health.current,
+    currentMp: resources.effort.current,
+    activeConditions: [],
+    xp: 0,
+    gold: 0,
+    personality: '',
+    speechStyle: '',
+    mannerisms: [],
+    goal: '',
+    secrets: {},
+    quickPhrases: [],
+    advantages: [],
+    disadvantages: [],
+    equipment: emptyItemList,
+    powers: [],
+    isTemplate: false,
+    rulesetId: 'ordem-compatible',
+    lifeStatus: 'active',
+    history: [],
+    creationMode,
+    sourceAttachment,
+    ordem: { ...state, resources },
+  }
+}
 
 export function CharacterForm() {
   const { id } = useParams<{ id: string }>()
@@ -72,9 +150,11 @@ export function CharacterForm() {
   const campaignRuleSystem = getSupportedCharacterSystemForCampaign(targetCampaign?.system)
 
   const [systemChoice, setSystemChoice] = useState<SupportedCharacterSystem>(() => {
+    if (existingCharacter?.ordem) return 'ORDEM'
     if (existingCharacter?.dnd) return 'DND5E'
     return campaignRuleSystem ?? '3DT'
   })
+  const [creationMode, setCreationMode] = useState<CreationMode>(existingCharacter?.creationMode ?? 'guided')
   const [name, setName] = useState(existingCharacter?.name ?? '')
   const [role, setRole] = useState(existingCharacter?.role ?? '')
   const [type, setType] = useState<CharacterType>(existingCharacter?.type ?? 'NPC')
@@ -86,6 +166,9 @@ export function CharacterForm() {
   const [dndState, setDndState] = useState<DndBuilderState>(
     existingCharacter ? hydrateDndBuilderFromCharacter(existingCharacter) : createDefaultDndBuilder(),
   )
+  const [ordemState, setOrdemState] = useState<OrdemBuilderState>(existingCharacter?.ordem ?? createDefaultOrdemBuilder())
+  const [importAttachment, setImportAttachment] = useState<Character['sourceAttachment'] | undefined>(existingCharacter?.sourceAttachment)
+  const [importError, setImportError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!existingCharacter) return
@@ -93,9 +176,12 @@ export function CharacterForm() {
     setRole(existingCharacter.role)
     setType(existingCharacter.type)
     setImage(existingCharacter.imageUri ?? '')
-    setSystemChoice(existingCharacter.dnd ? 'DND5E' : '3DT')
+    setSystemChoice(existingCharacter.ordem ? 'ORDEM' : existingCharacter.dnd ? 'DND5E' : '3DT')
+    setCreationMode(existingCharacter.creationMode ?? 'guided')
     setThreeDetState(hydrateThreeDetBuilderFromCharacter(existingCharacter))
     setDndState(hydrateDndBuilderFromCharacter(existingCharacter))
+    setOrdemState(existingCharacter.ordem ?? createDefaultOrdemBuilder())
+    setImportAttachment(existingCharacter.sourceAttachment)
   }, [existingCharacter])
 
   useEffect(() => {
@@ -128,7 +214,20 @@ export function CharacterForm() {
     [dndState.abilityScores, dndState.raceId],
   )
 
-  const currentIssues = systemChoice === '3DT' ? threeDetIssues : dndIssues
+  const ordemIssues = useMemo(() => {
+    const issues: Array<{ message: string }> = []
+    if (!ordemState.origin.trim()) issues.push({ message: 'Informe a origem do personagem.' })
+    if (!ordemState.path.trim()) issues.push({ message: 'Informe o caminho ou função do personagem.' })
+    if (Object.values(ordemState.attributes).reduce((total, value) => total + value, 0) > 9 && creationMode === 'guided') {
+      issues.push({ message: 'Na criação guiada, distribua no máximo 9 pontos entre os atributos.' })
+    }
+    if (Object.values(ordemState.attributes).some((value) => !Number.isInteger(value) || value < 0 || value > 5)) {
+      issues.push({ message: 'Atributos precisam ser inteiros entre 0 e 5.' })
+    }
+    if (creationMode === 'imported' && !importAttachment) issues.push({ message: 'Anexe a ficha e revise os dados antes de salvar.' })
+    return issues
+  }, [creationMode, importAttachment, ordemState])
+  const currentIssues = systemChoice === 'ORDEM' ? ordemIssues : systemChoice === '3DT' ? threeDetIssues : dndIssues
   const allIssueMessages = [...commonIssues, ...currentIssues.map((issue) => issue.message)]
   const isValid = allIssueMessages.length === 0
   const allowSystemRepair = Boolean(isEditing && campaignRuleSystem && systemChoice !== campaignRuleSystem)
@@ -145,13 +244,29 @@ export function CharacterForm() {
       imageUri: image || null,
       campaignId: targetCampaignId,
     }
-    const payload =
-      systemChoice === '3DT'
+    const payload = systemChoice === 'ORDEM'
+      ? buildOrdemPayload(base, ordemState, creationMode, importAttachment)
+      : systemChoice === '3DT'
         ? buildThreeDetCharacterPayload(base, threeDetState)
         : buildDndCharacterPayload(base, dndState)
 
     if (isEditing && id) {
-      updateCharacter(id, payload)
+      updateCharacter(id, existingCharacter ? {
+        ...payload,
+        xp: existingCharacter.xp,
+        gold: existingCharacter.gold,
+        equipment: existingCharacter.equipment,
+        activeConditions: existingCharacter.activeConditions,
+        history: existingCharacter.history ?? [],
+        ownerUserId: existingCharacter.ownerUserId,
+        lifeStatus: existingCharacter.lifeStatus ?? 'active',
+        personality: existingCharacter.personality,
+        speechStyle: existingCharacter.speechStyle,
+        mannerisms: existingCharacter.mannerisms,
+        goal: existingCharacter.goal,
+        secrets: existingCharacter.secrets,
+        quickPhrases: existingCharacter.quickPhrases,
+      } : payload)
     } else {
       createCharacter(payload)
     }
@@ -167,7 +282,7 @@ export function CharacterForm() {
             {isEditing ? 'Editar ficha' : 'Novo personagem'} com <span className="text-gradient-secondary">regras validadas</span>
           </>
         }
-        description="O fluxo agora limita a criacao aos conjuntos oficiais suportados, mostra o que ainda e valido em cada etapa e bloqueia combinacoes ilegais antes de salvar."
+        description="Escolha criação guiada, ficha livre ou importação revisável. O ruleset faz cálculos e validações sem prender o personagem a uma única campanha."
         actions={
           <button onClick={() => navigate('/characters')} className="btn-ghost">
             <ArrowLeft size={16} />
@@ -181,10 +296,17 @@ export function CharacterForm() {
           <section className="app-panel p-5">
             <SectionHeader
               icon={<BookOpen size={16} className="text-secondary" />}
-              title="Sistema oficial suportado"
-              description="3DeT Victory usa criacao por pontos, pericias e arquetipos. D&D 5e usa point buy, raca, classe e equipamento inicial oficial."
+              title="Ruleset da ficha"
+              description="A ficha herda o ruleset da campanha. Regras e tema ficam isolados dos componentes para permitir novos sistemas."
             />
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <SystemCard
+                active={systemChoice === 'ORDEM'}
+                title="Protocolo Paranormal"
+                description="Investigação, esforço, sanidade e rolagem de d20 compatível com campanhas paranormais. Conteúdo original."
+                disabled={systemSelectionLocked}
+                onClick={() => setSystemChoice('ORDEM')}
+              />
               <SystemCard
                 active={systemChoice === '3DT'}
                 title="3DeT Victory"
@@ -200,6 +322,13 @@ export function CharacterForm() {
                 onClick={() => setSystemChoice('DND5E')}
               />
             </div>
+            {systemChoice === 'ORDEM' ? (
+              <div className="mt-5 grid gap-3 md:grid-cols-3" aria-label="Modo de criação">
+                <CreationModeCard active={creationMode === 'guided'} icon={<BookOpen size={16} />} title="Criação Guiada" detail="Narrativa, opções válidas e cálculos automáticos." onClick={() => setCreationMode('guided')} />
+                <CreationModeCard active={creationMode === 'free'} icon={<PenLine size={16} />} title="Ficha Livre" detail="Preenchimento direto com avisos e validações." onClick={() => setCreationMode('free')} />
+                <CreationModeCard active={creationMode === 'imported'} icon={<Upload size={16} />} title="Importar" detail="PDF ou imagem com revisão manual obrigatória." onClick={() => setCreationMode('imported')} />
+              </div>
+            ) : null}
             {targetCampaign ? (
               <div
                 className={cn(
@@ -224,12 +353,12 @@ export function CharacterForm() {
               <Field label="Nome">
                 <input value={name} onChange={(event) => setName(event.target.value)} className="field" placeholder="Ex: Cloud Strife" />
               </Field>
-              <Field label={systemChoice === 'DND5E' ? 'Classe / funcao' : 'Conceito / funcao'}>
+              <Field label={systemChoice === 'DND5E' ? 'Classe / funcao' : systemChoice === 'ORDEM' ? 'Conceito / função' : 'Conceito / funcao'}>
                 <input
                   value={role}
                   onChange={(event) => setRole(event.target.value)}
                   className="field"
-                  placeholder={systemChoice === 'DND5E' ? 'Ex: Fighter veterano' : 'Ex: Duelista de aluguel'}
+                  placeholder={systemChoice === 'DND5E' ? 'Ex: Fighter veterano' : systemChoice === 'ORDEM' ? 'Ex: Perita forense em campo' : 'Ex: Duelista de aluguel'}
                 />
               </Field>
             </div>
@@ -266,10 +395,10 @@ export function CharacterForm() {
                 </div>
               </div>
               <div className="space-y-3">
-                <button type="button" onClick={() => setShowGenerator((value) => !value)} className="btn-secondary">
+                {systemChoice !== 'ORDEM' || ordemCompatibleRuleset.capabilities.aiGenerationAllowed ? <button type="button" onClick={() => setShowGenerator((value) => !value)} className="btn-secondary">
                   <Wand2 size={16} />
                   {showGenerator ? 'Ocultar gerador' : 'Gerar imagem'}
-                </button>
+                </button> : <p className="text-sm text-text-muted">IA é opcional e está desativada neste ruleset. O upload local funciona offline.</p>}
                 {showGenerator ? (
                   <div className="rounded-3xl border border-white/10 bg-black/20 p-3">
                     <ImageGenerator
@@ -284,7 +413,37 @@ export function CharacterForm() {
         </div>
 
         <div className="space-y-6">
-          {systemChoice === '3DT' ? (
+          {systemChoice === 'ORDEM' ? (
+            <OrdemCompatibleBuilder
+              state={ordemState}
+              onChange={setOrdemState}
+              mode={creationMode}
+              attachment={importAttachment}
+              importError={importError}
+              onImport={async (file) => {
+                setImportError(null)
+                const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp']
+                if (!allowed.includes(file.type)) {
+                  setImportError('Use PDF, PNG, JPEG ou WebP.')
+                  return
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                  setImportError('O arquivo deve ter no máximo 10 MB.')
+                  return
+                }
+                let dataUrl: string | undefined
+                if (file.type.startsWith('image/')) {
+                  dataUrl = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onload = () => resolve(String(reader.result))
+                    reader.onerror = () => reject(reader.error)
+                    reader.readAsDataURL(file)
+                  })
+                }
+                setImportAttachment({ name: file.name, mimeType: file.type, size: file.size, dataUrl, reviewedAt: Date.now() })
+              }}
+            />
+          ) : systemChoice === '3DT' ? (
             <ThreeDetGuidedBuilder
               state={threeDetState}
               onChange={setThreeDetState}
@@ -311,7 +470,7 @@ export function CharacterForm() {
             <div className="mt-4 rounded-3xl border border-white/10 bg-black/20 p-4">
               {allIssueMessages.length === 0 ? (
                 <div className="space-y-2 text-sm text-text-muted">
-                  <p>Sistema: <span className="text-white">{systemChoice === '3DT' ? '3DeT Victory' : 'D&D 5e'}</span></p>
+                  <p>Sistema: <span className="text-white">{systemChoice === 'ORDEM' ? 'Protocolo Paranormal' : systemChoice === '3DT' ? '3DeT Victory' : 'D&D 5e'}</span></p>
                   <p>Nome: <span className="text-white">{name || 'Sem nome'}</span></p>
                   <p>Tipo: <span className="text-white">{CHARACTER_TYPES.find((item) => item.value === type)?.label}</span></p>
                 </div>
@@ -339,6 +498,122 @@ export function CharacterForm() {
       </form>
     </div>
   )
+}
+
+function OrdemCompatibleBuilder({
+  state,
+  onChange,
+  mode,
+  attachment,
+  importError,
+  onImport,
+}: {
+  state: OrdemBuilderState
+  onChange: (next: OrdemBuilderState) => void
+  mode: CreationMode
+  attachment?: Character['sourceAttachment']
+  importError: string | null
+  onImport: (file: File) => void
+}) {
+  const ruleset = ordemCompatibleRuleset
+  const resources = mode === 'guided' ? deriveOrdemResources(state) : state.resources
+  const attributeTotal = Object.values(state.attributes).reduce((total, value) => total + value, 0)
+  const origins = ['Acadêmico', 'Atleta', 'Comunicador', 'Perita', 'Profissional de saúde', 'Técnico', 'Trabalhador rural']
+  const paths = ['Especialista', 'Operador', 'Ocultista', 'Sobrevivente', 'Investigador independente']
+
+  const setAttribute = (id: keyof OrdemBuilderState['attributes'], value: number) => {
+    const next = { ...state, attributes: { ...state.attributes, [id]: Math.max(0, Math.min(5, value)) } }
+    onChange(mode === 'guided' ? { ...next, resources: deriveOrdemResources(next) } : next)
+  }
+
+  return (
+    <>
+      {mode === 'imported' ? (
+        <section className="app-panel p-5">
+          <SectionHeader icon={<FileText size={16} className="text-secondary" />} title="Anexar ficha existente" description="O arquivo fica anexado como fonte. A criação só acontece depois da revisão manual abaixo; nenhum dado extraído é aceito cegamente." />
+          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-black/20 px-5 py-8 text-center hover:border-secondary/40">
+            <Upload size={24} className="text-secondary" />
+            <span className="mt-3 text-sm font-semibold text-white">Selecionar PDF ou imagem</span>
+            <span className="mt-1 text-xs text-text-muted">PDF, PNG, JPEG ou WebP · até 10 MB</span>
+            <input type="file" accept="application/pdf,image/png,image/jpeg,image/webp" className="hidden" onChange={(event) => event.target.files?.[0] && onImport(event.target.files[0])} />
+          </label>
+          {importError ? <p className="mt-3 text-sm text-rose-200">{importError}</p> : null}
+          {attachment ? (
+            <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+              <div className="text-sm font-semibold text-emerald-50">Arquivo pronto para revisão</div>
+              <div className="mt-1 text-xs text-emerald-100/70">{attachment.name} · {(attachment.size / 1024).toFixed(1)} KB</div>
+              {attachment.dataUrl ? <img src={attachment.dataUrl} alt="Prévia da ficha importada" className="mt-3 max-h-72 rounded-xl object-contain" /> : <p className="mt-3 text-xs text-emerald-100/70">PDF anexado. Use o documento como referência e revise os campos estruturados abaixo.</p>}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      <section className="app-panel p-5">
+        <SectionHeader icon={<BookOpen size={16} className="text-secondary" />} title="Resumo do Personagem — identidade" description={mode === 'free' ? 'Ficha livre com validações ativas.' : 'Escolhas narrativas curtas e editáveis. As opções são originais da plataforma.'} />
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <Field label="Origem">
+            <input list="ordem-origins" value={state.origin} onChange={(event) => onChange({ ...state, origin: event.target.value })} className="field" placeholder="Selecione ou descreva" />
+            <datalist id="ordem-origins">{origins.map((origin) => <option key={origin} value={origin} />)}</datalist>
+          </Field>
+          <Field label="Caminho">
+            <input list="ordem-paths" value={state.path} onChange={(event) => onChange({ ...state, path: event.target.value })} className="field" placeholder="Selecione ou descreva" />
+            <datalist id="ordem-paths">{paths.map((path) => <option key={path} value={path} />)}</datalist>
+          </Field>
+          <Field label="Progressão / exposição">
+            <input type="number" min={0} max={100} value={state.progression} onChange={(event) => onChange({ ...state, progression: Math.max(0, Math.min(100, Number(event.target.value))) })} className="field" />
+          </Field>
+          <Field label="Aparência">
+            <input value={state.appearance} onChange={(event) => onChange({ ...state, appearance: event.target.value })} className="field" placeholder="Descrição curta" />
+          </Field>
+        </div>
+        <Field label="História">
+          <textarea value={state.biography} onChange={(event) => onChange({ ...state, biography: event.target.value })} className="field mt-4 min-h-28 resize-y" placeholder="O que trouxe este personagem até o paranormal?" />
+        </Field>
+      </section>
+
+      <section className="app-panel p-5">
+        <SectionHeader icon={<Zap size={16} className="text-primary" />} title="Atributos e recursos" description={mode === 'guided' ? `Distribua até 9 pontos. Total atual: ${attributeTotal}/9. PV, PE e Sanidade são calculados automaticamente.` : 'Edite atributos e recursos diretamente; limites e avisos continuam ativos.'} />
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {ruleset.character.attributes.map((attribute) => (
+            <CounterCard key={attribute.id} label={attribute.shortLabel} value={state.attributes[attribute.id as keyof typeof state.attributes]} onChange={(value) => setAttribute(attribute.id as keyof typeof state.attributes, value)} />
+          ))}
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {ruleset.character.resources.map((resource) => {
+            const value = resources[resource.id as keyof typeof resources]
+            return (
+              <div key={resource.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-text-muted">{resource.shortLabel}</div>
+                {mode === 'guided' ? <div className="mt-2 text-2xl font-bold text-white">{value.current}/{value.max}</div> : (
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <input aria-label={`${resource.label} atual`} type="number" min={0} value={value.current} onChange={(event) => onChange({ ...state, resources: { ...state.resources, [resource.id]: { ...value, current: Number(event.target.value) } } })} className="field" />
+                    <input aria-label={`${resource.label} máximo`} type="number" min={1} value={value.max} onChange={(event) => onChange({ ...state, resources: { ...state.resources, [resource.id]: { ...value, max: Number(event.target.value) } } })} className="field" />
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="app-panel p-5">
+        <SectionHeader icon={<Shield size={16} className="text-secondary" />} title="Perícias e habilidades" description="Clique em uma perícia para alternar entre sem treino, treinada (+5) e veterana (+10)." />
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {ruleset.character.skills.map((skill) => {
+            const value = state.skills[skill.id] ?? 0
+            return <button key={skill.id} type="button" onClick={() => onChange({ ...state, skills: { ...state.skills, [skill.id]: value === 0 ? 5 : value === 5 ? 10 : 0 } })} className={cn('rounded-2xl border p-3 text-left', value ? 'border-secondary/35 bg-secondary/10 text-white' : 'border-white/10 bg-black/20 text-text-muted')}><div className="flex items-center justify-between"><span className="text-sm font-semibold">{skill.label}</span><span className="text-xs">{value ? `+${value}` : '—'}</span></div><p className="mt-1 text-xs">{skill.description}</p></button>
+          })}
+        </div>
+        <Field label="Habilidades / poderes (uma por linha)">
+          <textarea value={state.abilities.join('\n')} onChange={(event) => onChange({ ...state, abilities: event.target.value.split('\n').map((item) => item.trim()).filter(Boolean) })} className="field mt-4 min-h-28 resize-y" placeholder="Olhar clínico&#10;Treinamento de campo" />
+        </Field>
+      </section>
+    </>
+  )
+}
+
+function CreationModeCard({ active, icon, title, detail, onClick }: { active: boolean; icon: ReactNode; title: string; detail: string; onClick: () => void }) {
+  return <button type="button" onClick={onClick} className={cn('rounded-2xl border p-4 text-left transition', active ? 'border-secondary/40 bg-secondary/12 text-white' : 'border-white/10 bg-black/20 text-text-muted hover:border-white/20')}><div className="flex items-center gap-2 text-sm font-semibold">{icon}{title}</div><div className="mt-2 text-xs leading-relaxed">{detail}</div></button>
 }
 
 function ThreeDetGuidedBuilder({

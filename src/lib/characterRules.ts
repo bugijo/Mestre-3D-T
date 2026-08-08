@@ -15,7 +15,7 @@ import {
 } from '@/domain/models'
 import { createId } from '@/lib/id'
 
-export type SupportedCharacterSystem = '3DT' | 'DND5E'
+export type SupportedCharacterSystem = 'ORDEM' | '3DT' | 'DND5E'
 
 export type RuleIssue = {
   path: string

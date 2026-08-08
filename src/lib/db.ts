@@ -1,5 +1,6 @@
 import type { AppSnapshot } from '@/domain/models'
 import { logError } from '@/lib/logger'
+import { normalizeSnapshot } from '@/lib/snapshot'
 
 const DB_NAME = 'Mestre3DT_DB'
 const STORE_NAME = 'snapshots'
@@ -59,7 +60,10 @@ export async function loadSnapshotFromDB(): Promise<AppSnapshot | null> {
     const store = transaction.objectStore(STORE_NAME)
     const request = store.get(KEY)
 
-    request.onsuccess = () => resolve((request.result as AppSnapshot | null) ?? null)
+    request.onsuccess = () => {
+      const result = (request.result as AppSnapshot | null) ?? null
+      resolve(result ? normalizeSnapshot(result) : null)
+    }
     request.onerror = () => {
       logError('db:load-snapshot', request.error)
       reject(request.error)

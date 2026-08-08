@@ -17,6 +17,9 @@ const Catalog = lazy(() => import('@/pages/Catalog').then((module) => ({ default
 const SessionReports = lazy(() => import('@/pages/SessionReports').then((module) => ({ default: module.SessionReports })))
 const PlayerConsole = lazy(() => import('@/pages/PlayerConsole').then((module) => ({ default: module.PlayerConsole })))
 const AdminPortal = lazy(() => import('@/pages/AdminPortal').then((module) => ({ default: module.AdminPortal })))
+const LivePlayerPage = lazy(() => import('@/pages/LivePlayerPage').then((module) => ({ default: module.LivePlayerPage })))
+const MasterStudio = lazy(() => import('@/pages/MasterStudio').then((module) => ({ default: module.MasterStudio })))
+const StoryBoard = lazy(() => import('@/pages/StoryBoard').then((module) => ({ default: module.StoryBoard })))
 
 function withFallback(node: ReactNode, label?: string) {
   return <Suspense fallback={<AppShellFallback label={label} />}>{node}</Suspense>
@@ -35,11 +38,14 @@ export const router = createBrowserRouter(
       <Route path="characters/new" element={withFallback(<CharacterForm />, 'Carregando personagem...')} />
       <Route path="characters/:id" element={withFallback(<CharacterForm />, 'Carregando personagem...')} />
       <Route path="catalog" element={withFallback(<Catalog />, 'Carregando catalogo...')} />
+      <Route path="studio" element={withFallback(<MasterStudio />, 'Carregando Estúdio do Mestre...')} />
+      <Route path="story" element={withFallback(<StoryBoard />, 'Carregando quadro narrativo...')} />
       <Route path="session" element={withFallback(<SessionRunner />, 'Carregando sessao...')} />
       <Route path="reports" element={withFallback(<SessionReports />, 'Carregando relatorios...')} />
       <Route path="admin" element={withFallback(<AdminPortal />, 'Carregando painel administrativo...')} />
       <Route path="player" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
       <Route path="player/:characterId" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
+      <Route path="join/:code" element={withFallback(<LivePlayerPage />, 'Conectando à mesa...')} />
       <Route path="*" element={<NotFound />} />
     </Route>,
   ),

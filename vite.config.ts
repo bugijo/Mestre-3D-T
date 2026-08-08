@@ -34,26 +34,26 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['vite.svg'],
+        includeAssets: ['dossier-mark.svg'],
         devOptions: {
           enabled: true,
         },
         manifest: {
-          name: 'Mestre 3D&T',
-          short_name: 'Mestre 3D&T',
-          description: 'Grimorio digital para mestres de 3D&T',
-          theme_color: '#bd00ff',
-          background_color: '#09090b',
+          name: 'Dungeon Keeper — Mesa Presencial',
+          short_name: 'Dungeon Keeper',
+          description: 'Dossiê digital para sessões presenciais de RPG.',
+          theme_color: '#11100f',
+          background_color: '#11100f',
           display: 'standalone',
           icons: [
             {
-              src: 'vite.svg',
-              sizes: '192x192',
+              src: 'dossier-mark.svg',
+              sizes: 'any',
               type: 'image/svg+xml',
             },
             {
-              src: 'vite.svg',
-              sizes: '512x512',
+              src: 'dossier-mark.svg',
+              sizes: 'any',
               type: 'image/svg+xml',
             },
           ],

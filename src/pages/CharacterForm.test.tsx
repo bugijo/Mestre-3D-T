@@ -32,7 +32,7 @@ vi.mock('@/components/ui/ImageGenerator', () => ({
 }))
 
 describe('CharacterForm', () => {
-  it('habilita envio para ficha valida de 3DeT Victory e bloqueia prerequisito invalido', async () => {
+  it('habilita envio para ficha valida de ORDEM e bloqueia quando campos obrigatorios estao vazios', async () => {
     render(
       <MemoryRouter initialEntries={['/characters/new']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppStoreProvider>
@@ -47,13 +47,12 @@ describe('CharacterForm', () => {
     expect(submit).toBeDisabled()
 
     fireEvent.change(screen.getByPlaceholderText('Ex: Cloud Strife'), { target: { value: 'Aria' } })
-    expect(submit).toBeEnabled()
-
-    fireEvent.click(screen.getByText('Magia').closest('button') as HTMLButtonElement)
-    expect((await screen.findAllByText(/Exige a pericia Mistica/i)).length).toBeGreaterThan(0)
     expect(submit).toBeDisabled()
 
-    fireEvent.click(screen.getByText('Mistica').closest('button') as HTMLButtonElement)
+    fireEvent.change(screen.getAllByPlaceholderText('Selecione ou descreva')[0], { target: { value: 'Acadêmico' } })
+    expect(submit).toBeDisabled()
+
+    fireEvent.change(screen.getAllByPlaceholderText('Selecione ou descreva')[1], { target: { value: 'Especialista' } })
     expect(submit).toBeEnabled()
   }, 15000)
 })

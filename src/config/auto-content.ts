@@ -2,7 +2,8 @@ import type { AppSnapshot, Arc, Campaign, Character, Mood, Scene } from '@/domai
 import { createId } from '@/lib/id'
 import { generateImage } from '@/lib/imageGen'
 import { mapWithConcurrency } from '@/lib/async'
-import { DEFAULT_CAMPAIGN_SYSTEM } from '@/lib/campaignSystems'
+import { THREE_DET_CAMPAIGN_SYSTEM } from '@/lib/campaignSystems'
+import { createEmptyV1DomainState } from '@/domain/v1'
 
 type AutoAsset = { id: string; name: string; kind: 'icon' | 'sprite' | 'portrait' | 'background' | 'map'; path: string; dataUrl: string; meta: Record<string, string> }
 type AutoIcons = { items: AutoAsset[]; skills: AutoAsset[]; status: AutoAsset[]; menu: AutoAsset[] }
@@ -81,7 +82,7 @@ async function generateAutoContentInternal() {
     folders: { characters: 'generated/characters', npcs: 'generated/npcs', maps: 'generated/maps', icons: 'generated/icons' },
   }
 
-  const campaign: Campaign = { id: createId(), title: 'Auto Generated - 3D&T', system: DEFAULT_CAMPAIGN_SYSTEM, description: 'Conteudo gerado automaticamente', coverDataUrl: null, createdAt: now(), updatedAt: now() }
+  const campaign: Campaign = { id: createId(), title: 'Auto Generated - 3D&T', system: THREE_DET_CAMPAIGN_SYSTEM, rulesetId: '3det-victory', description: 'Conteudo gerado automaticamente', coverDataUrl: null, createdAt: now(), updatedAt: now() }
   const arcs: Arc[] = range(10).map((i) => ({ id: createId(), name: `Capitulo ${i + 1}`, description: 'Arc auto', campaignId: campaign.id, orderIndex: i, createdAt: now(), updatedAt: now() }))
 
   const namesA = ['Aiden', 'Luna', 'Kai', 'Mara', 'Orion', 'Selene', 'Darius', 'Aria', 'Riven', 'Nyx', 'Kellan', 'Eira', 'Thorne', 'Lyra', 'Cassian', 'Elara', 'Rowan', 'Zara', 'Drake', 'Nia']
@@ -249,10 +250,11 @@ export async function generateAutoSnapshot(): Promise<AppSnapshot> {
       combats: [],
       session: { isActive: false, activeCampaignId: generated.campaign.id, activeSceneId: generated.maps[0]?.id ?? null, activeCombatId: null, startedAt: null, endedAt: null, notes: [] },
       settings: { nextSessionAt: now() },
-      audio: { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false },
+      audio: { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false, loop: true },
       sessionHistory: [],
       rewardTables: [],
       rewardEvents: [],
+      v1: createEmptyV1DomainState(),
     }))
   }
   return autoSnapshotPromise

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { AppSnapshot, Arc, Campaign, Character, Combat, CombatParticipant, Condition, EquipmentItem, Scene, SessionNote, SessionSummary } from '@/domain/models'
 import type { RewardEvent, RewardGrant, RewardRule } from '@/domain/models'
+import type { CriticalActionLog, DiceLogEntry, LibraryEntity, RecordingConsent, SessionFeedback } from '@/domain/v1'
 import { getCharacterMaxHp, getCharacterMaxMp } from '@/domain/models'
 import { loadSnapshot } from '@/lib/storage'
 import { loadSnapshotFromDB, saveSnapshotToDB } from '@/lib/db'
@@ -9,6 +10,7 @@ import { logError } from '@/lib/logger'
 import {
   DEFAULT_CAMPAIGN_SYSTEM,
   getSupportedCharacterSystemForCampaign,
+  getRulesetIdForCampaign,
   isSupportedCampaignSystem,
   normalizeCampaignSystem,
 } from '@/lib/campaignSystems'
@@ -52,9 +54,16 @@ type Action =
   | { type: 'AUDIO/STOP' }
   | { type: 'AUDIO/SET_VOLUME'; volume: number }
   | { type: 'AUDIO/TOGGLE_MUTE' }
+  | { type: 'AUDIO/TOGGLE_LOOP' }
   | { type: 'REWARD_TABLE/UPSERT'; rule: RewardRule }
   | { type: 'REWARD_TABLE/DELETE'; ruleId: string }
   | { type: 'REWARDS/GRANT'; event: RewardEvent }
+  | { type: 'V1/LOG_DICE'; entry: DiceLogEntry }
+  | { type: 'V1/ADD_FEEDBACK'; feedback: SessionFeedback }
+  | { type: 'V1/SET_CONSENT'; consent: RecordingConsent }
+  | { type: 'V1/LOG_CRITICAL'; entry: CriticalActionLog }
+  | { type: 'V1/LIBRARY_UPSERT'; entity: LibraryEntity }
+  | { type: 'V1/LIBRARY_DELETE'; entityId: string }
 
 function upsertById<T extends { id: string }>(list: T[], item: T): T[] {
   const idx = list.findIndex((x) => x.id === item.id)
@@ -80,7 +89,7 @@ function ensureSupportedCampaignSystem(system: string) {
   return normalized
 }
 
-function assertCharacterMatchesCampaign(campaigns: Campaign[], character: Pick<Character, 'campaignId'> & Partial<Pick<Character, 'dnd'>>) {
+function assertCharacterMatchesCampaign(campaigns: Campaign[], character: Pick<Character, 'campaignId'> & Partial<Pick<Character, 'dnd' | 'ordem'>>) {
   if (!character.campaignId) return
 
   const campaign = campaigns.find((entry) => entry.id === character.campaignId)
@@ -91,7 +100,7 @@ function assertCharacterMatchesCampaign(campaigns: Campaign[], character: Pick<C
     throw new Error(`A campanha "${campaign.title}" usa um sistema sem criacao guiada suportada.`)
   }
 
-  const characterSystem = character.dnd ? 'DND5E' : '3DT'
+  const characterSystem = character.ordem ? 'ORDEM' : character.dnd ? 'DND5E' : '3DT'
   if (characterSystem !== requiredSystem) {
     throw new Error(`A ficha precisa usar o sistema ${campaign.system} da campanha vinculada.`)
   }
@@ -164,12 +173,14 @@ function reducer(state: AppState, action: Action): AppState {
       const campaigns = removeById(state.campaigns, action.campaignId)
       const arcs = state.arcs.filter((a) => a.campaignId !== action.campaignId)
       const scenes = state.scenes.filter((s) => s.campaignId !== action.campaignId)
+      const removedSceneIds = new Set(state.scenes.filter((scene) => scene.campaignId === action.campaignId).map((scene) => scene.id))
       const characters = state.characters.map((c) => (c.campaignId === action.campaignId ? { ...c, campaignId: null } : c))
+      const combats = state.combats.filter((combat) => !removedSceneIds.has(combat.sceneId))
       const session =
         state.session.activeCampaignId === action.campaignId
           ? { ...state.session, activeCampaignId: campaigns[0]?.id ?? null, activeSceneId: null, activeCombatId: null }
           : state.session
-      return { ...state, campaigns, arcs, scenes, characters, session }
+      return { ...state, campaigns, arcs, scenes, characters, combats, session }
     }
 
     case 'ARC/UPSERT':
@@ -229,11 +240,73 @@ function reducer(state: AppState, action: Action): AppState {
         },
       }
 
-    case 'SESSION/END':
+    case 'SESSION/END': {
       const endedAt = Date.now()
       const summary = buildSessionSummary(state, endedAt)
+      const campaignId = state.session.activeCampaignId
+      const campaign = state.campaigns.find((entry) => entry.id === campaignId)
+      const campaignSceneIds = new Set(state.scenes.filter((scene) => scene.campaignId === campaignId).map((scene) => scene.id))
+      const endingCombats = state.combats.filter((combat) => combat.isActive && campaignSceneIds.has(combat.sceneId))
+      const characters = state.characters.map((character) => {
+        const participant = endingCombats
+          .flatMap((combat) => combat.participants)
+          .find((entry) => entry.characterId === character.id)
+        const belongsToCampaign = character.campaignId === campaignId
+        const history = belongsToCampaign && character.type === 'PLAYER'
+          ? [
+              {
+                id: createId(),
+                type: 'session' as const,
+                title: `Sessão concluída — ${summary.campaignTitle}`,
+                detail: `${summary.sceneNames.length} cena(s), ${summary.defeatedEnemyNames.length} ameaça(s) derrotada(s).`,
+                campaignId: campaignId ?? undefined,
+                sessionId: summary.id,
+                createdAt: endedAt,
+              },
+              ...(character.history ?? []),
+            ]
+          : character.history
+        if (!participant) return { ...character, history }
+        return {
+          ...character,
+          currentHp: participant.currentHp,
+          currentMp: participant.currentMp ?? character.currentMp,
+          history,
+          ordem: character.ordem
+            ? {
+                ...character.ordem,
+                resources: {
+                  ...character.ordem.resources,
+                  health: { ...character.ordem.resources.health, current: participant.currentHp },
+                  effort: { ...character.ordem.resources.effort, current: participant.currentMp ?? character.ordem.resources.effort.current },
+                },
+              }
+            : character.ordem,
+          updatedAt: endedAt,
+        }
+      })
+      const participatingOwnerIds = new Set(
+        characters
+          .filter((character) => character.campaignId === campaignId && character.type === 'PLAYER')
+          .map((character) => character.ownerUserId)
+          .filter((value): value is string => Boolean(value)),
+      )
+      const users = state.v1.users.map((user) => {
+        const playerXp = participatingOwnerIds.has(user.id) ? 10 : 0
+        const masterXp = campaign?.gameMasterUserId === user.id ? 25 : 0
+        return playerXp || masterXp
+          ? { ...user, platformXp: user.platformXp + playerXp, gameMasterXp: user.gameMasterXp + masterXp, updatedAt: endedAt }
+          : user
+      })
+      const combats = state.combats.map((combat) =>
+        endingCombats.some((entry) => entry.id === combat.id)
+          ? { ...combat, isActive: false, endedAt }
+          : combat,
+      )
       return {
         ...state,
+        characters,
+        combats,
         session: {
           ...state.session,
           isActive: false,
@@ -241,7 +314,24 @@ function reducer(state: AppState, action: Action): AppState {
           activeCombatId: null,
         },
         sessionHistory: [summary, ...state.sessionHistory].slice(0, 20),
+        v1: {
+          ...state.v1,
+          users,
+          auditLog: [
+            {
+              id: createId(),
+              actorId: campaign?.gameMasterUserId ?? 'local-master',
+              action: 'session.end',
+              targetType: 'session',
+              targetId: summary.id,
+              detail: `Sessão presencial encerrada em ${summary.campaignTitle}.`,
+              createdAt: endedAt,
+            },
+            ...state.v1.auditLog,
+          ].slice(0, 1000),
+        },
       }
+    }
 
     case 'SESSION/ADD_NOTE':
       return { ...state, session: { ...state.session, notes: [action.note, ...state.session.notes] } }
@@ -415,10 +505,33 @@ function reducer(state: AppState, action: Action): AppState {
     }
 
     case 'COMBAT/END': {
+      const endedCombat = state.combats.find((combat) => combat.id === action.combatId)
       const combats = state.combats.map((c) => (c.id === action.combatId ? { ...c, isActive: false, endedAt: Date.now() } : c))
       const session = state.session.activeCombatId === action.combatId ? { ...state.session, activeCombatId: null } : state.session
       
-      const combat = state.combats.find(c => c.id === action.combatId)
+      const combat = endedCombat
+      const characters = endedCombat
+        ? state.characters.map((character) => {
+            const participant = endedCombat.participants.find((entry) => entry.characterId === character.id)
+            if (!participant) return character
+            return {
+              ...character,
+              currentHp: participant.currentHp,
+              currentMp: participant.currentMp ?? character.currentMp,
+              ordem: character.ordem
+                ? {
+                    ...character.ordem,
+                    resources: {
+                      ...character.ordem.resources,
+                      health: { ...character.ordem.resources.health, current: participant.currentHp },
+                      effort: { ...character.ordem.resources.effort, current: participant.currentMp ?? character.ordem.resources.effort.current },
+                    },
+                  }
+                : character.ordem,
+              updatedAt: Date.now(),
+            }
+          })
+        : state.characters
       const note: SessionNote = {
         id: createId(),
         createdAt: Date.now(),
@@ -428,7 +541,8 @@ function reducer(state: AppState, action: Action): AppState {
       
       return { 
         ...state, 
-        combats, 
+        combats,
+        characters,
         session: { ...session, notes: [note, ...session.notes] } 
       }
     }
@@ -458,7 +572,30 @@ function reducer(state: AppState, action: Action): AppState {
         })
         return { ...c, participants }
       })
-      return { ...state, combats }
+      const adjustedCombat = combats.find((combat) => combat.id === action.combatId)
+      const adjustedParticipant = adjustedCombat?.participants.find((participant) => participant.id === action.participantId)
+      const characters = adjustedParticipant?.characterId
+        ? state.characters.map((character) => {
+            if (character.id !== adjustedParticipant.characterId) return character
+            return {
+              ...character,
+              currentHp: adjustedParticipant.currentHp,
+              currentMp: adjustedParticipant.currentMp ?? character.currentMp,
+              ordem: character.ordem
+                ? {
+                    ...character.ordem,
+                    resources: {
+                      ...character.ordem.resources,
+                      health: { ...character.ordem.resources.health, current: adjustedParticipant.currentHp },
+                      effort: { ...character.ordem.resources.effort, current: adjustedParticipant.currentMp ?? character.ordem.resources.effort.current },
+                    },
+                  }
+                : character.ordem,
+              updatedAt: Date.now(),
+            }
+          })
+        : state.characters
+      return { ...state, combats, characters }
     }
 
     case 'COMBAT/TOGGLE_DEFEATED': {
@@ -498,6 +635,9 @@ function reducer(state: AppState, action: Action): AppState {
     case 'AUDIO/TOGGLE_MUTE':
       return { ...state, audio: { ...state.audio, isMuted: !state.audio.isMuted } }
 
+    case 'AUDIO/TOGGLE_LOOP':
+      return { ...state, audio: { ...state.audio, loop: !(state.audio.loop ?? true) } }
+
     case 'REWARD_TABLE/UPSERT': {
       const rules = upsertById(state.rewardTables, action.rule)
       return { ...state, rewardTables: rules }
@@ -513,11 +653,17 @@ function reducer(state: AppState, action: Action): AppState {
       const characters = state.characters.map(c => {
         const g = grants.find(x => x.characterId === c.id)
         if (!g) return c
+        const historyEntries = [
+          g.xp > 0 ? { id: createId(), type: 'xp' as const, title: 'XP recebido', detail: action.event.notes || 'Recompensa da sessão.', amount: g.xp, campaignId: c.campaignId ?? undefined, createdAt: action.event.createdAt } : null,
+          g.items.length > 0 ? { id: createId(), type: 'item' as const, title: 'Item recebido', detail: g.items.map((item) => item.name).join(', '), campaignId: c.campaignId ?? undefined, createdAt: action.event.createdAt } : null,
+          g.gold > 0 ? { id: createId(), type: 'event' as const, title: 'Recursos recebidos', detail: `${g.gold} em recursos da campanha.`, amount: g.gold, campaignId: c.campaignId ?? undefined, createdAt: action.event.createdAt } : null,
+        ].filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
         return {
           ...c,
           xp: (c.xp ?? 0) + (g.xp ?? 0),
           gold: (c.gold ?? 0) + (g.gold ?? 0),
           equipment: g.items && g.items.length > 0 ? [...c.equipment, ...g.items] : c.equipment,
+          history: [...historyEntries, ...(c.history ?? [])],
           updatedAt: Date.now(),
         }
       })
@@ -540,6 +686,40 @@ function reducer(state: AppState, action: Action): AppState {
       }
     }
 
+    case 'V1/LOG_DICE':
+      if (state.v1.diceLog.some((entry) => entry.id === action.entry.id)) return state
+      return { ...state, v1: { ...state.v1, diceLog: [action.entry, ...state.v1.diceLog].slice(0, 500) } }
+
+    case 'V1/ADD_FEEDBACK':
+      return {
+        ...state,
+        v1: {
+          ...state.v1,
+          feedback: [action.feedback, ...state.v1.feedback.filter((entry) => !(entry.sessionId === action.feedback.sessionId && entry.userId === action.feedback.userId))],
+        },
+      }
+
+    case 'V1/SET_CONSENT':
+      return {
+        ...state,
+        v1: {
+          ...state.v1,
+          recordingConsents: [
+            action.consent,
+            ...state.v1.recordingConsents.filter((entry) => !(entry.sessionId === action.consent.sessionId && entry.participantId === action.consent.participantId)),
+          ],
+        },
+      }
+
+    case 'V1/LOG_CRITICAL':
+      return { ...state, v1: { ...state.v1, auditLog: [action.entry, ...state.v1.auditLog].slice(0, 1000) } }
+
+    case 'V1/LIBRARY_UPSERT':
+      return { ...state, v1: { ...state.v1, library: upsertById(state.v1.library, action.entity) } }
+
+    case 'V1/LIBRARY_DELETE':
+      return { ...state, v1: { ...state.v1, library: removeById(state.v1.library, action.entityId) } }
+
     default:
       return state
   }
@@ -548,7 +728,7 @@ function reducer(state: AppState, action: Action): AppState {
   type AppStoreApi = {
   state: AppState
   replaceSnapshot: (snapshot: AppSnapshot) => void
-  createCampaign: (data: Pick<Campaign, 'title' | 'system' | 'description'> & { coverDataUrl?: string | null }) => Campaign
+  createCampaign: (data: Pick<Campaign, 'title' | 'system' | 'description'> & Pick<Partial<Campaign>, 'entryPolicy' | 'defaultSessionMode'> & { coverDataUrl?: string | null }) => Campaign
   updateCampaign: (id: string, data: Partial<Campaign>) => void
   deleteCampaign: (campaignId: string) => void
   createArc: (campaignId: string, name: string, description: string) => Arc
@@ -586,9 +766,17 @@ function reducer(state: AppState, action: Action): AppState {
   stopTrack: () => void
   setVolume: (volume: number) => void
     toggleMute: () => void
+    toggleLoop: () => void
     upsertRewardRule: (rule: RewardRule) => void
     deleteRewardRule: (ruleId: string) => void
-    grantRewards: (sceneId: string, combatId: string | null, grants: RewardGrant[], notes?: string) => RewardEvent
+  grantRewards: (sceneId: string, combatId: string | null, grants: RewardGrant[], notes?: string) => RewardEvent
+  addDiceLog: (entry: Omit<DiceLogEntry, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => DiceLogEntry
+  submitSessionFeedback: (feedback: Omit<SessionFeedback, 'id' | 'createdAt'>) => SessionFeedback
+  setRecordingConsent: (consent: Omit<RecordingConsent, 'id'> & { id?: string }) => RecordingConsent
+  logCriticalAction: (entry: Omit<CriticalActionLog, 'id' | 'createdAt'>) => CriticalActionLog
+  createLibraryEntity: (entity: Omit<LibraryEntity, 'id' | 'createdAt' | 'updatedAt'>) => LibraryEntity
+  updateLibraryEntity: (id: string, patch: Partial<LibraryEntity>) => void
+  deleteLibraryEntity: (id: string) => void
   }
 
 const AppStoreContext = createContext<AppStoreApi | null>(null)
@@ -609,7 +797,7 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         const dbSnapshot = await loadSnapshotFromDB()
         if (dbSnapshot) {
           if (!dbSnapshot.audio) {
-            dbSnapshot.audio = { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false }
+            dbSnapshot.audio = { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false, loop: true }
           }
           if (!dbSnapshot.rewardTables) {
             dbSnapshot.rewardTables = []
@@ -636,7 +824,7 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         const localSnapshot = loadSnapshot()
         if (localSnapshot) {
           if (!localSnapshot.audio) {
-            localSnapshot.audio = { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false }
+            localSnapshot.audio = { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false, loop: true }
           }
           if (!localSnapshot.rewardTables) {
             localSnapshot.rewardTables = []
@@ -732,6 +920,10 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
           system: system || DEFAULT_CAMPAIGN_SYSTEM,
           description: data.description.trim(),
           coverDataUrl: data.coverDataUrl ?? null,
+          rulesetId: getRulesetIdForCampaign(system),
+          gameMasterUserId: 'demo-master',
+          entryPolicy: data.entryPolicy ?? { mode: 'new_start', requiresMasterApproval: true },
+          defaultSessionMode: data.defaultSessionMode ?? 'in_person',
           createdAt: Date.now(),
           updatedAt: Date.now(),
         }
@@ -826,6 +1018,9 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
           updatedAt: Date.now(),
           xp: 0,
           gold: 0,
+          rulesetId: data.rulesetId ?? (data.ordem ? 'ordem-compatible' : data.dnd ? 'dnd5e' : '3det-victory'),
+          lifeStatus: data.lifeStatus ?? 'active',
+          history: data.history ?? [],
         }
         const character: Character = {
           ...base,
@@ -914,7 +1109,7 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         dispatch({ type: 'COMBAT/END', combatId })
         if (combat) {
           const rule = state.rewardTables[0] || { id: createId(), name: 'Padrão', criteria: '', xp: 50, gold: 20 }
-          const participants = combat.participants
+          const participants = combat.participants.filter((participant) => participant.isPlayer && participant.characterId)
           if (participants.length > 0) {
             const grants: RewardGrant[] = participants.map((p) => ({ characterId: p.characterId!, xp: rule.xp, gold: rule.gold, items: [] }))
             const event: RewardEvent = {
@@ -940,6 +1135,7 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
       stopTrack: () => dispatch({ type: 'AUDIO/STOP' }),
       setVolume: (volume) => dispatch({ type: 'AUDIO/SET_VOLUME', volume }),
       toggleMute: () => dispatch({ type: 'AUDIO/TOGGLE_MUTE' }),
+      toggleLoop: () => dispatch({ type: 'AUDIO/TOGGLE_LOOP' }),
       upsertRewardRule: (rule) => {
         const r: RewardRule = { ...rule, id: rule.id || createId() }
         dispatch({ type: 'REWARD_TABLE/UPSERT', rule: r })
@@ -957,6 +1153,37 @@ const AppStoreContext = createContext<AppStoreApi | null>(null)
         dispatch({ type: 'REWARDS/GRANT', event })
         return event
       },
+      addDiceLog: (entry) => {
+        const next: DiceLogEntry = { ...entry, id: entry.id ?? createId(), createdAt: entry.createdAt ?? Date.now() }
+        dispatch({ type: 'V1/LOG_DICE', entry: next })
+        return next
+      },
+      submitSessionFeedback: (feedback) => {
+        const next: SessionFeedback = { ...feedback, id: createId(), createdAt: Date.now() }
+        dispatch({ type: 'V1/ADD_FEEDBACK', feedback: next })
+        return next
+      },
+      setRecordingConsent: (consent) => {
+        const next: RecordingConsent = { ...consent, id: consent.id ?? createId() }
+        dispatch({ type: 'V1/SET_CONSENT', consent: next })
+        return next
+      },
+      logCriticalAction: (entry) => {
+        const next: CriticalActionLog = { ...entry, id: createId(), createdAt: Date.now() }
+        dispatch({ type: 'V1/LOG_CRITICAL', entry: next })
+        return next
+      },
+      createLibraryEntity: (entity) => {
+        const next: LibraryEntity = { ...entity, id: createId(), createdAt: Date.now(), updatedAt: Date.now() }
+        dispatch({ type: 'V1/LIBRARY_UPSERT', entity: next })
+        return next
+      },
+      updateLibraryEntity: (id, patch) => {
+        const existing = state.v1.library.find((entity) => entity.id === id)
+        if (!existing) return
+        dispatch({ type: 'V1/LIBRARY_UPSERT', entity: { ...existing, ...patch, id, updatedAt: Date.now() } })
+      },
+      deleteLibraryEntity: (id) => dispatch({ type: 'V1/LIBRARY_DELETE', entityId: id }),
     }
   }, [state])
 

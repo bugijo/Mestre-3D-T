@@ -11,6 +11,7 @@ const api = {
     combats: [],
     audio: { currentTrackUrl: null, volume: 0.5, isPlaying: false, isMuted: false },
     settings: { nextSessionAt: Date.now() },
+    rewardEvents: [] as any[],
   },
   startSession: vi.fn(),
   endSession: vi.fn(),
