@@ -5,6 +5,8 @@ import { useOptionalLiveSession } from '@/realtime/LiveSessionContext'
 import { createSessionProjection } from '@/realtime/projection'
 import { cn } from '@/lib/cn'
 
+const SYNC_DEBOUNCE_MS = 500
+
 type LanInfo = { addresses: string[]; port: number }
 
 export function LiveSessionHostPanel() {
@@ -14,6 +16,8 @@ export function LiveSessionHostPanel() {
   const [copied, setCopied] = useState(false)
   const [assignments, setAssignments] = useState<Record<string, string>>({})
   const processedEvents = useRef(new Set<string>())
+  const lastSyncedProjectionRef = useRef<string | null>(null)
+  const pendingSyncRef = useRef(false)
   const campaign = store.state.campaigns.find((entry) => entry.id === store.state.session.activeCampaignId) ?? null
   const projection = useMemo(() => createSessionProjection(store.state), [store.state])
   const characters = projection.characters.filter((character) => character.type === 'PLAYER' || character.type === 'COMPANION')
@@ -27,8 +31,21 @@ export function LiveSessionHostPanel() {
 
   useEffect(() => {
     if (!live?.isMaster || !live.code || live.connectionStatus !== 'connected') return
-    const timeout = window.setTimeout(() => live.syncProjection(projection), 180)
-    return () => window.clearTimeout(timeout)
+    if (pendingSyncRef.current) return
+    const projectionJson = JSON.stringify(projection)
+    if (projectionJson === lastSyncedProjectionRef.current) return
+    pendingSyncRef.current = true
+    const timeout = window.setTimeout(() => {
+      pendingSyncRef.current = false
+      const currentJson = JSON.stringify(projection)
+      if (currentJson === lastSyncedProjectionRef.current) return
+      lastSyncedProjectionRef.current = currentJson
+      live.syncProjection(projection)
+    }, SYNC_DEBOUNCE_MS)
+    return () => {
+      pendingSyncRef.current = false
+      window.clearTimeout(timeout)
+    }
   }, [live, projection])
 
   useEffect(() => {
@@ -36,6 +53,10 @@ export function LiveSessionHostPanel() {
     for (const event of live.events) {
       if (processedEvents.current.has(event.id)) continue
       processedEvents.current.add(event.id)
+      if (processedEvents.current.size > 1000) {
+        const toRemove = Array.from(processedEvents.current).slice(0, processedEvents.current.size - 500)
+        for (const id of toRemove) processedEvents.current.delete(id)
+      }
       if (event.kind === 'dice') {
         store.addDiceLog({
           id: event.id,
