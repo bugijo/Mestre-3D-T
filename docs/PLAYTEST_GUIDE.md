@@ -187,3 +187,187 @@ node server/playtest-e2e.mjs
 # Browser smoke (precisa de build)
 npm run build && node .tools/qa-browser-smoke.mjs
 ```
+
+---
+
+## 10. PRIMEIRO TESTE REAL — PC + Celulares
+
+> Instrução passo a passo para seu primeiro teste com uma mesa real.
+
+### O que testar
+
+Validar o fluxo completo: Mestre no PC, 1 a 3 jogadores nos celulares, tudo na mesma rede Wi-Fi.
+
+### Pré-requisitos
+
+- Computador (PC ou notebook) com Node.js instalado
+- 1 a 3 celulares (Android ou iOS) na **mesma rede Wi-Fi** do PC
+- Navegador moderno em todos os dispositivos (Chrome, Edge, Safari)
+
+### Passo a passo
+
+#### 1. Iniciar o servidor no PC
+
+Abra o terminal e execute:
+
+```bash
+cd /caminho/para/o/projeto/app
+npm run dev:lan
+```
+
+O terminal vai mostrar algo como:
+
+```
+Mestre: http://localhost:4173/session
+LAN: http://192.168.1.100:4173
+WebSocket: ws://0.0.0.0:4173/ws
+```
+
+**Importante:** Anote o endereço `192.168.X.X:4173` — é ele que os celulares vão usar.
+
+---
+
+#### 2. Abrir o Mestre no PC
+
+Abra o navegador no PC e acesse:
+
+```
+http://localhost:4173/session
+```
+
+Você verá a tela **"Iniciar Sessão"** com a campanha **"O Caso de Santa Aurora"**.
+
+---
+
+#### 3. Iniciar sessão e abrir LAN
+
+1. Clique no card **"O Caso de Santa Aurora"** para iniciar a sessão
+2. No painel **"Mesa presencial LAN"**, clique em **"Abrir mesa na rede"**
+3. Aparecerão:
+   - Um **QR Code** (canto esquerdo)
+   - Um **código de 6 letras/números** (ex: `AB3XYZ`)
+   - A **URL de entrada** (ex: `http://192.168.1.100:4173/join/AB3XYZ`)
+   - O status **"LAN conectada"** no canto superior direito
+
+---
+
+#### 4. Entrar com os celulares
+
+Em cada celular:
+
+1. Abra o navegador
+2. Digite o endereço `http://192.168.1.100:4173` (o número que apareceu no terminal)
+3. Você verá a página de entrada da sessão
+4. Digite o **nome do jogador**
+5. Digite o **código de 6 caracteres** que aparece na tela do Mestre
+6. Clique em **"Solicitar entrada"**
+
+**Alternativa:** O Mestre pode mostrar o QR Code — nos celulares, use o app da câmera para escanear (a maioria escaneia QR direto sem app extra).
+
+---
+
+#### 5. Aprovar jogadores no PC
+
+No PC do Mestre:
+
+1. No painel **"Pedidos de entrada"**, você verá cada jogador que pediu para entrar
+2. Para cada um:
+   - Selecione o **personagem** no menu (Lia, Caio ou Tainá)
+   - Clique em **"Aprovar"**
+3. Quando aprovados, eles aparecem na lista **"Na mesa"** com um ponto verde se conectados
+
+---
+
+#### 6. O que o jogador vê no celular
+
+Após a aprovação, o celular mostra:
+
+- **Nome do personagem** e seus recursos (PV, PE, SAN)
+- **Cena atual** — o que o Mestre apresentar no Palco
+- **Rolador de dados** — para fazer testes
+- **Botão de dados** com opção de visibilidade (pública ou só Mestre)
+- Mensagens do Mestre
+
+---
+
+#### 7. Testar as ações do Mestre
+
+No PC, use a **Barra do Diretor** (acima do conteúdo principal):
+
+| O que fazer | Como | Resultado esperado |
+|-------------|------|-------------------|
+| **Apresentar cena** | Clique em "Cena" | Todos os celulares mostram a cena |
+| **Revelar NPC** | Clique em "NPC" | Todos veem a imagem/texto do NPC |
+| **Enviar segredo** | Selecione um jogador no campo "Destinatário" e clique em "Enviar Mensagem" | Só aquele jogador recebe |
+| **Rolar dados (Mestre)** | Use o rolador no painel direito | O resultado aparece para todos (público) ou só você (privado) |
+| **Iniciar combate** | Clique no botão "INICIAR COMBATE" | O modo combate abre no PC e os celulares recebem a atualização |
+| **Conceder recompensa** | Clique em "Recompensa" | Todos recebem a notificação |
+| **Encerrar sessão** | Clique em "Encerrar Sessão" no topo | Todos recebem "sessão encerrada" |
+
+---
+
+#### 8. Testar ações do jogador
+
+No celular do jogador:
+
+- **Rolar dados:** Escolha o atributo, ajuste bônus, escolha visibilidade, clique em "Rolar"
+- O Mestre vê o resultado no painel de dados (à direita na interface do PC)
+- Se a rolagem for **privada** (só Mestre), os outros jogadores NÃO veem
+
+---
+
+#### 9. Testar desconexão e reconexão
+
+1. No celular, feche o navegador (ou desative o Wi-Fi)
+2. No PC, o ponto do jogador fica **amarelo** (reconectando)
+3. Reabra o navegador e entre novamente com o **mesmo nome e código**
+4. O jogador recupera automaticamente:
+   - Aprovação
+   - Personagem atribuído
+   - Cena atual
+   - Histórico de eventos da sessão
+
+---
+
+#### 10. Verificações de segurança
+
+Enquanto testa, confirme que:
+
+- [ ] **Jogador NÃO pode ver** os PVs/recursos de outro jogador
+- [ ] **Jogador NÃO pode receber** mensagem secreta destinada a outro
+- [ ] **Jogador NÃO pode** encerrar a sessão
+- [ ] **Jogador NÃO pode** alterar personagem de outro jogador
+- [ ] **Após refresh** (F5 no celular), o jogador recupera o estado sem duplicar eventos
+- [ ] **Recompensa** concedida aparece apenas uma vez, mesmo após refresh
+
+---
+
+#### 11. Checklists rápidas
+
+##### Checklist do Mestre (antes do teste)
+
+- [ ] Node.js instalado (`node --version`)
+- [ ] Projeto na última versão (`git log -1` na branch `v1-presencial`)
+- [ ] Celulares na mesma rede Wi-Fi
+- [ ] Navegador atualizado no PC
+- [ ] `npm run dev:lan` rodando sem erros
+
+##### Checklist durante o teste
+
+- [ ] 1 jogador entra e vê o personagem
+- [ ] 3 jogadores entram simultaneamente
+- [ ] Mestre apresenta cena → todos recebem
+- [ ] Mestre envia segredo → só um jogador recebe
+- [ ] Jogador rola dados → Mestre vê resultado
+- [ ] Rolagem privada → outros jogadores não veem
+- [ ] Combate inicia → todos recebem
+- [ ] Jogador desconecta e reconecta → estado preservado
+- [ ] Sessão encerra → todos notificados
+
+---
+
+#### 12. Após o teste
+
+1. No terminal do PC, pressione **Ctrl+C** para parar o servidor
+2. Os dados da sessão ficam salvos em `.data/lan-sessions.json`
+3. Para um novo teste, execute `npm run dev:lan` novamente
