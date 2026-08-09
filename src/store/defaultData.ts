@@ -106,8 +106,10 @@ export function createDefaultSnapshot(): AppSnapshot {
   const masterId = 'demo-master'
   const playerOneUserId = 'demo-player-lia'
   const playerTwoUserId = 'demo-player-caio'
+  const playerThreeUserId = 'demo-player-taina'
   const liaId = createId()
   const caioId = createId()
+  const taináId = createId()
   const npcId = createId()
   const creatureId = createId()
 
@@ -228,6 +230,25 @@ export function createDefaultSnapshot(): AppSnapshot {
   })
   caio.ordem!.skills = { medicine: 10, athletics: 5, will: 5 }
 
+  const tainá = paranormalCharacter({
+    id: taináId,
+    campaignId,
+    ownerUserId: playerThreeUserId,
+    name: 'Tainá Vargas',
+    type: 'PLAYER',
+    role: 'Técnica paranormal',
+    origin: 'Técnica',
+    path: 'Ocultista',
+    attributes: { agility: 2, intellect: 3, presence: 3, strength: 1, vigor: 1 },
+    health: 14,
+    effort: 14,
+    sanity: 22,
+    biography: 'Técnica em eletrônica que modificou um rádio comum para captar frequências fora do espectro audível. Escuta o que não deveria.',
+    equipment: [demoItem('Rádio modificado', 'Capta frequências alteradas. Sintonizar exige um teste de Tecnologia.')],
+  })
+  tainá.ordem!.skills = { perception: 10, will: 5, technology: 10 }
+  tainá.ordem!.abilities = ['Percepção Paranormal']
+
   const npc = paranormalCharacter({
     id: npcId,
     campaignId,
@@ -282,8 +303,9 @@ export function createDefaultSnapshot(): AppSnapshot {
     { id: masterId, displayName: 'Mestre Demo', roles: ['player', 'game_master'], platformXp: 0, gameMasterXp: 0, titles: [], createdAt: timestamp, updatedAt: timestamp },
     { id: playerOneUserId, displayName: 'Jogadora Lia', roles: ['player'], platformXp: 0, gameMasterXp: 0, titles: [], createdAt: timestamp, updatedAt: timestamp },
     { id: playerTwoUserId, displayName: 'Jogador Caio', roles: ['player'], platformXp: 0, gameMasterXp: 0, titles: [], createdAt: timestamp, updatedAt: timestamp },
+    { id: playerThreeUserId, displayName: 'Jogadora Tainá', roles: ['player'], platformXp: 0, gameMasterXp: 0, titles: [], createdAt: timestamp, updatedAt: timestamp },
   ]
-  v1.participations = [lia, caio].map((character) => ({
+  v1.participations = [lia, caio, tainá].map((character) => ({
     id: createId(),
     characterId: character.id,
     campaignId,
@@ -301,7 +323,7 @@ export function createDefaultSnapshot(): AppSnapshot {
     campaigns: [campaign],
     arcs: [arc],
     scenes: [investigationScene, combatScene],
-    characters: [lia, caio, npc, creature],
+    characters: [lia, caio, tainá, npc, creature],
     combats: [],
     session: {
       isActive: false,
