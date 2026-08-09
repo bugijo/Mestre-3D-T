@@ -100,6 +100,7 @@ try {
   const playerB = await connect(); clients.push(playerB)
   playerB.send({ type: 'player:join', code: ready.code, playerName: 'Jogador B' })
   const statusB = await playerB.next((message) => message.type === 'player:status')
+  const tokenB = statusB.participant.reconnectToken
   const participantList = await master.next((message) => message.type === 'participant:list' && message.participants.length === 2)
   const participantA = participantList.participants.find((entry) => entry.playerName === 'Jogador A')
   const participantB = participantList.participants.find((entry) => entry.playerName === 'Jogador B')
@@ -126,6 +127,46 @@ try {
   const duplicateAck = await playerA.next((message) => message.type === 'event:ack' && message.actionId === 'same-action' && message.duplicate === true)
   assert(event.event.payload.total === 17 && duplicateAck.duplicate, 'Deduplicação de ações falhou.')
 
+  // Player attempts to send a 'reward' event (master-only)
+  playerB.send({ type: 'event:send', actionId: 'player-reward-attempt', event: { kind: 'reward', payload: { xp: 100 }, audience: { kind: 'all' } } })
+  const forbiddenAck = await playerB.next((msg) => msg.type === 'error' && msg.code === 'FORBIDDEN', 2000)
+  assert(forbiddenAck, 'Jogador deveria ser bloqueado ao enviar evento master-only.')
+  console.log('  Autorização: jogador bloqueado ao usar evento master-only.')
+
+  // Player B tries to send an event about Player A's character
+  playerB.send({ type: 'event:send', actionId: 'player-b-other-char', event: { kind: 'dice', payload: { characterId: 'char-a', expression: '1d20', total: 15 }, audience: { kind: 'all' } } })
+  const forbiddenChar = await playerB.next((msg) => msg.type === 'error' && msg.code === 'FORBIDDEN', 2000)
+  assert(forbiddenChar, 'Jogador deveria ser bloqueado ao modificar personagem alheio.')
+  console.log('  Autorização: jogador bloqueado ao referenciar personagem de outro.')
+
+  // Test that actionId dedup works after reconnection
+  playerB.send({ type: 'event:send', actionId: 'dedup-after-reconnect', event: { kind: 'dice', payload: { total: 10 }, audience: { kind: 'all' } } })
+  await playerB.next((msg) => msg.type === 'event:ack' && msg.actionId === 'dedup-after-reconnect')
+  playerB.close()
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  const reconnectedB = await connect(); clients.push(reconnectedB)
+  reconnectedB.send({ type: 'player:join', code: ready.code, playerName: 'Jogador B', reconnectToken: tokenB })
+  await reconnectedB.next((msg) => msg.type === 'session:resume')
+  // Try same actionId after reconnect - should still be deduped
+  reconnectedB.send({ type: 'event:send', actionId: 'dedup-after-reconnect', event: { kind: 'dice', payload: { total: 10 }, audience: { kind: 'all' } } })
+  const dedupAfterReconnect = await reconnectedB.next((msg) => msg.type === 'event:ack' && msg.actionId === 'dedup-after-reconnect' && msg.duplicate === true, 2000)
+  assert(dedupAfterReconnect, 'Deduplicação deveria persistir após reconexão.')
+  console.log('  Deduplicação: actionId persiste após reconexão.')
+
+  // Two players send events concurrently - both should be accepted with different actionIds
+  const actionA = 'concurrent-a-' + Date.now()
+  const actionB = 'concurrent-b-' + Date.now()
+  reconnectedB.send({ type: 'event:send', actionId: actionA, event: { kind: 'dice', payload: { total: 7 }, audience: { kind: 'all' } } })
+  playerA.send({ type: 'event:send', actionId: actionB, event: { kind: 'dice', payload: { total: 8 }, audience: { kind: 'all' } } })
+  const ackA = await reconnectedB.next((msg) => msg.type === 'event:ack' && msg.actionId === actionA && msg.duplicate === false, 2000)
+  const ackB = await playerA.next((msg) => msg.type === 'event:ack' && msg.actionId === actionB && msg.duplicate === false, 2000)
+  assert(ackA && ackB, 'Eventos concorrentes deveriam ser aceitos.')
+  // Master should receive both
+  const eventA = await master.next((msg) => msg.type === 'event:new' && msg.event.actionId === actionA, 2000)
+  const eventB = await master.next((msg) => msg.type === 'event:new' && msg.event.actionId === actionB, 2000)
+  assert(eventA && eventB, 'Mestre deveria receber ambos eventos concorrentes.')
+  console.log('  Concorrência: 2 jogadores agindo simultaneamente funcionou.')
+
   playerA.close()
   await new Promise((resolve) => setTimeout(resolve, 100))
   const reconnectedA = await connect(); clients.push(reconnectedA)
@@ -138,7 +179,7 @@ try {
 
   master.send({ type: 'session:end' })
   await reconnectedA.next((message) => message.type === 'session:ended')
-  console.log('LAN smoke: aprovação, projeção privada, palco, deduplicação, encerramento e reconexão passaram.')
+  console.log('LAN smoke: aprovação, projeção privada, palco, deduplicação, autorização jogador, eventos concorrentes, encerramento e reconexão passaram.')
 } finally {
   for (const client of clients) client.close()
   server.kill('SIGTERM')
