@@ -15,6 +15,8 @@ const host = process.env.LAN_HOST || '0.0.0.0'
 const port = Number(process.env.LAN_PORT || 4173)
 const production = process.argv.includes('--production')
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+const MASTER_ACTIONS = new Set(['reward', 'grant', 'system', 'participant:approve', 'stage:present', 'session:end', 'session:state'])
+const DEDUP_CLEANUP_INTERVAL = 1000 * 60 * 10 // 10 minutes
 const sessions = new Map()
 let persistTimer = null
 
@@ -61,17 +63,23 @@ function serializableSession(session) {
     projection: session.projection,
     stage: session.stage,
     events: session.events.slice(-200),
+    actionIds: Array.from(session.actionIds).slice(-500),
     participants: Array.from(session.participants.values()).map((participant) => ({ ...publicParticipant(participant, true), connected: false })),
   }
 }
 
 function hydrateSession(raw) {
-  return {
+  const session = {
     ...raw,
     participants: new Map((raw.participants || []).map((participant) => [participant.id, participant])),
     clients: new Set(),
-    actionIds: new Set((raw.events || []).map((event) => event.actionId).filter(Boolean)),
+    actionIds: new Set((raw.actionIds || [])),
   }
+  // Also hydrate from events (backward compat + runtime)
+  for (const event of (raw.events || [])) {
+    if (event.actionId) session.actionIds.add(event.actionId)
+  }
+  return session
 }
 
 async function loadSessions() {
@@ -98,6 +106,16 @@ function schedulePersist() {
   }, 150)
 }
 
+function cleanupStaleActionIds(session) {
+  if (!session || !session.events || session.events.length === 0) return
+  const cutoff = Date.now() - DEDUP_CLEANUP_INTERVAL
+  const eventsInWindow = session.events.filter((event) => event.createdAt >= cutoff)
+  const recentIds = new Set(eventsInWindow.map((event) => event.actionId).filter(Boolean))
+  for (const id of session.actionIds) {
+    if (!recentIds.has(id)) session.actionIds.delete(id)
+  }
+}
+
 function send(ws, message) {
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(message))
 }
@@ -121,6 +139,15 @@ function projectForParticipant(projection, participant) {
       ? projection.characters.filter((character) => character.id === ownCharacterId)
       : [],
   }
+}
+
+function validatePlayerEvent(event, participant) {
+  // Block player from using master-only event kinds
+  if (MASTER_ACTIONS.has(event?.kind)) return false
+  // If a characterId is included in the payload, it must match the participant's assigned character
+  const targetId = event?.payload?.characterId
+  if (targetId && targetId !== participant?.characterId) return false
+  return true
 }
 
 function resumePayload(session, ws) {
@@ -325,6 +352,11 @@ function handleMessage(ws, message) {
       send(ws, { type: 'event:ack', actionId, duplicate: true })
       return
     }
+    // Validate authorization for non-master
+    if (!isMaster && !validatePlayerEvent(message.event, participant)) {
+      send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Ação não permitida para jogadores.' })
+      return
+    }
     session.actionIds.add(actionId)
     const event = {
       id: token(10),
@@ -343,6 +375,8 @@ function handleMessage(ws, message) {
     session.updatedAt = Date.now()
     broadcastEvent(session, event)
     send(ws, { type: 'event:ack', actionId, duplicate: false })
+    // Cleanup stale actionIds periodically (every 50 events)
+    if (session.events.length % 50 === 0) cleanupStaleActionIds(session)
     schedulePersist()
     return
   }
