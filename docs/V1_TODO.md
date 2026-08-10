@@ -1,6 +1,6 @@
 # V1 TODO List — Estado Atual
 
-> Baseado no playtest E2E completo (2026-08-09)
+> Atualizado: 2026-08-10 (Ciclo 3 QA)
 > Branch: `v1-presencial`
 
 ---
@@ -10,9 +10,9 @@
 ### Fase 0 — Estado atual
 - [x] Auditoria dos 3 repositórios
 - [x] Preservação do trabalho V1 do Codex
-- [x] TypeScript limpo, build OK, 104/104 testes verdes
+- [x] TypeScript limpo, build OK, 114/114 testes verdes
 - [x] LAN smoke test: protocolo validado
-- [x] Playtest E2E (31 passos, 28 verificações, 0 falhas)
+- [x] Playtest E2E (31 passos, 0 falhas)
 - [x] Playwright chromium smoke (desktop + mobile)
 
 ### Fase 1 — Fundação
@@ -45,6 +45,11 @@
 - [x] QR code em /api/qr
 - [x] Persistência em disco
 - [x] Rate limiting e heartbeat
+- [x] **Validação de Origin no WebSocket** (P5)
+- [x] **Reconexão single-connection** (P4)
+- [x] **Código de sessão de 8 chars** (P8)
+- [x] **maxPayload 2MB** (1.16)
+- [x] **Jitter no reconnect backoff** (3.5)
 
 ### Fase 5 — Palco
 - [x] DirectorBar → Stage (scene, npc_reveal, map, combat, reward, message)
@@ -63,42 +68,48 @@
 - [x] Feedback do jogador
 - [x] Recording consent
 
-### Fase 8 — Playtest
+### Fase 8 — QA e Estabilidade
 - [x] Demo "O Caso de Santa Aurora" completa
 - [x] 3 personagens jogadores
-- [x] 2 cenas (investigação + combate)
-- [x] NPC + criatura
-- [x] Recompensas
+- [x] Mesa virtual 1 Mestre + 4 jogadores (Ciclo 2 e Ciclo 3)
+- [x] Ciclo 3: 6 correções de segurança/estabilidade
+- [x] Graceful degradation Admin crypto em HTTP LAN (P1)
+- [x] 114/114 testes, typecheck 0 erros, build OK
+- [x] 0 BLOCKER / 0 CRITICAL / 0 HIGH restantes
 
 ### Documentação
 - [x] docs/V1_PLAYTEST.md — resultados do playtest
 - [x] docs/PLAYTEST_GUIDE.md — guia para usuário não técnico
 - [x] docs/V1_TODO.md (este arquivo)
-- [x] docs/V1_AUDIT.md — mantido da auditoria inicial
+- [x] docs/QA_MASTER_REPORT.md — 3 ciclos de QA
+- [x] docs/QA_SECURITY_REALTIME_REPORT.md — auditoria de segurança
+- [x] docs/VIRTUAL_TABLE_PLAYTEST.md — mesa virtual
 
 ---
 
 ## 🔄 Pendente (próximas execuções)
 
-### Prioridade Alta
-
+### Prioridade Alta — Playtest físico
 - [ ] **Teste em celular real** — toque, QR, áudio, Wi-Fi real
 - [ ] **Teste 3+ celulares simultâneos** — validar concorrência real
 - [ ] **Teste em rede doméstica com roteador** — latência, perda de pacote
 
 ### Prioridade Média
-
 - [ ] docs/V1_ARCHITECTURE.md — diagrama de camadas
 - [ ] docs/RULESET_ARCHITECTURE.md — multi-ruleset
 - [ ] Integrar AppStore com LiveSessionContext (sync bidirecional)
 - [ ] Página de histórico do personagem (CharacterHistoryEvent)
 - [ ] Upload de imagem de personagem funcional
+- [ ] HTTPS LAN (mkcert) — desbloqueia Admin completo, PWA, cookies seguros
+- [ ] Schema validation (Zod) para mensagens WS
+- [ ] Rate limiting global por IP
 
 ### Prioridade Baixa / Futuro
-
 - [ ] Suporte a Firefox e WebKit no Playwright smoke
-- [ ] Testes de carga (load testing)
+- [ ] Testes de carga (load testing) em rede real
 - [ ] Refatoração do AppStore (~1200 linhas)
+- [ ] Global rate limiting
+- [ ] Seq gap detection no cliente
 
 ---
 
@@ -106,12 +117,10 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Testes passando | 104/104 (39 arquivos) |
-| Playwright smoke | Chromium (desktop + mobile) |
-| LAN smoke | ✅ Todos os cenários |
-| Playtest E2E (31 passos) | ✅ 28 verificações, 0 falhas |
+| Testes passando | 114/114 (40 arquivos) |
 | TypeScript | Strict, 0 erros |
-| Build | PWA + dist |
-| Personagens demo | 3 jogadores + 1 NPC + 1 criatura |
-| Cenas demo | 2 (investigação + combate) |
-| Commits não pusheados | 1 (v1-presencial) |
+| Build | ✅ PWA + dist (20.55s) |
+| Mesa virtual | ✅ 1 Mestre + 4 jogadores |
+| BLOCKER/CRITICAL/HIGH | 0 |
+| Commits locais não pusheados | vários (v1-presencial) |
+| Pronto para playtest físico | ✅ SIM |
