@@ -27,8 +27,8 @@ function token(size = 24) {
 function shortCode() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
     let value = ''
-    const bytes = randomBytes(6)
-    for (let index = 0; index < 6; index += 1) value += alphabet[bytes[index] % alphabet.length]
+    const bytes = randomBytes(8)
+    for (let index = 0; index < 8; index += 1) value += alphabet[bytes[index] % alphabet.length]
     if (!sessions.has(value)) return value
   }
   throw new Error('Não foi possível gerar um código de sessão único.')
@@ -286,6 +286,14 @@ function handleMessage(ws, message) {
       }
       session.participants.set(participant.id, participant)
     } else {
+      // Close existing WS connection for this participant (P4: prevent multi-connection)
+      for (const client of Array.from(session.clients)) {
+        if (client.meta?.participantId === participant.id && client !== ws) {
+          client.meta = { ...client.meta, replaced: true }
+          client.close(1000, 'Replaced by new connection')
+          session.clients.delete(client)
+        }
+      }
       participant.connected = true
       participant.lastSeenAt = Date.now()
       if (safeText(message.playerName, 80)) participant.playerName = safeText(message.playerName, 80)
@@ -480,10 +488,21 @@ const server = http.createServer(async (request, response) => {
   createReadStream(filePath).pipe(response)
 })
 
-// A projection can legitimately contain a reviewed map or portrait. Keep a hard
-// ceiling, but leave enough room for the 10 MB upload policy used by the UI.
-const webSocketServer = new WebSocketServer({ server, path: '/ws', maxPayload: 12 * 1024 * 1024 })
-webSocketServer.on('connection', (ws) => {
+const webSocketServer = new WebSocketServer({ server, path: '/ws', maxPayload: 2 * 1024 * 1024 })
+webSocketServer.on('connection', (ws, req) => {
+  // Origin validation for HTTP LAN
+  const origin = req?.headers?.origin
+  if (origin) {
+    try {
+      const originUrl = new URL(origin)
+      const allowedHosts = ['localhost', '127.0.0.1', '::1', host]
+      const isAllowed = allowedHosts.some((h) => originUrl.hostname === h) || originUrl.hostname.endsWith('.local')
+      if (!isAllowed) {
+        ws.close(4001, 'Origin not allowed')
+        return
+      }
+    } catch { /* ignore invalid origin header */ }
+  }
   ws.isAlive = true
   ws.on('pong', () => { ws.isAlive = true })
   ws.on('message', (raw) => {

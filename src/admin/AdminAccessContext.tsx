@@ -15,6 +15,7 @@ import {
   verifyTotpCode,
 } from '@/lib/adminSecurity'
 import { logError, logInfo, logWarn } from '@/lib/logger'
+import { isHttpLan } from '@/lib/secureContext'
 import {
   ADMIN_VAULT_STORAGE_KEY,
   ADMIN_VAULT_SYNC_KEY,
@@ -184,7 +185,8 @@ export function AdminAccessProvider({ children }: { children: React.ReactNode })
       return { ok: true, secret: totpSecret }
     } catch (error) {
       logError('admin-access:bootstrap', error)
-      return { ok: false, error: 'Falha ao inicializar o cofre administrativo.' }
+      const hint = isHttpLan() ? ' O Admin requer HTTPS em LAN.' : ''
+      return { ok: false, error: 'Falha ao inicializar o cofre administrativo.' + hint }
     }
   }
 
@@ -301,7 +303,8 @@ export function AdminAccessProvider({ children }: { children: React.ReactNode })
       return { ok: true }
     } catch (error) {
       logError('admin-access:verify-2fa', error)
-      return { ok: false, error: 'Nao foi possivel validar o segundo fator.' }
+      const hint = isHttpLan() ? ' O Admin requer HTTPS em LAN.' : ''
+      return { ok: false, error: 'Nao foi possivel validar o segundo fator.' + hint }
     }
   }
 
@@ -359,7 +362,8 @@ export function AdminAccessProvider({ children }: { children: React.ReactNode })
       return { ok: true, secret: totpSecret }
     } catch (error) {
       logError('admin-access:create-user', error)
-      return { ok: false, error: 'Falha ao criar usuario privilegiado.' }
+      const hint = isHttpLan() ? ' O Admin requer HTTPS em LAN.' : ''
+      return { ok: false, error: 'Falha ao criar usuario privilegiado.' + hint }
     }
   }
 

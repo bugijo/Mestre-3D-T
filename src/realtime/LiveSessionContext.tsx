@@ -152,7 +152,7 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
         return
       }
       setConnectionStatus('reconnecting')
-      const delay = Math.min(10_000, 500 * 2 ** reconnectAttemptsRef.current)
+      const delay = Math.min(10_000, 500 * 2 ** reconnectAttemptsRef.current) * (0.5 + Math.random() * 0.5)
       reconnectAttemptsRef.current += 1
       reconnectTimerRef.current = window.setTimeout(() => {
         if (authRef.current) connect(authRef.current, true)

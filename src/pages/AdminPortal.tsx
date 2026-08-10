@@ -8,6 +8,7 @@ import { MetricTile } from '@/components/ui/MetricTile'
 import { getLogEntries } from '@/lib/logger'
 import { formatDuration } from '@/lib/sessionReports'
 import { safeClipboard } from '@/lib/clipboard'
+import { isHttpLan } from '@/lib/secureContext'
 
 export function AdminPortal() {
   const { state } = useAppStore()
@@ -148,6 +149,15 @@ export function AdminPortal() {
           </div>
         }
       />
+
+      {isHttpLan() ? (
+        <div className="app-panel-muted border-l-4 border-amber-400 px-5 py-4 text-sm text-white">
+          <strong>Contexto HTTP LAN detectado.</strong> O painel administrativo requer um contexto seguro
+          (HTTPS ou <code>localhost</code>) para criptografia e autenticação 2FA.
+          Acesse por <code>https://localhost:{window.location.port || '4173'}</code> ou use um túnel HTTPS.
+          {vault.users.length > 0 && <span className="ml-2 text-text-muted">Os dados existentes continuam disponíveis em modo somente leitura.</span>}
+        </div>
+      ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricTile icon={Database} label="Campanhas" value={`${metrics.totalCampaigns}`} detail={`${metrics.totalScenes} cenas`} tone="secondary" />
