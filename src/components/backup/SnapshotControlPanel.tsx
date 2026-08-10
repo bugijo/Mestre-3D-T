@@ -4,6 +4,7 @@ import { downloadSnapshot, healthCheck, uploadSnapshot } from '@/lib/supabase'
 import { useAppStore } from '@/store/AppStore'
 import { isAppSnapshot, normalizeSnapshot, sanitizeSyncSlot } from '@/lib/snapshot'
 import { logError, logInfo } from '@/lib/logger'
+import { safeClipboard } from '@/lib/clipboard'
 
 export function SnapshotControlPanel() {
   const { state, replaceSnapshot } = useAppStore()
@@ -64,7 +65,7 @@ export function SnapshotControlPanel() {
 
   const copySnapshot = async () => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(state))
+      await safeClipboard(JSON.stringify(state))
       setFeedback('Snapshot copiado para a area de transferencia.')
     } catch (error) {
       logError('backup:copy', error)

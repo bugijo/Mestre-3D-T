@@ -1,4 +1,5 @@
 import { logError, logInfo } from '@/lib/logger'
+import { createId } from '@/lib/id'
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 
@@ -103,7 +104,7 @@ function makeFileName(originalName: string, mime: string) {
   const ext = extFromMime(mime)
   const id = Math.random().toString(36).slice(2, 8)
   const ts = new Date().toISOString().replace(/[:.]/g, '-')
-  if (SETTINGS.naming === 'uuid') return `${base}-${crypto.randomUUID?.() || id}.${ext}`
+  if (SETTINGS.naming === 'uuid') return `${base}-${createId()}.${ext}`
   if (SETTINGS.naming === 'sha256_name') return `${sha256(base).slice(0, 12)}.${ext}`
   return `${ts}-${id}-${base}.${ext}`
 }

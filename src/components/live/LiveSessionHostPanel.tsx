@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/AppStore'
 import { useOptionalLiveSession } from '@/realtime/LiveSessionContext'
 import { createSessionProjection } from '@/realtime/projection'
 import { cn } from '@/lib/cn'
+import { safeClipboard } from '@/lib/clipboard'
 
 const SYNC_DEBOUNCE_MS = 500
 
@@ -154,7 +155,7 @@ export function LiveSessionHostPanel() {
                     type="button"
                     aria-label="Copiar endereço da sessão"
                     onClick={async () => {
-                      await navigator.clipboard?.writeText(joinUrl)
+                      await safeClipboard(joinUrl)
                       setCopied(true)
                       window.setTimeout(() => setCopied(false), 1500)
                     }}

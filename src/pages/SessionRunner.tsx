@@ -71,11 +71,14 @@ export function SessionRunner() {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
       const tagName = target?.tagName?.toLowerCase()
+      const isElement = target instanceof Element
       const isTypingContext =
         tagName === 'input' ||
         tagName === 'textarea' ||
         tagName === 'select' ||
-        !!target?.isContentEditable
+        !!target?.isContentEditable ||
+        target?.contentEditable === 'true' ||
+        (isElement && target.getAttribute('contenteditable') === 'true')
 
       if (!isTypingContext && !event.ctrlKey && !event.metaKey && !event.altKey && event.key.toLowerCase() === 'i') {
         event.preventDefault()

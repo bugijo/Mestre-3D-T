@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createId } from '@/lib/id'
 
 export type SharedSessionFeedEntry = {
   id: string
@@ -33,7 +34,7 @@ function loadEntries(sessionKey: string): SharedSessionFeedEntry[] {
 export function useSharedSessionFeed(sessionKey: string) {
   const [entries, setEntries] = useState<SharedSessionFeedEntry[]>([])
   const channelRef = useRef<BroadcastChannel | null>(null)
-  const sourceRef = useRef(typeof crypto !== 'undefined' ? crypto.randomUUID() : `session-${Date.now()}`)
+  const sourceRef = useRef(createId())
 
   useEffect(() => {
     const saved = loadEntries(sessionKey)
@@ -63,7 +64,7 @@ export function useSharedSessionFeed(sessionKey: string) {
       publish(entry: Omit<SharedSessionFeedEntry, 'id' | 'createdAt'>) {
         const nextEntry: SharedSessionFeedEntry = {
           ...entry,
-          id: typeof crypto !== 'undefined' ? crypto.randomUUID() : `${Date.now()}`,
+          id: createId(),
           createdAt: Date.now(),
         }
         setEntries((current) => {

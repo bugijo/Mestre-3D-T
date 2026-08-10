@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
+import { createId } from '@/lib/id'
 
 type Notice = {
   id: string
@@ -17,7 +18,7 @@ export function InGameNotifications() {
   }, [items])
 
   const add = (message: string, type: Notice['type'] = 'info') => {
-    const notice: Notice = { id: crypto.randomUUID(), message, type }
+    const notice: Notice = { id: createId(), message, type }
     setItems(prev => [...prev, notice].slice(-5))
     setTimeout(() => {
       setItems(prev => prev.filter(n => n.id !== notice.id))

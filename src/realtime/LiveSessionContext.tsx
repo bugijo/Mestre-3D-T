@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createId } from '@/lib/id'
 import type {
   ConnectionStatus,
   HostSessionInput,
@@ -47,7 +48,7 @@ function socketUrl() {
 }
 
 function actionId() {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`
+  return createId()
 }
 
 export function LiveSessionProvider({ children }: { children: React.ReactNode }) {

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createId } from '@/lib/id'
 import {
   createAuditEntry,
   createPrivilegedUserRecord,
@@ -158,7 +159,7 @@ export function AdminAccessProvider({ children }: { children: React.ReactNode })
       }
 
       const { user, totpSecret } = await createPrivilegedUserRecord({
-        id: crypto.randomUUID(),
+        id: createId(),
         name: normalizedName,
         email: normalizedEmail,
         password: input.password,
@@ -335,7 +336,7 @@ export function AdminAccessProvider({ children }: { children: React.ReactNode })
 
     try {
       const { user, totpSecret } = await createPrivilegedUserRecord({
-        id: crypto.randomUUID(),
+        id: createId(),
         name: sanitizeName(input.name),
         email: normalizedEmail,
         password: input.password,

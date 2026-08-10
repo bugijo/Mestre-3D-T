@@ -7,6 +7,7 @@ import { PageHero } from '@/components/ui/PageHero'
 import { MetricTile } from '@/components/ui/MetricTile'
 import { getLogEntries } from '@/lib/logger'
 import { formatDuration } from '@/lib/sessionReports'
+import { safeClipboard } from '@/lib/clipboard'
 
 export function AdminPortal() {
   const { state } = useAppStore()
@@ -62,7 +63,7 @@ export function AdminPortal() {
   const copySetupSecret = async () => {
     if (!totpSetup) return
     const payload = formatTotpSetupSecret(totpSetup.email, totpSetup.secret)
-    await navigator.clipboard.writeText(`${payload.secret}\n${payload.uri}`)
+    await safeClipboard(`${payload.secret}\n${payload.uri}`)
     setFeedback('Segredo 2FA copiado para a area de transferencia.')
   }
 

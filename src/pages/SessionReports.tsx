@@ -8,6 +8,7 @@ import {
   formatDuration,
 } from '@/lib/sessionReports'
 import { logError, logInfo } from '@/lib/logger'
+import { safeClipboard } from '@/lib/clipboard'
 
 export function SessionReports() {
   const { state } = useAppStore()
@@ -30,7 +31,7 @@ export function SessionReports() {
     if (!summary) return
 
     try {
-      await navigator.clipboard.writeText(buildSessionReportMarkdown(summary))
+      await safeClipboard(buildSessionReportMarkdown(summary))
       setCopiedId(summaryId)
       logInfo('reports:copy', 'Relatorio de sessao copiado', { summaryId })
       window.setTimeout(() => setCopiedId((current) => (current === summaryId ? null : current)), 1800)
@@ -43,7 +44,7 @@ export function SessionReports() {
     const content = filteredSummaries.map(buildSessionReportMarkdown).join('\n\n---\n\n')
     if (!content) return
     try {
-      await navigator.clipboard.writeText(content)
+      await safeClipboard(content)
       setCopiedId('digest')
       logInfo('reports:copy-digest', 'Digest de relatorios copiado', { count: filteredSummaries.length })
       window.setTimeout(() => setCopiedId((current) => (current === 'digest' ? null : current)), 1800)

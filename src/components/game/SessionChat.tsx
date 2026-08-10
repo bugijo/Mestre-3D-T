@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { MessageSquare, Send } from 'lucide-react'
+import { createId } from '@/lib/id'
 import { cn } from '@/lib/cn'
 
 type ChatMessage = {
@@ -49,7 +50,7 @@ export function SessionChat({ sessionKey, className }: { sessionKey: string, cla
   const send = () => {
     const text = input.trim()
     if (!text) return
-    const msg: ChatMessage = { id: crypto.randomUUID(), user, text, createdAt: Date.now() }
+    const msg: ChatMessage = { id: createId(), user, text, createdAt: Date.now() }
     setMessages(prev => {
       const next = [...prev, msg].slice(-200)
       localStorage.setItem(`chat:${sessionKey}`, JSON.stringify(next))

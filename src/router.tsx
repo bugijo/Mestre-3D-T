@@ -43,8 +43,8 @@ export const router = createBrowserRouter(
       <Route path="session" element={withFallback(<SessionRunner />, 'Carregando sessao...')} />
       <Route path="reports" element={withFallback(<SessionReports />, 'Carregando relatorios...')} />
       <Route path="admin" element={withFallback(<AdminPortal />, 'Carregando painel administrativo...')} />
-      <Route path="player" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
-      <Route path="player/:characterId" element={withFallback(<PlayerConsole />, 'Carregando console do jogador...')} />
+      <Route path="player" element={withFallback(<PlayerConsole readonly />, 'Carregando console do jogador...')} />
+      <Route path="player/:characterId" element={withFallback(<PlayerConsole readonly />, 'Carregando console do jogador...')} />
       <Route path="join/:code" element={withFallback(<LivePlayerPage />, 'Conectando à mesa...')} />
       <Route path="*" element={<NotFound />} />
     </Route>,

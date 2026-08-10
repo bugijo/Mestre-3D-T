@@ -14,7 +14,11 @@ import { cn } from '@/lib/cn'
 const EQUIPMENT_TYPES: EquipmentType[] = ['WEAPON', 'ARMOR', 'SHIELD', 'ACCESSORY', 'CONSUMABLE']
 const CONDITION_TYPES: ConditionType[] = ['BURNING', 'POISONED', 'STUNNED', 'BLESSED', 'CURSED', 'CUSTOM']
 
-export function PlayerConsole() {
+interface PlayerConsoleProps {
+  readonly?: boolean
+}
+
+export function PlayerConsole({ readonly = true }: PlayerConsoleProps) {
   const { characterId } = useParams<{ characterId?: string }>()
   const {
     addConditionToCharacter,
@@ -233,29 +237,31 @@ export function PlayerConsole() {
             <Backpack size={16} className="text-amber-300" />
             <h2 className="text-sm font-bold uppercase tracking-[0.24em] text-white">Inventario</h2>
           </div>
-          <form onSubmit={handleAddItem} className="mb-4 flex gap-2">
-            <input
-              type="text"
-              value={itemName}
-              onChange={(event) => setItemName(event.target.value)}
-              placeholder="Novo item"
-              className="field flex-1"
-            />
-            <select
-              value={itemType}
-              onChange={(event) => setItemType(event.target.value as EquipmentType)}
-              className="field w-36"
-            >
-              {EQUIPMENT_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <button type="submit" className="btn-primary px-3">
-              Adicionar
-            </button>
-          </form>
+          {!readonly && (
+            <form onSubmit={handleAddItem} className="mb-4 flex gap-2">
+              <input
+                type="text"
+                value={itemName}
+                onChange={(event) => setItemName(event.target.value)}
+                placeholder="Novo item"
+                className="field flex-1"
+              />
+              <select
+                value={itemType}
+                onChange={(event) => setItemType(event.target.value as EquipmentType)}
+                className="field w-36"
+              >
+                {EQUIPMENT_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <button type="submit" className="btn-primary px-3">
+                Adicionar
+              </button>
+            </form>
+          )}
           <div className="space-y-2">
             {character.equipment.length === 0 ? (
               <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-6 text-center text-sm text-text-muted">
@@ -268,25 +274,27 @@ export function PlayerConsole() {
                     <div className="text-sm font-semibold text-white">{item.name}</div>
                     <div className="text-xs text-text-muted">{item.type}</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleCharacterEquipment(character.id, item.id)}
-                      className={cn(
-                        'rounded-lg px-2 py-1 text-xs transition',
-                        item.isEquipped ? 'bg-secondary/25 text-white' : 'bg-white/10 text-text-muted',
-                      )}
-                    >
-                      {item.isEquipped ? 'Equipado' : 'Equipar'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeEquipmentFromCharacter(character.id, item.id)}
-                      className="rounded-lg bg-rose-500/20 px-2 py-1 text-xs text-rose-200 transition hover:bg-rose-500/30"
-                    >
-                      Remover
-                    </button>
-                  </div>
+                  {!readonly && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleCharacterEquipment(character.id, item.id)}
+                        className={cn(
+                          'rounded-lg px-2 py-1 text-xs transition',
+                          item.isEquipped ? 'bg-secondary/25 text-white' : 'bg-white/10 text-text-muted',
+                        )}
+                      >
+                        {item.isEquipped ? 'Equipado' : 'Equipar'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeEquipmentFromCharacter(character.id, item.id)}
+                        className="rounded-lg bg-rose-500/20 px-2 py-1 text-xs text-rose-200 transition hover:bg-rose-500/30"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -318,29 +326,31 @@ export function PlayerConsole() {
             </div>
 
             <div>
-              <form onSubmit={handleAddCondition} className="mb-3 flex gap-2">
-                <input
-                  type="text"
-                  value={conditionName}
-                  onChange={(event) => setConditionName(event.target.value)}
-                  placeholder="Nova condicao"
-                  className="field flex-1"
-                />
-                <select
-                  value={conditionType}
-                  onChange={(event) => setConditionType(event.target.value as ConditionType)}
-                  className="field w-36"
-                >
-                  {CONDITION_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className="btn-secondary px-3">
-                  Aplicar
-                </button>
-              </form>
+              {!readonly && (
+                <form onSubmit={handleAddCondition} className="mb-3 flex gap-2">
+                  <input
+                    type="text"
+                    value={conditionName}
+                    onChange={(event) => setConditionName(event.target.value)}
+                    placeholder="Nova condicao"
+                    className="field flex-1"
+                  />
+                  <select
+                    value={conditionType}
+                    onChange={(event) => setConditionType(event.target.value as ConditionType)}
+                    className="field w-36"
+                  >
+                    {CONDITION_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" className="btn-secondary px-3">
+                    Aplicar
+                  </button>
+                </form>
+              )}
               <div className="space-y-2">
                 {character.activeConditions.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-5 text-center text-sm text-text-muted">
@@ -353,13 +363,15 @@ export function PlayerConsole() {
                         <div className="text-sm font-semibold text-white">{condition.name}</div>
                         <div className="text-xs text-text-muted">{condition.type}</div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeConditionFromCharacter(character.id, condition.id)}
-                        className="rounded-lg bg-rose-500/20 px-2 py-1 text-xs text-rose-200 transition hover:bg-rose-500/30"
-                      >
-                        Remover
-                      </button>
+                      {!readonly && (
+                        <button
+                          type="button"
+                          onClick={() => removeConditionFromCharacter(character.id, condition.id)}
+                          className="rounded-lg bg-rose-500/20 px-2 py-1 text-xs text-rose-200 transition hover:bg-rose-500/30"
+                        >
+                          Remover
+                        </button>
+                      )}
                     </div>
                   ))
                 )}

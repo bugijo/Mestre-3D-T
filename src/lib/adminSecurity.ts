@@ -1,4 +1,5 @@
 import { logError } from '@/lib/logger'
+import { createId } from '@/lib/id'
 
 export type PrivilegedRole = 'ADMIN' | 'CEO'
 
@@ -312,7 +313,7 @@ export async function rotateUserTotp(user: PrivilegedUser, password: string) {
 
 export function createAuditEntry(input: Omit<AuditEntry, 'id' | 'createdAt'>) {
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     createdAt: Date.now(),
     ...input,
   } satisfies AuditEntry

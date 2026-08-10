@@ -124,7 +124,7 @@ describe('PlayerConsole', () => {
         }}
       >
         <Routes>
-          <Route path="/player/:characterId" element={<PlayerConsole />} />
+          <Route path="/player/:characterId" element={<PlayerConsole readonly={false} />} />
         </Routes>
       </MemoryRouter>,
     )

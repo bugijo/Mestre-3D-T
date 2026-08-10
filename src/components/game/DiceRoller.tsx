@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Dices, RefreshCw } from 'lucide-react'
+import { createId } from '@/lib/id'
 import { cn } from '@/lib/cn'
 
 export type RollResult = {
@@ -24,7 +25,7 @@ export function DiceRoller({ className, onRoll }: { className?: string, onRoll?:
       const total = results.reduce((a, b) => a + b, 0)
       
       const newRoll: RollResult = {
-        id: crypto.randomUUID(),
+        id: createId(),
         diceCount,
         results,
         total,
