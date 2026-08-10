@@ -176,11 +176,11 @@ function broadcastParticipants(session) {
     type: 'participant:list',
     participants: Array.from(session.participants.values()).map((participant) => publicParticipant(participant)),
   }
-  for (const client of session.clients) if (client.meta?.role === 'master') send(client, message)
+  for (const client of Array.from(session.clients)) if (client.meta?.role === 'master') send(client, message)
 }
 
 function broadcastProjection(session) {
-  for (const client of session.clients) {
+  for (const client of Array.from(session.clients)) {
     if (client.meta?.role === 'master') continue
     const participant = session.participants.get(client.meta?.participantId)
     if (participant?.status !== 'approved') continue
@@ -189,7 +189,7 @@ function broadcastProjection(session) {
 }
 
 function broadcastStage(session) {
-  for (const client of session.clients) {
+  for (const client of Array.from(session.clients)) {
     if (client.meta?.role === 'master') continue
     const participant = session.participants.get(client.meta?.participantId)
     if (participant?.status !== 'approved') continue
@@ -206,7 +206,7 @@ function eventForClient(session, event, client) {
 }
 
 function broadcastEvent(session, event) {
-  for (const client of session.clients) if (eventForClient(session, event, client)) send(client, { type: 'event:new', event, seq: session.seq })
+  for (const client of Array.from(session.clients)) if (eventForClient(session, event, client)) send(client, { type: 'event:new', event, seq: session.seq })
 }
 
 function attach(session, ws, meta) {
@@ -304,7 +304,11 @@ function handleMessage(ws, message) {
   const isMaster = ws.meta?.role === 'master'
   const participant = session.participants.get(ws.meta?.participantId)
 
-  if (message.type === 'participant:approve' && isMaster) {
+  if (message.type === 'participant:approve') {
+    if (!isMaster) {
+      send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Apenas o Mestre pode aprovar participantes.' })
+      return
+    }
     const target = session.participants.get(safeText(message.participantId, 100))
     if (!target) return
     target.status = message.approved === false ? 'declined' : 'approved'
@@ -312,7 +316,7 @@ function handleMessage(ws, message) {
     target.lastSeenAt = Date.now()
     session.seq += 1
     session.updatedAt = Date.now()
-    for (const client of session.clients) {
+    for (const client of Array.from(session.clients)) {
       if (client.meta?.participantId !== target.id) continue
       send(client, { type: 'player:status', participant: publicParticipant(target, true), campaignTitle: session.campaignTitle })
       if (target.status === 'approved') send(client, resumePayload(session, client))
@@ -322,7 +326,11 @@ function handleMessage(ws, message) {
     return
   }
 
-  if (message.type === 'session:state' && isMaster) {
+  if (message.type === 'session:state') {
+    if (!isMaster) {
+      send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Apenas o Mestre pode alterar o estado da sessão.' })
+      return
+    }
     session.projection = message.projection || null
     session.seq += 1
     session.updatedAt = Date.now()
@@ -331,7 +339,11 @@ function handleMessage(ws, message) {
     return
   }
 
-  if (message.type === 'stage:present' && isMaster) {
+  if (message.type === 'stage:present') {
+    if (!isMaster) {
+      send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Apenas o Mestre pode apresentar conteúdo no Palco.' })
+      return
+    }
     session.stage = {
       ...message.stage,
       id: safeText(message.stage?.id, 100) || token(10),
@@ -348,16 +360,17 @@ function handleMessage(ws, message) {
 
   if (message.type === 'event:send' && (isMaster || participant?.status === 'approved')) {
     const actionId = safeText(message.actionId, 100) || token(10)
+    // Check-then-add atomically (single-threaded event loop: no preemption between has and add)
     if (session.actionIds.has(actionId)) {
       send(ws, { type: 'event:ack', actionId, duplicate: true })
       return
     }
+    session.actionIds.add(actionId)
     // Validate authorization for non-master
     if (!isMaster && !validatePlayerEvent(message.event, participant)) {
       send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Ação não permitida para jogadores.' })
       return
     }
-    session.actionIds.add(actionId)
     const event = {
       id: token(10),
       actionId,
@@ -381,7 +394,11 @@ function handleMessage(ws, message) {
     return
   }
 
-  if (message.type === 'session:end' && isMaster) {
+  if (message.type === 'session:end') {
+    if (!isMaster) {
+      send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Apenas o Mestre pode encerrar a sessão.' })
+      return
+    }
     session.status = 'ended'
     session.seq += 1
     session.updatedAt = Date.now()
