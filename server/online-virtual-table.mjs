@@ -37,13 +37,13 @@ async function run() {
   const ps = [];
   for (let i = 0; i < 4; i++) {
     const ws = await connect();
+    // Register collector BEFORE join to capture all events
+    ws._events = [];
+    ws.on('message', d => { ws._events.push(JSON.parse(String(d))); });
     ws.send(JSON.stringify({ type: 'player:join', code: r.code, playerName: names[i] }));
     const s = await waitFor(ws, 'player:status');
     log(names[i], `Join OK`);
     ps.push({ ws, name: names[i], id: s.participant.id, ch: s.participant.characterId, tok: s.participant.reconnectToken });
-    // Register collector immediately
-    ws._events = [];
-    ws.on('message', d => { ws._events.push(JSON.parse(String(d))); });
     await sleep(100);
   }
 

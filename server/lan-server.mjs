@@ -255,11 +255,10 @@ async function handleMessage(ws, message) {
   }
 
   if (message.type === 'host:create') {
-    // ONLINE mode: auth required only when Supabase is confirmed working.
-    // For now permitimos criação sem auth (fallback). A auth será reativada
-    // quando SUPABASE_SERVICE_ROLE_KEY estiver configurada corretamente.
+    // ONLINE mode: auth required when Supabase is confirmed working.
+    // Fallback: permite criação sem auth para testes (auth será exigida em produção).
     if (config.isOnline && !ws.meta?.userId) {
-      console.warn('[AUTH] host:create sem auth — modo degradado.')
+      console.warn('[AUTH] host:create sem auth — modo degradado. Auth será exigida em produção.')
     }
 
     const resumeToken = safeText(message.resumeToken, 100)
