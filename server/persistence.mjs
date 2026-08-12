@@ -394,20 +394,13 @@ export async function signInUser(email, password) {
   const config = getConfig()
   if (!config.supabaseUrl) return { session: null, error: 'Supabase não configurado' }
   try {
-    const res = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': config.supabaseServiceRoleKey || '',
-      },
-      body: JSON.stringify({ email, password }),
-    })
-    if (!res.ok) {
-      const body = await res.text()
-      return { session: null, error: body.includes('Invalid login') ? 'Email ou senha inválidos' : 'Falha na autenticação' }
-    }
-    const data = await res.json()
-    return { session: { access_token: data.access_token, user: data.user }, error: null }
+    // Use the Supabase client's signInWithPassword for proper auth flow
+    const anonKey = config.supabasePublishableKey || ''
+    const authClient = createClient(config.supabaseUrl, anonKey, { auth: { persistSession: false } })
+    const { data, error } = await authClient.auth.signInWithPassword({ email, password })
+    if (error) return { session: null, error: error.message }
+    if (!data.session) return { session: null, error: 'Falha na autenticação' }
+    return { session: { access_token: data.session.access_token, user: data.user }, error: null }
   } catch (err) {
     return { session: null, error: err.message || 'Erro ao autenticar' }
   }
