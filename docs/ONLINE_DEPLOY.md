@@ -79,11 +79,15 @@ No dashboard do Render, selecione o deploy anterior e clique em "Rollback".
 
 ## SUPABASE_SERVICE_ROLE_KEY
 
-Esta variável **não está configurada** na Alpha atual. Para ativar a persistência online:
+✅ **Configurada** na Alpha. A persistência online está ativa.
+
+### Como obter (caso precise rotacionar)
+
 1. Acesse o dashboard do Supabase: https://supabase.com
 2. Projeto: `mlhrloxhbrscvcclcxxh`
 3. Settings → API → Project API keys → `service_role` key
-4. Render Dashboard → rpg-alpha → Environment → Add SUPABASE_SERVICE_ROLE_KEY
+   (Ou use a Management API com `SUPABASE_ACCESS_TOKEN`)
+4. Render Dashboard → rpg-alpha → Environment → Update SUPABASE_SERVICE_ROLE_KEY
 5. Faça deploy manual
 
-**NUNCA exponha a service_role_key no frontend ou no GitHub.**
+**NUNCA exponha a service_role_key no frontend ou no GitHub.
