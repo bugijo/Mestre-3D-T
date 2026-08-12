@@ -593,46 +593,21 @@ const server = http.createServer(async (request, response) => {
     }
   }
 
-  // Debug: check Supabase and test save
+  // Debug: check Supabase connectivity (no secrets returned)
   if (url.pathname === '/api/debug-supabase') {
     response.setHeader('content-type', 'application/json')
     try {
       const { createClient } = await import('@supabase/supabase-js')
-      if (!config.supabaseServiceRoleKey) {
-        response.end(JSON.stringify({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }))
-        return
-      }
       const client = createClient(config.supabaseUrl, config.supabaseServiceRoleKey, { auth: { persistSession: false } })
-      
-      // Test query
-      const { data: qData, error: qError } = await client.from('live_sessions').select('code').limit(1)
-      if (qError) {
-        response.end(JSON.stringify({ error: 'query failed: ' + qError.message }))
-        return
-      }
-      
-      // Test upsert
-      const testId = 'debug-save-' + Date.now().toString(36)
-      const { error: uError } = await client
-        .from('live_sessions')
-        .upsert({ id: testId, code: testId.slice(-8).toUpperCase(), master_token: 'debug', status: 'active', mode: 'online' }, { onConflict: 'code' })
-      
-      if (uError) {
-        response.end(JSON.stringify({ error: 'upsert failed: ' + uError.message }))
-        return
-      }
-      
-      // Cleanup
-      await client.from('live_sessions').delete().eq('code', testId.slice(-8).toUpperCase())
-      
+      const { data, error } = await client.from('live_sessions').select('code').limit(1)
       response.end(JSON.stringify({
-        config: { url: !!config.supabaseUrl, key: config.supabaseServiceRoleKey.length + ' chars', pub: !!config.supabasePublishableKey },
-        query: { ok: true, rows: qData.length },
-        testUpsert: { ok: true }
+        supabaseUrl: config.supabaseUrl ? 'configured' : 'missing',
+        serviceRoleKey: config.supabaseServiceRoleKey ? 'configured (' + config.supabaseServiceRoleKey.length + ' chars)' : 'missing',
+        publishableKey: config.supabasePublishableKey ? 'configured' : 'missing',
+        testQuery: error ? { error: error.message } : { ok: true, rows: data.length }
       }))
     } catch (e) {
-      response.end(JSON.stringify({ error: e.message, stack: e.stack?.split('
-').slice(0,3).join(' | ') }))
+      response.end(JSON.stringify({ error: e.message }))
     }
     return
   }
