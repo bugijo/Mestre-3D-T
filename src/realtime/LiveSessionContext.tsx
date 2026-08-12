@@ -41,8 +41,12 @@ type LiveSessionApi = {
 const LiveSessionContext = createContext<LiveSessionApi | null>(null)
 
 function socketUrl() {
-  const explicit = (import.meta.env.VITE_LAN_WS_URL as string | undefined)?.trim()
+  // Backward compat: VITE_LAN_WS_URL → VITE_WS_URL → same-origin
+  const explicit =
+    (import.meta.env.VITE_WS_URL as string | undefined)?.trim() ||
+    (import.meta.env.VITE_LAN_WS_URL as string | undefined)?.trim()
   if (explicit) return explicit
+  // Same-origin: works for both LAN and ONLINE
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   return `${protocol}//${window.location.host}/ws`
 }
