@@ -30,6 +30,8 @@ const MASTER_ACTIONS = new Set(['reward', 'grant', 'system', 'participant:approv
 const DEDUP_CLEANUP_INTERVAL = 1000 * 60 * 10 // 10 minutes
 const sessions = new Map()
 let persistTimer = null
+const PERSIST_INTERVAL = 10_000
+let persistIntervalTimer = null
 
 function token(size = 24) {
   return randomBytes(size).toString('base64url')
@@ -117,6 +119,29 @@ function schedulePersist() {
       console.error(`[${config.mode.toUpperCase()}] Falha ao persistir sessoes:`, error.message)
     }
   }, 150)
+}
+
+// Periodic persist every 10s in ONLINE mode for safety
+function startPersistInterval() {
+  if (persistIntervalTimer) return
+  persistIntervalTimer = setInterval(async () => {
+    if (config.isOnline && sessions.size > 0) {
+      try {
+        for (const s of Array.from(sessions.values()).map(serializableSession)) {
+          await saveSession(s)
+        }
+      } catch (error) {
+        console.error('[ONLINE] Falha no persist periódico:', error.message)
+      }
+    }
+  }, PERSIST_INTERVAL)
+}
+
+function stopPersistInterval() {
+  if (persistIntervalTimer) {
+    clearInterval(persistIntervalTimer)
+    persistIntervalTimer = null
+  }
 }
 
 function cleanupStaleActionIds(session) {
@@ -453,6 +478,7 @@ async function handleMessage(ws, message) {
 }
 
 await loadExistingSessions()
+startPersistInterval()
 
 const production = config.nodeEnv === 'production' || process.argv.includes('--production')
 let vite = null
@@ -565,6 +591,26 @@ const server = http.createServer(async (request, response) => {
       })
       return
     }
+  }
+
+  // Force persist (useful before restart)
+  if (url.pathname === '/api/persist' && request.method === 'POST') {
+    clearTimeout(persistTimer)
+    response.setHeader('content-type', 'application/json')
+    try {
+      const allSessions = Array.from(sessions.values()).map(serializableSession)
+      if (config.isOnline) {
+        for (const s of allSessions) {
+          await saveSession(s)
+        }
+      } else {
+        await saveSession(allSessions)
+      }
+      response.end(JSON.stringify({ ok: true, sessions: allSessions.length }))
+    } catch (error) {
+      response.end(JSON.stringify({ ok: false, error: error.message }))
+    }
+    return
   }
 
   // LAN info — only in LAN mode
