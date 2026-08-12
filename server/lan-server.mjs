@@ -17,7 +17,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { WebSocketServer, WebSocket } from 'ws'
 import QRCode from 'qrcode'
-import { saveSession, loadSessions, deleteSession, verifyToken } from './persistence.mjs'
+import { saveSession, loadSessions, deleteSession, verifyToken, signUpUser, signInUser } from './persistence.mjs'
 import { validateOrigin } from './origin-validator.mjs'
 import { getConfig } from './app-config.mjs'
 
@@ -255,10 +255,10 @@ async function handleMessage(ws, message) {
   }
 
   if (message.type === 'host:create') {
-    // ONLINE mode: auth required when Supabase is confirmed working.
-    // Fallback: permite criação sem auth para testes (auth será exigida em produção).
+    // ONLINE mode requires prior authentication
     if (config.isOnline && !ws.meta?.userId) {
-      console.warn('[AUTH] host:create sem auth — modo degradado. Auth será exigida em produção.')
+      send(ws, { type: 'error', code: 'AUTH_REQUIRED', message: 'Autenticação necessária para criar sessão online.' })
+      return
     }
 
     const resumeToken = safeText(message.resumeToken, 100)
@@ -512,6 +512,59 @@ const server = http.createServer(async (request, response) => {
     response.setHeader('content-type', 'application/json')
     response.end(JSON.stringify({ mode: config.mode, publicUrl: config.publicUrl }))
     return
+  }
+
+  // Auth endpoints (ONLINE mode only)
+  if (config.isOnline) {
+    // POST /api/auth/signup
+    if (url.pathname === '/api/auth/signup' && request.method === 'POST') {
+      let body = ''
+      request.on('data', (chunk) => { body += chunk })
+      request.on('end', async () => {
+        response.setHeader('content-type', 'application/json')
+        try {
+          const { email, password } = JSON.parse(body)
+          if (!email || !password || password.length < 6) {
+            response.end(JSON.stringify({ error: 'Email e senha (mín 6 caracteres) são obrigatórios.' }))
+            return
+          }
+          const { user, error } = await signUpUser(email, password)
+          if (error) {
+            response.end(JSON.stringify({ error }))
+            return
+          }
+          response.end(JSON.stringify({ ok: true, user: { id: user.id, email: user.email } }))
+        } catch {
+          response.end(JSON.stringify({ error: 'JSON inválido.' }))
+        }
+      })
+      return
+    }
+
+    // POST /api/auth/login
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+      let body = ''
+      request.on('data', (chunk) => { body += chunk })
+      request.on('end', async () => {
+        response.setHeader('content-type', 'application/json')
+        try {
+          const { email, password } = JSON.parse(body)
+          if (!email || !password) {
+            response.end(JSON.stringify({ error: 'Email e senha são obrigatórios.' }))
+            return
+          }
+          const { session, error } = await signInUser(email, password)
+          if (error || !session) {
+            response.end(JSON.stringify({ error: error || 'Falha na autenticação.' }))
+            return
+          }
+          response.end(JSON.stringify({ ok: true, access_token: session.access_token, user: { id: session.user.id, email: session.user.email } }))
+        } catch {
+          response.end(JSON.stringify({ error: 'JSON inválido.' }))
+        }
+      })
+      return
+    }
   }
 
   // LAN info — only in LAN mode

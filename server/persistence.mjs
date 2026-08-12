@@ -356,6 +356,63 @@ export async function verifyToken(accessToken) {
   }
 }
 
+/**
+ * Sign up a new user via Supabase Auth (admin API).
+ *
+ * Uses the service-role client so it can create users without
+ * requiring email confirmation. Only available in ONLINE mode.
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<{user: object|null, error: string|null}>}
+ */
+export async function signUpUser(email, password) {
+  const config = getConfig()
+  const supabase = getSupabaseClient(config)
+  if (!supabase) return { user: null, error: 'Supabase não configurado' }
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email, password, email_confirm: true,
+    })
+    if (error) return { user: null, error: error.message }
+    return { user: data.user, error: null }
+  } catch (err) {
+    return { user: null, error: err.message || 'Erro ao criar usuário' }
+  }
+}
+
+/**
+ * Sign in a user via Supabase Auth REST API.
+ *
+ * Returns a JWT session that can be used with auth:login on WebSocket.
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<{session: {access_token: string, user: object}|null, error: string|null}>}
+ */
+export async function signInUser(email, password) {
+  const config = getConfig()
+  if (!config.supabaseUrl) return { session: null, error: 'Supabase não configurado' }
+  try {
+    const res = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': config.supabaseServiceRoleKey || '',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+    if (!res.ok) {
+      const body = await res.text()
+      return { session: null, error: body.includes('Invalid login') ? 'Email ou senha inválidos' : 'Falha na autenticação' }
+    }
+    const data = await res.json()
+    return { session: { access_token: data.access_token, user: data.user }, error: null }
+  } catch (err) {
+    return { session: null, error: err.message || 'Erro ao autenticar' }
+  }
+}
+
 // --- Public API ---
 
 /**
