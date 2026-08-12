@@ -8,6 +8,9 @@
     "dev:public": "node ./node_modules/vite/bin/vite.js --host 0.0.0.0 --port 4173",
     "dev:lan": "node ./server/lan-server.mjs",
     "serve:lan": "node ./server/lan-server.mjs --production",
+    "dev:online": "APP_MODE=online node ./server/lan-server.mjs",
+    "serve:online": "NODE_ENV=production APP_MODE=online node ./server/lan-server.mjs",
+    "start": "NODE_ENV=production APP_MODE=online node ./server/lan-server.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
     "lint": "npm run typecheck",
     "build": "node ./node_modules/typescript/bin/tsc && node ./.tools/vite-build.mjs",
@@ -47,6 +50,7 @@
     "ws": "^8.21.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/node": "^20.11.24",
