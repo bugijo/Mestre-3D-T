@@ -1,19 +1,30 @@
+/**
+ * lan-server.mjs — Dual-mode (LAN + ONLINE) server for the RPG V1 session
+ *
+ * LAN mode:    serves Vite SPA + WebSocket, persists sessions to .data/lan-sessions.json
+ * ONLINE mode: serves built SPA + WebSocket, persists sessions to Supabase (service role)
+ *
+ * Run:   node server/lan-server.mjs
+ * Env:   APP_MODE=lan|online  (default: lan)
+ */
+
 import http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import { randomBytes } from 'node:crypto'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { existsSync, createReadStream } from 'node:fs'
 import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { WebSocketServer, WebSocket } from 'ws'
 import QRCode from 'qrcode'
+import { saveSession, loadSessions, deleteSession } from './persistence.mjs'
+import { validateOrigin } from './origin-validator.mjs'
+import { getConfig } from './app-config.mjs'
 
 const rootDir = normalize(join(dirname(fileURLToPath(import.meta.url)), '..'))
+const config = getConfig()
 const dataDir = join(rootDir, '.data')
 const sessionsFile = join(dataDir, 'lan-sessions.json')
-const host = process.env.LAN_HOST || '0.0.0.0'
-const port = Number(process.env.LAN_PORT || 4173)
-const production = process.argv.includes('--production')
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 const MASTER_ACTIONS = new Set(['reward', 'grant', 'system', 'participant:approve', 'stage:present', 'session:end', 'session:state'])
 const DEDUP_CLEANUP_INTERVAL = 1000 * 60 * 10 // 10 minutes
@@ -82,15 +93,11 @@ function hydrateSession(raw) {
   return session
 }
 
-async function loadSessions() {
-  try {
-    const parsed = JSON.parse(await readFile(sessionsFile, 'utf8'))
-    const cutoff = Date.now() - 1000 * 60 * 60 * 48
-    for (const raw of Array.isArray(parsed) ? parsed : []) {
-      if (raw.updatedAt >= cutoff && raw.status !== 'ended') sessions.set(raw.code, hydrateSession(raw))
-    }
-  } catch (error) {
-    if (error?.code !== 'ENOENT') console.warn('[LAN] Sessões anteriores não puderam ser carregadas:', error.message)
+async function loadExistingSessions() {
+  const rawSessions = await loadSessions()
+  const cutoff = Date.now() - 1000 * 60 * 60 * 48
+  for (const raw of Array.isArray(rawSessions) ? rawSessions : []) {
+    if (raw.updatedAt >= cutoff && raw.status !== 'ended') sessions.set(raw.code, hydrateSession(raw))
   }
 }
 
@@ -98,10 +105,16 @@ function schedulePersist() {
   clearTimeout(persistTimer)
   persistTimer = setTimeout(async () => {
     try {
-      await mkdir(dataDir, { recursive: true })
-      await writeFile(sessionsFile, JSON.stringify(Array.from(sessions.values()).map(serializableSession), null, 2), 'utf8')
+      const allSessions = Array.from(sessions.values()).map(serializableSession)
+      if (config.isOnline) {
+        for (const s of allSessions) {
+          await saveSession(s)
+        }
+      } else {
+        await saveSession(allSessions)
+      }
     } catch (error) {
-      console.error('[LAN] Falha ao persistir sessões:', error.message)
+      console.error(`[${config.mode.toUpperCase()}] Falha ao persistir sessoes:`, error.message)
     }
   }, 150)
 }
@@ -415,8 +428,9 @@ function handleMessage(ws, message) {
   }
 }
 
-await loadSessions()
+await loadExistingSessions()
 
+const production = config.nodeEnv === 'production' || process.argv.includes('--production')
 let vite = null
 if (!production) {
   const { createServer } = await import('vite')
@@ -436,23 +450,41 @@ const contentTypes = {
 }
 
 const server = http.createServer(async (request, response) => {
-  const url = new URL(request.url || '/', `http://${request.headers.host || `localhost:${port}`}`)
+  const url = new URL(request.url || '/', `http://${request.headers.host || `localhost:${config.port}`}`)
+
+  // Health check
   if (url.pathname === '/api/health') {
     response.setHeader('content-type', 'application/json')
-    response.end(JSON.stringify({ ok: true, sessions: sessions.size, transport: 'websocket' }))
+    const health = { ok: true, sessions: sessions.size, mode: config.mode, transport: 'websocket', uptime: process.uptime() }
+    response.end(JSON.stringify(health))
     return
   }
+
+  // Public config (no secrets)
+  if (url.pathname === '/api/config') {
+    response.setHeader('content-type', 'application/json')
+    response.end(JSON.stringify({ mode: config.mode, publicUrl: config.publicUrl }))
+    return
+  }
+
+  // LAN info — only in LAN mode
   if (url.pathname === '/api/lan-info') {
+    if (config.isOnline) {
+      response.writeHead(404).end('Nao disponivel em modo online')
+      return
+    }
     const addresses = []
     for (const entries of Object.values(networkInterfaces())) {
       for (const entry of entries || []) {
-        if (entry.family === 'IPv4' && !entry.internal) addresses.push(`http://${entry.address}:${port}`)
+        if (entry.family === 'IPv4' && !entry.internal) addresses.push(`http://${entry.address}:${config.port}`)
       }
     }
     response.setHeader('content-type', 'application/json')
-    response.end(JSON.stringify({ host, port, addresses }))
+    response.end(JSON.stringify({ host: config.host, port: config.port, addresses }))
     return
   }
+
+  // QR code
   if (url.pathname === '/api/qr') {
     const text = safeText(url.searchParams.get('text'), 1000)
     if (!text) {
@@ -490,18 +522,14 @@ const server = http.createServer(async (request, response) => {
 
 const webSocketServer = new WebSocketServer({ server, path: '/ws', maxPayload: 2 * 1024 * 1024 })
 webSocketServer.on('connection', (ws, req) => {
-  // Origin validation for HTTP LAN
+  // Origin validation
   const origin = req?.headers?.origin
   if (origin) {
-    try {
-      const originUrl = new URL(origin)
-      const allowedHosts = ['localhost', '127.0.0.1', '::1', host]
-      const isAllowed = allowedHosts.some((h) => originUrl.hostname === h) || originUrl.hostname.endsWith('.local')
-      if (!isAllowed) {
-        ws.close(4001, 'Origin not allowed')
-        return
-      }
-    } catch { /* ignore invalid origin header */ }
+    const host = req?.headers?.host || `localhost:${config.port}`
+    if (!validateOrigin(origin, host)) {
+      ws.close(4001, 'Origin not allowed')
+      return
+    }
   }
   ws.isAlive = true
   ws.on('pong', () => { ws.isAlive = true })
@@ -510,7 +538,7 @@ webSocketServer.on('connection', (ws, req) => {
       handleMessage(ws, JSON.parse(String(raw)))
     } catch (error) {
       send(ws, { type: 'error', code: 'INVALID_MESSAGE', message: 'Mensagem inválida.' })
-      console.warn('[LAN] Mensagem rejeitada:', error.message)
+      console.warn(`[${config.mode.toUpperCase()}] Mensagem rejeitada:`, error.message)
     }
   })
   ws.on('close', () => {
@@ -538,21 +566,40 @@ setInterval(() => {
   }
 }, 20_000).unref()
 
-server.listen(port, host, () => {
+server.listen(config.port, config.host, () => {
+  if (config.isOnline) {
+    console.log(`\nDungeon Keeper V1 — sessao ONLINE`)
+    console.log(`ONLINE: ${config.publicUrl}`)
+    console.log(`WebSocket: ${config.publicUrl.replace(/^http/, 'ws')}/ws\n`)
+    return
+  }
+
   const addresses = []
   for (const entries of Object.values(networkInterfaces())) {
-    for (const entry of entries || []) if (entry.family === 'IPv4' && !entry.internal) addresses.push(`http://${entry.address}:${port}`)
+    for (const entry of entries || []) if (entry.family === 'IPv4' && !entry.internal) addresses.push(`http://${entry.address}:${config.port}`)
   }
-  console.log(`\nDungeon Keeper V1 — sessão presencial`)
-  console.log(`Mestre: http://localhost:${port}/session`)
+  console.log(`\nDungeon Keeper V1 — sessao presencial (LAN)`)
+  console.log(`Mestre: http://localhost:${config.port}/session`)
   for (const address of addresses) console.log(`LAN: ${address}`)
-  console.log(`WebSocket: ws://0.0.0.0:${port}/ws\n`)
+  console.log(`WebSocket: ws://0.0.0.0:${config.port}/ws\n`)
 })
 
 async function shutdown() {
   clearTimeout(persistTimer)
-  await mkdir(dataDir, { recursive: true })
-  await writeFile(sessionsFile, JSON.stringify(Array.from(sessions.values()).map(serializableSession), null, 2), 'utf8')
+  // Persist all sessions before shutdown
+  try {
+    const allSessions = Array.from(sessions.values()).map(serializableSession)
+    if (config.isOnline) {
+      for (const s of allSessions) {
+        await saveSession(s)
+      }
+    } else {
+      await mkdir(dataDir, { recursive: true })
+      await writeFile(sessionsFile, JSON.stringify(allSessions, null, 2), 'utf8')
+    }
+  } catch (error) {
+    console.error(`[${config.mode.toUpperCase()}] Falha ao salvar sessoes no encerramento:`, error.message)
+  }
   await vite?.close()
   webSocketServer.close()
   server.close(() => process.exit(0))
