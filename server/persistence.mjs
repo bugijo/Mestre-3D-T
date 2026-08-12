@@ -331,6 +331,31 @@ async function deleteOnlineSession(code) {
   }
 }
 
+// --- Token verification ---
+
+/**
+ * Verify a Supabase JWT access token and return the user.
+ *
+ * Uses the existing service-role Supabase client. Returns null if Supabase
+ * is not configured, the token is invalid, or the user cannot be found.
+ *
+ * @param {string} accessToken
+ * @returns {Promise<import('@supabase/supabase-js').User|null>}
+ */
+export async function verifyToken(accessToken) {
+  if (!accessToken || typeof accessToken !== 'string') return null
+  const config = getConfig()
+  const supabase = getSupabaseClient(config)
+  if (!supabase) return null
+  try {
+    const { data, error } = await supabase.auth.getUser(accessToken)
+    if (error || !data?.user) return null
+    return data.user
+  } catch {
+    return null
+  }
+}
+
 // --- Public API ---
 
 /**

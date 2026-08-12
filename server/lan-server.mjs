@@ -17,7 +17,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { WebSocketServer, WebSocket } from 'ws'
 import QRCode from 'qrcode'
-import { saveSession, loadSessions, deleteSession } from './persistence.mjs'
+import { saveSession, loadSessions, deleteSession, verifyToken } from './persistence.mjs'
 import { validateOrigin } from './origin-validator.mjs'
 import { getConfig } from './app-config.mjs'
 
@@ -234,10 +234,33 @@ function rateLimited(ws) {
   return ws.meta.messageTimes.length > 80
 }
 
-function handleMessage(ws, message) {
+async function handleMessage(ws, message) {
   if (!message || typeof message.type !== 'string') return
 
+  if (message.type === 'auth:login') {
+    const token = message.token
+    if (!token || typeof token !== 'string') {
+      send(ws, { type: 'error', code: 'AUTH_FAILED', message: 'Token ausente.' })
+      return
+    }
+    const user = await verifyToken(token)
+    if (!user) {
+      send(ws, { type: 'error', code: 'AUTH_FAILED', message: 'Token inválido.' })
+      return
+    }
+    ws.meta = ws.meta || {}
+    ws.meta.userId = user.id
+    send(ws, { type: 'auth:ready', userId: user.id })
+    return
+  }
+
   if (message.type === 'host:create') {
+    // ONLINE mode requires prior authentication
+    if (config.isOnline && !ws.meta?.userId) {
+      send(ws, { type: 'error', code: 'AUTH_REQUIRED', message: 'Autenticação necessária para criar sessão online.' })
+      return
+    }
+
     const resumeToken = safeText(message.resumeToken, 100)
     const resumed = resumeToken
       ? Array.from(sessions.values()).find((session) => session.masterToken === resumeToken && session.status !== 'ended')
@@ -255,6 +278,7 @@ function handleMessage(ws, message) {
       id: token(12),
       code,
       masterToken: token(),
+      masterUserId: ws.meta?.userId || null,
       campaignId: safeText(message.campaignId, 100),
       campaignTitle: safeText(message.campaignTitle, 160) || 'Sessão presencial',
       mode: 'in_person',
@@ -449,8 +473,31 @@ const contentTypes = {
   '.woff2': 'font/woff2',
 }
 
+function setSecurityHeaders(response) {
+  const isDev = response.req?.url?.startsWith('/api/') || !config.isOnline
+  response.setHeader('X-Content-Type-Options', 'nosniff')
+  response.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()')
+
+  // CSP - permissive enough for the app and WebSocket
+  const self = "'self'"
+  response.setHeader(
+    'Content-Security-Policy',
+    `default-src ${self}; ` +
+    `script-src ${self} 'wasm-unsafe-eval'; ` +
+    `style-src ${self} 'unsafe-inline'; ` +
+    `img-src ${self} data: blob:; ` +
+    `connect-src ${self} wss: https:; ` +
+    `font-src ${self}; ` +
+    `frame-ancestors ${self}; ` +
+    `base-uri ${self}; ` +
+    `form-action ${self}`
+  )
+}
+
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url || '/', `http://${request.headers.host || `localhost:${config.port}`}`)
+  setSecurityHeaders(response)
 
   // Health check
   if (url.pathname === '/api/health') {
