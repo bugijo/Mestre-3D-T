@@ -593,6 +593,25 @@ const server = http.createServer(async (request, response) => {
     }
   }
 
+  // Debug: check Supabase connectivity (no secrets returned)
+  if (url.pathname === '/api/debug-supabase') {
+    response.setHeader('content-type', 'application/json')
+    try {
+      const { createClient } = await import('@supabase/supabase-js')
+      const client = createClient(config.supabaseUrl, config.supabaseServiceRoleKey, { auth: { persistSession: false } })
+      const { data, error } = await client.from('live_sessions').select('code').limit(1)
+      response.end(JSON.stringify({
+        supabaseUrl: config.supabaseUrl ? 'configured' : 'missing',
+        serviceRoleKey: config.supabaseServiceRoleKey ? 'configured (' + config.supabaseServiceRoleKey.length + ' chars)' : 'missing',
+        publishableKey: config.supabasePublishableKey ? 'configured' : 'missing',
+        testQuery: error ? { error: error.message } : { ok: true, rows: data.length }
+      }))
+    } catch (e) {
+      response.end(JSON.stringify({ error: e.message }))
+    }
+    return
+  }
+
   // Force persist (useful before restart)
   if (url.pathname === '/api/persist' && request.method === 'POST') {
     clearTimeout(persistTimer)
