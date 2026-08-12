@@ -16,6 +16,12 @@ export function LiveSessionHostPanel() {
   const [lanInfo, setLanInfo] = useState<LanInfo | null>(null)
   const [copied, setCopied] = useState(false)
   const [assignments, setAssignments] = useState<Record<string, string>>({})
+  const [showLogin, setShowLogin] = useState(false)
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [signupMode, setSignupMode] = useState(false)
   const processedEvents = useRef(new Set<string>())
   const lastSyncedProjectionRef = useRef<string | null>(null)
   const pendingSyncRef = useRef(false)
@@ -104,15 +110,75 @@ export function LiveSessionHostPanel() {
     if (!campaign) return
     if (!store.state.session.isActive) store.startSession()
     live.hostSession({ campaignId: campaign.id, campaignTitle: campaign.title, projection })
-    store.logCriticalAction({ actorId: 'demo-master', action: 'session.host', targetType: 'campaign', targetId: campaign.id, detail: 'Sessão LAN presencial iniciada.' })
+    store.logCriticalAction({ actorId: 'demo-master', action: 'session.host', targetType: 'campaign', targetId: campaign.id, detail: 'Sessão presencial iniciada.' })
+  }
+
+  const handleLogin = async () => {
+    setLoginLoading(true)
+    setLoginError(null)
+    const error = signupMode
+      ? await live.signup(loginEmail, loginPassword)
+      : await live.login(loginEmail, loginPassword)
+    if (error) {
+      setLoginError(error)
+    } else {
+      setShowLogin(false)
+      setLoginEmail('')
+      setLoginPassword('')
+    }
+    setLoginLoading(false)
   }
 
   return (
-    <section className="app-panel p-4" aria-label="Conexão presencial LAN">
+    <section className="app-panel p-4" aria-label="Conexão presencial">
+      {/* Auth bar — ONLINE mode */}
+      {!live.isAuthenticated && !live.code ? (
+        <div className="mb-4 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-medium text-amber-100">Identifique-se como Mestre</span>
+              <p className="mt-0.5 text-xs text-text-muted">Faça login para criar sessão online ou use LAN.</p>
+            </div>
+            <button type="button" onClick={() => setShowLogin(!showLogin)} className="btn-secondary text-sm">
+              {showLogin ? 'Cancelar' : 'Entrar'}
+            </button>
+          </div>
+          {showLogin && (
+            <div className="mt-3 space-y-2 border-t border-amber-400/15 pt-3">
+              <input
+                type="email" placeholder="Email" value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-text-muted"
+              />
+              <input
+                type="password" placeholder="Senha (mín 6 caracteres)" value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-text-muted"
+              />
+              {loginError && <p className="text-xs text-red-400">{loginError}</p>}
+              <div className="flex gap-2">
+                <button type="button" onClick={handleLogin} disabled={loginLoading || !loginEmail || !loginPassword} className="btn-primary text-sm">
+                  {loginLoading ? '…' : signupMode ? 'Cadastrar' : 'Entrar'}
+                </button>
+                <button type="button" onClick={() => setSignupMode(!signupMode)} className="text-xs text-text-muted underline hover:text-white">
+                  {signupMode ? 'Já tenho conta' : 'Criar conta'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : live.isAuthenticated && live.authUser ? (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-100">
+          <ShieldCheck size={14} /> Mestre: {live.authUser.email}
+          <button type="button" onClick={() => live.logout()} className="ml-auto text-xs text-text-muted underline hover:text-white">Sair</button>
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#cfa3a3]">
-            <Radio size={14} /> Mesa presencial LAN
+            <Radio size={14} /> Mesa presencial
           </div>
           <p className="mt-2 max-w-xl text-sm text-text-muted">
             WebSocket real entre aparelhos, aprovação pelo Mestre e retomada automática após queda de conexão.

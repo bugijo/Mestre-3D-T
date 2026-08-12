@@ -12,6 +12,21 @@ import type {
   StagePresentation,
 } from './protocol'
 
+// --- Auth token management ---
+const AUTH_TOKEN_KEY = 'dk-live:auth-token'
+
+function getAuthToken() {
+  return localStorage.getItem(AUTH_TOKEN_KEY)
+}
+
+function setAuthToken(token: string) {
+  localStorage.setItem(AUTH_TOKEN_KEY, token)
+}
+
+function clearAuthToken() {
+  localStorage.removeItem(AUTH_TOKEN_KEY)
+}
+
 const MASTER_TOKEN_KEY = 'dk-live:master-token'
 const MASTER_CODE_KEY = 'dk-live:master-code'
 const PLAYER_TOKEN_PREFIX = 'dk-live:player-token:'
@@ -28,6 +43,8 @@ type LiveSessionApi = {
   stage: StagePresentation | null
   events: LiveEvent[]
   error: string | null
+  isAuthenticated: boolean
+  authUser: { id: string; email: string } | null
   hostSession: (input: HostSessionInput) => void
   joinSession: (input: JoinSessionInput) => void
   approveParticipant: (participantId: string, approved: boolean, characterId?: string | null) => void
@@ -36,6 +53,9 @@ type LiveSessionApi = {
   sendEvent: (kind: string, payload: Record<string, unknown>, audience?: LiveAudience, actionId?: string) => string
   endSession: () => void
   disconnect: () => void
+  login: (email: string, password: string) => Promise<string | null>
+  signup: (email: string, password: string) => Promise<string | null>
+  logout: () => void
 }
 
 const LiveSessionContext = createContext<LiveSessionApi | null>(null)
@@ -67,6 +87,8 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
   const [stage, setStage] = useState<StagePresentation | null>(null)
   const [events, setEvents] = useState<LiveEvent[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(!!getAuthToken())
+  const [authUser, setAuthUser] = useState<{ id: string; email: string } | null>(null)
   const socketRef = useRef<WebSocket | null>(null)
   const authRef = useRef<{ role: 'master'; input: HostSessionInput; token?: string } | { role: 'player'; input: JoinSessionInput; token?: string } | null>(null)
   const reconnectTimerRef = useRef<number | null>(null)
@@ -93,7 +115,14 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
       reconnectAttemptsRef.current = 0
       setConnectionStatus('connected')
       if (auth.role === 'master') {
-        socket.send(JSON.stringify({ type: 'host:create', ...auth.input, resumeToken: auth.token }))
+        // ONLINE mode: auth:login first, then host:create
+        const authToken = getAuthToken()
+        if (authToken) {
+          socket.send(JSON.stringify({ type: 'auth:login', token: authToken }))
+          // The host:create will be sent after auth:ready is received
+        } else {
+          socket.send(JSON.stringify({ type: 'host:create', ...auth.input, resumeToken: auth.token }))
+        }
       } else {
         socket.send(JSON.stringify({ type: 'player:join', ...auth.input, reconnectToken: auth.token }))
       }
@@ -101,7 +130,15 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
 
     socket.addEventListener('message', (event) => {
       const message = JSON.parse(String(event.data)) as Record<string, any>
-      if (message.type === 'host:ready') {
+      if (message.type === 'auth:ready') {
+        setIsAuthenticated(true)
+        setAuthUser({ id: String(message.userId), email: 'Mestre' })
+        // Now send host:create after successful auth
+        const masterAuth = authRef.current
+        if (masterAuth?.role === 'master') {
+          socket.send(JSON.stringify({ type: 'host:create', ...masterAuth.input, resumeToken: masterAuth.token }))
+        }
+      } else if (message.type === 'host:ready') {
         const nextCode = String(message.code)
         setCode(nextCode)
         setIsMaster(true)
@@ -186,6 +223,8 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
     stage,
     events,
     error,
+    isAuthenticated,
+    authUser,
     hostSession(input) {
       setCampaignTitle(input.campaignTitle)
       setIsMaster(true)
@@ -227,7 +266,44 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
       setConnectionStatus('offline')
       setJoinStatus('idle')
     },
-  }), [campaignTitle, code, connect, connectionStatus, error, events, isMaster, joinStatus, participant, participants, projection, send, stage])
+    async login(email, password) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+        const data = await res.json()
+        if (data.error) return data.error
+        setAuthToken(data.access_token)
+        setIsAuthenticated(true)
+        setAuthUser({ id: data.user.id, email: data.user.email })
+        return null
+      } catch {
+        return 'Erro de conexão com o servidor.'
+      }
+    },
+    async signup(email, password) {
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+        const data = await res.json()
+        if (data.error) return data.error
+        return null
+      } catch {
+        return 'Erro de conexão com o servidor.'
+      }
+    },
+    logout() {
+      clearAuthToken()
+      setIsAuthenticated(false)
+      setAuthUser(null)
+      disconnect()
+    },
+  }), [campaignTitle, code, connect, connectionStatus, error, events, isAuthenticated, authUser, isMaster, joinStatus, participant, participants, projection, send, stage])
 
   return <LiveSessionContext.Provider value={api}>{children}</LiveSessionContext.Provider>
 }
