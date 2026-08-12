@@ -113,10 +113,13 @@ async function run() {
   log('MASTER', 'Sessão encerrada');
 
   // Stats
-  const p2Sec = ps[1]._events.filter(e => e.type === 'event:new' && JSON.stringify(e).includes('SECRET'));
-  const allP1 = ps[0]._events.length;
-  const allP2 = ps[1]._events.length;
-  const allP4 = ps[3]._events.length;
+  const ev1 = ps[0]._events || []
+  const ev2 = ps[1]._events || []
+  const ev4 = ps[3]._events || []
+  const p2Sec = ev2.filter(e => e.type === 'event:new' && JSON.stringify(e).includes('SECRET'));
+  const allP1 = ev1.length;
+  const allP2 = ev2.length;
+  const allP4 = ev4.length;
 
   console.log('\n========== RESULTADOS ==========');
   console.log(`✅ Sessão criada: ${r.code}`);
