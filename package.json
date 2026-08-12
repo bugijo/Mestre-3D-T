@@ -10,7 +10,7 @@
     "serve:lan": "node ./server/lan-server.mjs --production",
     "dev:online": "APP_MODE=online node ./server/lan-server.mjs",
     "serve:online": "NODE_ENV=production APP_MODE=online node ./server/lan-server.mjs",
-    "start": "NODE_ENV=production APP_MODE=online node ./server/lan-server.mjs",
+    "start": "NODE_ENV=production APP_MODE=online node ./server/lan-server.mjs --production",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
     "lint": "npm run typecheck",
     "build": "node ./node_modules/typescript/bin/tsc && node ./.tools/vite-build.mjs",
