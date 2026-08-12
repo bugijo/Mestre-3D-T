@@ -597,19 +597,24 @@ const server = http.createServer(async (request, response) => {
   if (url.pathname === '/api/persist' && request.method === 'POST') {
     clearTimeout(persistTimer)
     response.setHeader('content-type', 'application/json')
-    try {
-      const allSessions = Array.from(sessions.values()).map(serializableSession)
-      if (config.isOnline) {
-        for (const s of allSessions) {
+    const errors = []
+    const allSessions = Array.from(sessions.values()).map(serializableSession)
+    if (config.isOnline) {
+      for (const s of allSessions) {
+        try {
           await saveSession(s)
+        } catch (e) {
+          errors.push({ code: s.code, error: e.message })
         }
-      } else {
-        await saveSession(allSessions)
       }
-      response.end(JSON.stringify({ ok: true, sessions: allSessions.length }))
-    } catch (error) {
-      response.end(JSON.stringify({ ok: false, error: error.message }))
+    } else {
+      try {
+        await saveSession(allSessions)
+      } catch (e) {
+        errors.push({ error: e.message })
+      }
     }
+    response.end(JSON.stringify({ ok: errors.length === 0, sessions: allSessions.length, errors: errors.length > 0 ? errors : undefined }))
     return
   }
 
