@@ -139,7 +139,7 @@ try {
   }
   master.send({ type: 'host:create', campaignId: 'camp-demo', campaignTitle: 'O Caso de Santa Aurora', projection })
   const ready = await master.next((msg) => msg.type === 'host:ready')
-  assert(/^[A-Z2-9]{6}$/.test(ready.code), `Código inválido: ${ready.code}`)
+  assert(/^[A-Z2-9]{8}$/.test(ready.code), `Código inválido: ${ready.code}`)
   ok(`Sessão criada com código ${ready.code}`)
 
   // ================================================================

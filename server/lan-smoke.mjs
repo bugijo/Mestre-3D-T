@@ -89,7 +89,7 @@ try {
     projection: { campaign: { id: 'campaign-smoke', title: 'Mesa Smoke LAN' }, characters: [{ id: 'char-a', name: 'A' }, { id: 'char-b', name: 'B' }], scene: { id: 'scene-a', name: 'Arquivo' }, combat: null, audio: { currentTrackUrl: null }, session: { isActive: true }, updatedAt: Date.now() },
   })
   const ready = await master.next((message) => message.type === 'host:ready')
-  assert(/^[A-Z2-9]{6}$/.test(ready.code), 'Código curto inválido.')
+  assert(/^[A-Z2-9]{8}$/.test(ready.code), 'Código curto inválido.')
 
   const playerA = await connect(); clients.push(playerA)
   playerA.send({ type: 'player:join', code: ready.code, playerName: 'Jogador A' })
