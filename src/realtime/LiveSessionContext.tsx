@@ -301,7 +301,13 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
       clearAuthToken()
       setIsAuthenticated(false)
       setAuthUser(null)
-      disconnect()
+      intentionalCloseRef.current = true
+      authRef.current = null
+      if (reconnectTimerRef.current) window.clearTimeout(reconnectTimerRef.current)
+      socketRef.current?.close()
+      socketRef.current = null
+      setConnectionStatus('offline')
+      setJoinStatus('idle')
     },
   }), [campaignTitle, code, connect, connectionStatus, error, events, isAuthenticated, authUser, isMaster, joinStatus, participant, participants, projection, send, stage])
 
