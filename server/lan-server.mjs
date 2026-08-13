@@ -612,25 +612,70 @@ const server = http.createServer(async (request, response) => {
     return
   }
 
-  // Force persist (useful before restart)
+  // Force persist (useful before restart) — direct Supabase
   if (url.pathname === '/api/persist' && request.method === 'POST') {
     clearTimeout(persistTimer)
     response.setHeader('content-type', 'application/json')
     const errors = []
     const allSessions = Array.from(sessions.values()).map(serializableSession)
-    if (config.isOnline) {
-      for (const s of allSessions) {
-        try {
-          await saveSession(s)
-        } catch (e) {
-          errors.push({ code: s.code, error: e.message })
+    if (config.isOnline && config.supabaseServiceRoleKey) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const sb = createClient(config.supabaseUrl, config.supabaseServiceRoleKey, { auth: { persistSession: false } })
+        for (const s of allSessions) {
+          try {
+            // Direct upsert of session
+            const dbSession = {
+              id: s.id, code: s.code, master_token: s.masterToken,
+              master_user_id: s.masterUserId || null,
+              campaign_id: s.campaignId || null, campaign_title: s.campaignTitle || '',
+              mode: s.mode || 'online', status: s.status || 'active',
+              ruleset: s.ruleset || null, projection: s.projection ?? null,
+              stage: s.stage ?? null, seq: s.seq ?? 0,
+              created_at: new Date(s.createdAt).toISOString(),
+              updated_at: new Date(s.updatedAt).toISOString(),
+              ended_at: s.status === 'ended' ? new Date().toISOString() : null,
+            }
+            const { error: se } = await sb.from('live_sessions').upsert(dbSession, { onConflict: 'code' })
+            if (se) { errors.push({ code: s.code, upsert: se.message }); continue }
+            
+            // Save participants
+            if (Array.isArray(s.participants)) {
+              await sb.from('session_participants').delete().eq('session_code', s.code)
+              for (const p of s.participants) {
+                await sb.from('session_participants').insert({
+                  id: p.id, session_code: s.code, player_name: p.playerName || '',
+                  reconnect_token: p.reconnectToken || null, status: p.status || 'pending',
+                  character_id: p.characterId || null, connected: false,
+                  joined_at: new Date(p.joinedAt || Date.now()).toISOString(),
+                })
+              }
+            }
+            
+            // Save events
+            if (Array.isArray(s.events) && s.events.length > 0) {
+              const existing = await sb.from('session_events').select('action_id').eq('session_code', s.code)
+              const existingIds = new Set((existing.data || []).map(e => e.action_id).filter(Boolean))
+              for (const ev of s.events) {
+                if (ev.actionId && existingIds.has(ev.actionId)) continue
+                await sb.from('session_events').insert({
+                  id: ev.id, session_code: s.code, action_id: ev.actionId || null,
+                  seq: ev.seq ?? null, kind: ev.kind || '',
+                  payload: ev.payload ?? {}, audience: ev.audience ?? { kind: 'all' },
+                  actor: ev.actor ?? {}, created_at: new Date(ev.createdAt || Date.now()).toISOString(),
+                })
+              }
+            }
+          } catch (e) {
+            errors.push({ code: s.code, error: e.message })
+          }
         }
+      } catch (e) {
+        errors.push({ global: e.message })
       }
     } else {
-      try {
-        await saveSession(allSessions)
-      } catch (e) {
-        errors.push({ error: e.message })
+      for (const s of allSessions) {
+        try { await saveSession(s) } catch (e) { errors.push({ code: s.code, error: e.message }) }
       }
     }
     response.end(JSON.stringify({ ok: errors.length === 0, sessions: allSessions.length, errors: errors.length > 0 ? errors : undefined }))
