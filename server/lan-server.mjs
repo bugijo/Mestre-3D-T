@@ -630,7 +630,7 @@ const server = http.createServer(async (request, response) => {
               master_user_id: s.masterUserId || null,
               campaign_id: s.campaignId || null, campaign_title: s.campaignTitle || '',
               mode: s.mode || 'online', status: s.status || 'active',
-              ruleset: s.ruleset || null, projection: s.projection ?? null,
+              ruleset: s.ruleset || 'ordem-compatible', projection: s.projection ?? null,
               stage: s.stage ?? null, seq: s.seq ?? 0,
               created_at: new Date(s.createdAt).toISOString(),
               updated_at: new Date(s.updatedAt).toISOString(),

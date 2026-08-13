@@ -145,7 +145,7 @@ function sessionToDb(s) {
     campaign_title: s.campaignTitle || '',
     mode: s.mode || 'in_person',
     status: s.status || 'active',
-    ruleset: s.ruleset || null,
+    ruleset: s.ruleset || 'ordem-compatible',
     projection: s.projection ?? null,
     stage: s.stage ?? null,
     seq: s.seq ?? 0,
