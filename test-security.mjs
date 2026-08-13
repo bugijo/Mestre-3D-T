@@ -1,7 +1,29 @@
 import { WebSocket } from 'ws'
 
 const PORT = 4175
-const WS_URL = `ws://127.0.0.1:${PORT}/ws`
+const WS_URL = `wss://rpg-alpha.onrender.com/ws`
+const API_URL = 'https://rpg-alpha.onrender.com'
+
+// Auth helper for ONLINE mode: signup, login, authenticate via WS
+async function createAuthedMaster(name) {
+  const email = `sec-${name}-${Date.now()}@test.com`
+  const password = 'test123456'
+  await fetch(API_URL + '/api/auth/signup', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  const login = await fetch(API_URL + '/api/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await login.json()
+  if (!data.access_token) throw new Error(`Auth failed for ${name}: ${data.error || 'no token'}`)
+  const client = new TestClient(name)
+  await client.connect()
+  client.send({ type: 'auth:login', token: data.access_token })
+  await client.waitFor(m => m.type === 'auth:ready')
+  return client
+}
 
 class TestClient {
   constructor(name) {
@@ -66,8 +88,7 @@ async function runTests() {
 
   // Test 1: Master token exposure on reconnection
   console.log('--- TEST 1: Master token in localStorage ---')
-  const master1 = new TestClient('Master1')
-  await master1.connect()
+  const master1 = await createAuthedMaster('Master1')
   master1.send({ type: 'host:create', campaignId: 'test-camp', campaignTitle: 'Test', projection: { session: { isActive: true } } })
   const ready1 = await master1.waitFor(m => m.type === 'host:ready')
   console.log(`Master token: ${ready1.masterToken}`)
@@ -96,8 +117,7 @@ async function runTests() {
   
   // Test 3: Player trying to approve themselves
   console.log('\n--- TEST 3: Player sending participant:approve ---')
-  const master2 = new TestClient('Master2')
-  await master2.connect()
+  const master2 = await createAuthedMaster('Master2')
   master2.send({ type: 'host:create', campaignId: 'test-camp-3', campaignTitle: 'Test3', projection: { session: { isActive: true } } })
   const ready2 = await master2.waitFor(m => m.type === 'host:ready')
   const code2 = ready2.code
@@ -122,8 +142,7 @@ async function runTests() {
   
   // Test 4: Player trying to send master-only events
   console.log('\n--- TEST 4: Player sending master-only events ---')
-  const master3 = new TestClient('Master3')
-  await master3.connect()
+  const master3 = await createAuthedMaster('Master3')
   master3.send({ type: 'host:create', campaignId: 'test-camp-4', campaignTitle: 'Test4', projection: { session: { isActive: true } } })
   const ready3 = await master3.waitFor(m => m.type === 'host:ready')
   const code3 = ready3.code
@@ -181,8 +200,7 @@ async function runTests() {
   
   // Test 6: Duplicate actionId handling
   console.log('\n--- TEST 6: ActionId deduplication ---')
-  const master4 = new TestClient('Master4')
-  await master4.connect()
+  const master4 = await createAuthedMaster('Master4')
   master4.send({ type: 'host:create', campaignId: 'test-camp-5', campaignTitle: 'Test5', projection: { session: { isActive: true } } })
   const ready4 = await master4.waitFor(m => m.type === 'host:ready')
   const code4 = ready4.code
@@ -230,8 +248,7 @@ async function runTests() {
   
   // Test 8: Private message/secret leakage
   console.log('\n--- TEST 8: Private stage leakage ---')
-  const master5 = new TestClient('Master5')
-  await master5.connect()
+  const master5 = await createAuthedMaster('Master5')
   master5.send({ type: 'host:create', campaignId: 'test-camp-6', campaignTitle: 'Test6', projection: { session: { isActive: true } } })
   const ready5 = await master5.waitFor(m => m.type === 'host:ready')
   const code5 = ready5.code
@@ -274,8 +291,7 @@ async function runTests() {
   
   // Test 9: Event audience filtering
   console.log('\n--- TEST 9: Event audience filtering (master-only) ---')
-  const master6 = new TestClient('Master6')
-  await master6.connect()
+  const master6 = await createAuthedMaster('Master6')
   master6.send({ type: 'host:create', campaignId: 'test-camp-7', campaignTitle: 'Test7', projection: { session: { isActive: true } } })
   const ready6 = await master6.waitFor(m => m.type === 'host:ready')
   const code6 = ready6.code
@@ -329,8 +345,7 @@ async function runTests() {
   
   // Test 12: Reconnection with stale token
   console.log('\n--- TEST 12: Reconnection token reuse ---')
-  const master7 = new TestClient('Master7')
-  await master7.connect()
+  const master7 = await createAuthedMaster('Master7')
   master7.send({ type: 'host:create', campaignId: 'test-camp-8', campaignTitle: 'Test8', projection: { session: { isActive: true } } })
   const ready7 = await master7.waitFor(m => m.type === 'host:ready')
   const code7 = ready7.code
@@ -388,8 +403,7 @@ async function runTests() {
   
   // Test 14: Event ordering / race conditions
   console.log('\n--- TEST 14: Concurrent events ordering ---')
-  const master8 = new TestClient('Master8')
-  await master8.connect()
+  const master8 = await createAuthedMaster('Master8')
   master8.send({ type: 'host:create', campaignId: 'test-camp-9', campaignTitle: 'Test9', projection: { session: { isActive: true } } })
   const ready8 = await master8.waitFor(m => m.type === 'host:ready')
   const code8 = ready8.code
@@ -427,8 +441,7 @@ async function runTests() {
   
   // Test 15: Stage presentation during reconnection
   console.log('\n--- TEST 15: Stage state during reconnection ---')
-  const master9 = new TestClient('Master9')
-  await master9.connect()
+  const master9 = await createAuthedMaster('Master9')
   master9.send({ type: 'host:create', campaignId: 'test-camp-10', campaignTitle: 'Test10', projection: { session: { isActive: true } } })
   const ready9 = await master9.waitFor(m => m.type === 'host:ready')
   const code9 = ready9.code
@@ -491,8 +504,7 @@ async function runTests() {
   
   // Test 18: XSS via stage content
   console.log('\n--- TEST 18: XSS via stage content ---')
-  const masterXSS = new TestClient('MasterXSS')
-  await masterXSS.connect()
+  const masterXSS = await createAuthedMaster('MasterXSS')
   masterXSS.send({ type: 'host:create', campaignId: 'xss-camp', campaignTitle: 'XSS', projection: { session: { isActive: true } } })
   const readyXSS = await masterXSS.waitFor(m => m.type === 'host:ready')
   const codeXSS = readyXSS.code

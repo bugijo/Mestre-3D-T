@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 
 const URL = 'wss://rpg-alpha.onrender.com/ws';
+const API_URL = 'https://rpg-alpha.onrender.com';
 const log = (r, m) => console.log(`[${r}] ${m}`);
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -22,11 +23,32 @@ function waitFor(ws, t, to = 15000) {
   });
 }
 
+async function authMaster() {
+  const email = 'vt-' + Date.now() + '@test.com';
+  const password = 'test123456';
+  await fetch(API_URL + '/api/auth/signup', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const login = await fetch(API_URL + '/api/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await login.json();
+  if (!data.access_token) throw new Error('Falha no login do mestre: ' + (data.error || 'sem token'));
+  return data.access_token;
+}
+
 async function run() {
   console.log('\n========== MESA VIRTUAL ONLINE ==========\n');
 
-  // Master creates session
+  // Master authenticates and creates session
+  const token = await authMaster();
   const m = await connect();
+  m.send(JSON.stringify({ type: 'auth:login', token }));
+  await waitFor(m, 'auth:ready');
+  log('MASTER', 'Autenticado');
+
   m.send(JSON.stringify({ type: 'host:create', campaignId: 'vt', campaignTitle: 'Mesa Virtual Online', projection: null }));
   const r = await waitFor(m, 'host:ready');
   log('MASTER', `Sessão: ${r.code}`);
