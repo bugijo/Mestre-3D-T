@@ -291,6 +291,11 @@ async function handleMessage(ws, message) {
       ? Array.from(sessions.values()).find((session) => session.masterToken === resumeToken && session.status !== 'ended')
       : null
     if (resumed) {
+      // ONLINE mode: verify the session belongs to this user
+      if (config.isOnline && resumed.masterUserId && resumed.masterUserId !== ws.meta?.userId) {
+        send(ws, { type: 'error', code: 'FORBIDDEN', message: 'Esta sessão pertence a outro usuário.' })
+        return
+      }
       attach(resumed, ws, { role: 'master' })
       send(ws, { type: 'host:ready', code: resumed.code, masterToken: resumed.masterToken, resumed: true })
       send(ws, resumePayload(resumed, ws))
@@ -593,8 +598,12 @@ const server = http.createServer(async (request, response) => {
     }
   }
 
-  // Debug: check Supabase connectivity (no secrets returned)
+  // Debug endpoint — LAN only. Disabled in ONLINE mode.
   if (url.pathname === '/api/debug-supabase') {
+    if (config.isOnline) {
+      response.writeHead(404).end('Nao disponivel em modo online')
+      return
+    }
     response.setHeader('content-type', 'application/json')
     try {
       const { createClient } = await import('@supabase/supabase-js')
@@ -612,8 +621,25 @@ const server = http.createServer(async (request, response) => {
     return
   }
 
-  // Force persist (useful before restart) — direct Supabase
+  // Force persist — requires valid auth token in ONLINE mode
   if (url.pathname === '/api/persist' && request.method === 'POST') {
+    // In ONLINE mode, require valid Authorization header
+    if (config.isOnline) {
+      const authHeader = (request.headers.authorization || '').trim()
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
+      if (!token) {
+        response.writeHead(401, { 'content-type': 'application/json' })
+        response.end(JSON.stringify({ error: 'Autenticação necessária.' }))
+        return
+      }
+      const user = await verifyToken(token)
+      if (!user) {
+        response.writeHead(403, { 'content-type': 'application/json' })
+        response.end(JSON.stringify({ error: 'Token inválido ou expirado.' }))
+        return
+      }
+    }
+
     clearTimeout(persistTimer)
     response.setHeader('content-type', 'application/json')
     const errors = []
@@ -638,7 +664,7 @@ const server = http.createServer(async (request, response) => {
             }
             const { error: se } = await sb.from('live_sessions').upsert(dbSession, { onConflict: 'code' })
             if (se) { errors.push({ code: s.code, upsert: se.message }); continue }
-            
+
             // Save participants
             if (Array.isArray(s.participants)) {
               await sb.from('session_participants').delete().eq('session_code', s.code)
@@ -651,7 +677,7 @@ const server = http.createServer(async (request, response) => {
                 })
               }
             }
-            
+
             // Save events
             if (Array.isArray(s.events) && s.events.length > 0) {
               const existing = await sb.from('session_events').select('action_id').eq('session_code', s.code)
