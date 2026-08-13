@@ -628,7 +628,7 @@ const server = http.createServer(async (request, response) => {
             const dbSession = {
               id: s.id, code: s.code, master_token: s.masterToken,
               master_user_id: s.masterUserId || null,
-              campaign_id: s.campaignId || null, campaign_title: s.campaignTitle || '',
+              campaign_id: s.campaignId || '', campaign_title: s.campaignTitle || '',
               mode: s.mode || 'online', status: s.status || 'active',
               ruleset: s.ruleset || 'ordem-compatible', projection: s.projection ?? null,
               stage: s.stage ?? null, seq: s.seq ?? 0,

@@ -141,7 +141,7 @@ function sessionToDb(s) {
     code: s.code,
     master_token: s.masterToken,
     master_user_id: s.masterUserId || null,
-    campaign_id: s.campaignId || null,
+    campaign_id: s.campaignId || '',
     campaign_title: s.campaignTitle || '',
     mode: s.mode || 'in_person',
     status: s.status || 'active',
