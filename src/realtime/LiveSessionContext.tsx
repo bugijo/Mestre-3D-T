@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { createId } from '@/lib/id'
+import { apiBaseUrl, wsUrl } from '@/config/env'
 import type {
   ConnectionStatus,
   HostSessionInput,
@@ -60,17 +61,6 @@ type LiveSessionApi = {
 
 const LiveSessionContext = createContext<LiveSessionApi | null>(null)
 
-function socketUrl() {
-  // Backward compat: VITE_LAN_WS_URL → VITE_WS_URL → same-origin
-  const explicit =
-    (import.meta.env.VITE_WS_URL as string | undefined)?.trim() ||
-    (import.meta.env.VITE_LAN_WS_URL as string | undefined)?.trim()
-  if (explicit) return explicit
-  // Same-origin: works for both LAN and ONLINE
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-  return `${protocol}//${window.location.host}/ws`
-}
-
 function actionId() {
   return createId()
 }
@@ -108,7 +98,7 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
     intentionalCloseRef.current = false
     setConnectionStatus(reconnecting ? 'reconnecting' : 'connecting')
     setError(null)
-    const socket = new WebSocket(socketUrl())
+    const socket = new WebSocket(wsUrl())
     socketRef.current = socket
 
     socket.addEventListener('open', () => {
@@ -268,7 +258,7 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
     },
     async login(email, password) {
       try {
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch(`${apiBaseUrl()}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
@@ -285,7 +275,7 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
     },
     async signup(email, password) {
       try {
-        const res = await fetch('/api/auth/signup', {
+        const res = await fetch(`${apiBaseUrl()}/api/auth/signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),

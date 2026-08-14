@@ -29,3 +29,10 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+.env.mobile
+.env
+dist-mobile/*.apk
+# Android SDK / JDK (local toolchains, not part of the repo)
+android-sdk/
+jdk17/
+jdk21/
