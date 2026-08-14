@@ -6,6 +6,11 @@
   color-scheme: dark;
   --app-outline: rgba(125, 211, 252, 0.28);
   --app-grid: rgba(148, 163, 184, 0.08);
+  /* Safe area padding for mobile (Capacitor / notched devices) */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
 }
 
 @layer base {
@@ -24,6 +29,11 @@
       radial-gradient(circle at top right, rgba(245, 158, 11, 0.14), transparent 18%),
       linear-gradient(180deg, rgba(4, 10, 20, 0.96), rgba(7, 17, 31, 1));
     background-attachment: fixed;
+    /* Respect device safe areas (notch / rounded corners) */
+    padding-top: var(--sat);
+    padding-right: var(--sar);
+    padding-bottom: var(--sab);
+    padding-left: var(--sal);
   }
 
   a {
