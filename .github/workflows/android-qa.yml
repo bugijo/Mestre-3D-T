@@ -1,0 +1,97 @@
+name: Android QA — Firebase Test Lab
+
+on:
+  push:
+    branches: ["mobile-alpha"]
+  workflow_dispatch:
+
+jobs:
+  android-qa:
+    name: Android Robo Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web (mobile mode)
+        run: npm run build:mobile
+
+      - name: Capacitor sync Android
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RPG-Alpha-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: rpg-alpha-qa
+          install_components: 'firebase-test-lab'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: rpg-alpha-qa
+          credentials_json: ${{ secrets.FIREBASE_TEST_LAB_KEY }}
+        # Skip if secret not available (local runs)
+        if: ${{ secrets.FIREBASE_TEST_LAB_KEY != '' }}
+
+      - name: Run Firebase Test Lab Robo Test
+        if: ${{ secrets.FIREBASE_TEST_LAB_KEY != '' }}
+        run: |
+          gcloud firebase test android run \
+            --type robo \
+            --app android/app/build/outputs/apk/debug/app-debug.apk \
+            --device model=SmallPhone.arm,version=28,locale=pt_BR,orientation=portrait \
+            --device model=MediumPhone.arm,version=30,locale=pt_BR,orientation=portrait \
+            --device model=MediumPhone.arm,version=34,locale=pt_BR,orientation=portrait \
+            --timeout 15m \
+            --project rpg-alpha-qa \
+            --results-bucket gs://rpg-alpha-qa-testlab
+        env:
+          CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+
+      - name: Download Test Lab results
+        if: ${{ secrets.FIREBASE_TEST_LAB_KEY != '' }}
+        run: |
+          # Find the test matrix ID
+          MATRIX_ID=$(gcloud firebase test android list --project rpg-alpha-qa --limit=1 --format="value(testMatrixId)")
+          if [ -n "$MATRIX_ID" ]; then
+            gcloud firebase test android results download --matrix-id=$MATRIX_ID --project rpg-alpha-qa --output-dir=testlab-results || true
+          fi
+        env:
+          CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+
+      - name: Upload Test Lab results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-testlab-results
+          path: testlab-results/
+          if-no-files-found: ignore
+          retention-days: 7
