@@ -32,6 +32,8 @@ function validateOnlineOrigin(origin, config) {
 
   try {
     const originUrl = new URL(origin)
+    // Capacitor Android WebView serves local assets from https://localhost
+    if (originUrl.origin === 'https://localhost' || originUrl.origin === 'http://localhost') return true
     return config.allowedOrigins.some((allowed) => {
       // Exact match
       if (allowed === origin) return true

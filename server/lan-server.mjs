@@ -530,6 +530,30 @@ const server = http.createServer(async (request, response) => {
   const url = new URL(request.url || '/', `http://${request.headers.host || `localhost:${config.port}`}`)
   setSecurityHeaders(response)
 
+  // CORS — allow known origins (incl. Capacitor Android WebView: https://localhost)
+  const requestOrigin = request.headers.origin || ''
+  if (requestOrigin) {
+    const originAllowed = config.allowedOrigins.some((allowed) => {
+      if (allowed === '*') return false // wildcard never allowed
+      try {
+        return new URL(allowed).origin === new URL(requestOrigin).origin
+      } catch {
+        return allowed === requestOrigin
+      }
+    })
+    if (originAllowed) {
+      response.setHeader('Access-Control-Allow-Origin', requestOrigin)
+      response.setHeader('Vary', 'Origin')
+    }
+    response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS')
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204)
+      response.end()
+      return
+    }
+  }
+
   // Health check
   if (url.pathname === '/api/health') {
     response.setHeader('content-type', 'application/json')
