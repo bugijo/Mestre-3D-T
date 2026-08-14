@@ -36,3 +36,5 @@ dist-mobile/*.apk
 android-sdk/
 jdk17/
 jdk21/
+gcloud/
+gcloud/*.tar.gz

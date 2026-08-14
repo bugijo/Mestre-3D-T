@@ -1,0 +1,67 @@
+name: iOS Alpha Build Check
+
+# Valida que o código iOS (Capacitor) compila para o Simulator no macOS.
+# NÃO assina, NÃO publica, NÃO usa Apple Developer.
+on:
+  push:
+    branches: ["mobile-alpha"]
+  workflow_dispatch:
+
+jobs:
+  ios-build:
+    name: Build iOS Simulator
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web (mobile mode)
+        run: npm run build:mobile
+
+      - name: Capacitor sync iOS
+        run: npx cap sync ios
+
+      - name: List Xcode / SDKs
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks
+
+      - name: Build iOS for Simulator (no signing)
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+        env:
+          # Sem credenciais Apple — build de simulação não exige assinatura
+          DEVELOPER_DIR: ""
+
+      - name: Verify app bundle
+        run: |
+          APP_BUNDLE=$(find ios/App/build/Build/Products -name "*.app" -maxdepth 2 | head -1)
+          echo "Bundle: $APP_BUNDLE"
+          test -n "$APP_BUNDLE"
+          ls -la "$APP_BUNDLE"
+
+      - name: Upload app bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RPG-Alpha-iOS-Simulator
+          path: ios/App/build/Build/Products/Debug-iphonesimulator/*.app
+          if-no-files-found: error
+          retention-days: 7
