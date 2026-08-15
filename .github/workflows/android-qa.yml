@@ -27,12 +27,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 36
-          ndk-version: r27c
-          emulator: false
+          packages: platform-36,build-tools-36.0.0
           cmdline-tools-version: latest
-          # Accept all licenses
-          licenses: all
+          accept-android-sdk-licenses: true
 
       - name: Setup Node
         uses: actions/setup-node@v4

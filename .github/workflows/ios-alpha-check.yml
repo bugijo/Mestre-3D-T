@@ -72,37 +72,48 @@ jobs:
 
       - name: Create and boot iPhone Simulator
         run: |
-          # List available runtimes to find one that works
-          echo "=== Available runtimes ==="
-          xcrun simctl list runtimes
+          # Use existing available simulators instead of creating new ones
+          echo "=== Available simulators ==="
+          xcrun simctl list devices available -j > available_simulators.json
           
-          # Use iPhone 15 with iOS 17 (should be available on macos-15)
-          # First check if the runtime exists
-          RUNTIME=$(xcrun simctl list runtimes | grep "iOS 17" | head -1 | awk '{print $NF}' | tr -d '()')
-          if [ -z "$RUNTIME" ]; then
-            echo "iOS 17 runtime not found, trying iOS 16..."
-            RUNTIME=$(xcrun simctl list runtimes | grep "iOS 16" | head -1 | awk '{print $NF}' | tr -d '()')
+          # Find first available iPhone 16/16 Pro/15/15 Pro simulator that is booted or shutdown (not unavailable)
+          SIMULATOR_ID=$(cat available_simulators.json | jq -r '
+            .devices | to_entries[] | .value[] | 
+            select(.name | test("iPhone (16|15|14)")) | 
+            select(.state != "Unavailable") | 
+            .udid
+          ' | head -1)
+          
+          if [ -z "$SIMULATOR_ID" ] || [ "$SIMULATOR_ID" = "null" ]; then
+            echo "No iPhone 16/15/14 simulator found, trying any available iPhone..."
+            SIMULATOR_ID=$(cat available_simulators.json | jq -r '
+              .devices | to_entries[] | .value[] | 
+              select(.name | test("iPhone")) | 
+              select(.state != "Unavailable") | 
+              .udid
+            ' | head -1)
           fi
-          if [ -z "$RUNTIME" ]; then
-            echo "ERROR: No iOS runtime found"
-            xcrun simctl list runtimes
+          
+          if [ -z "$SIMULATOR_ID" ] || [ "$SIMULATOR_ID" = "null" ]; then
+            echo "ERROR: No available iPhone simulator found"
+            cat available_simulators.json
             exit 1
           fi
-          echo "Using runtime: $RUNTIME"
           
-          # Create simulator with iPhone 15 (or 14 if 15 not available)
-          DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-15"
-          if ! xcrun simctl list devicetypes | grep -q "iPhone-15"; then
-            echo "iPhone 15 not found, trying iPhone 14..."
-            DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-14"
+          echo "Using existing simulator: $SIMULATOR_ID"
+          
+          # Check current state
+          STATE=$(cat available_simulators.json | jq -r --arg udid "$SIMULATOR_ID" '.devices | to_entries[] | .value[] | select(.udid == $udid) | .state')
+          echo "Simulator state: $STATE"
+          
+          # Boot if needed
+          if [ "$STATE" != "Booted" ]; then
+            xcrun simctl boot "$SIMULATOR_ID"
+            sleep 15
+          else
+            echo "Simulator already booted"
           fi
           
-          echo "Using device type: $DEVICE_TYPE"
-          SIMULATOR_ID=$(xcrun simctl create "RPG-Test-iPhone" "$DEVICE_TYPE" "$RUNTIME")
-          echo "Created simulator: $SIMULATOR_ID"
-          xcrun simctl boot "$SIMULATOR_ID"
-          # Wait for boot
-          sleep 15
           xcrun simctl bootstatus "$SIMULATOR_ID"
 
       - name: Install app on Simulator
