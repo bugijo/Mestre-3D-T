@@ -115,6 +115,9 @@ jobs:
           fi
           
           xcrun simctl bootstatus "$SIMULATOR_ID"
+          
+          # Persist SIMULATOR_ID for subsequent steps
+          echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_ENV
 
       - name: Install app on Simulator
         run: |
