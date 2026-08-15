@@ -24,6 +24,16 @@ jobs:
           java-version: '21'
           cache: gradle
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 36
+          ndk-version: r27c
+          emulator: false
+          cmdline-tools-version: latest
+          # Accept all licenses
+          licenses: all
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -42,7 +52,7 @@ jobs:
       - name: Build debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --info
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g"
 
