@@ -118,6 +118,7 @@ jobs:
 
       - name: Install app on Simulator
         run: |
+          set -x
           APP_BUNDLE=$(find ios/App/build/Build/Products -name "*.app" -maxdepth 2 | head -1)
           if [ -z "$APP_BUNDLE" ]; then
             echo "ERROR: App bundle not found"
