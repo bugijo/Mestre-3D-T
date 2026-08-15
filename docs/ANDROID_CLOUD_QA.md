@@ -6,23 +6,24 @@
 - Robo Test: crawler automatizado da UI (não requer teste instrumentado).
 - Projeto Firebase: `rpg-alpha-qa` (Spark / gratuito, sem billing).
 
-## Dispositivos (matriz)
+## Dispositivos (matriz) — EXECUTADOS 2026-08-15
 
-| Perfil | Modelo | Android | Tela | Tipo |
-|--------|--------|---------|------|------|
-| A — pequena/antiga | SmallPhone.arm | 28 (Android 9) | 1280x720 | Virtual |
-| B — intermediária | MediumPhone.arm | 30 (Android 11) | 2400x1080 | Virtual |
-| C — moderna | MediumPhone.arm | 34 (Android 14) | 2400x1080 | Virtual |
+| Perfil | Modelo | Android | Tela | Tipo | Outcome |
+|--------|--------|---------|------|------|---------|
+| A — pequena/antiga | SmallPhone.arm | 28 (Android 9) | 1280x720 | Virtual | **PASSED** (infra apenas) |
+| B — intermediária | MediumPhone.arm | 30 (Android 11) | 2400x1080 | Virtual | **PASSED** (funcional) |
+| C — moderna | MediumPhone.arm | 34 (Android 14) | 2400x1080 | Virtual | **PASSED** (funcional) |
 
 Todas em `locale=pt_BR`, `orientation=portrait`.
 
-## Como executar
+## Execução Real (CLI local)
 
 ```bash
-# Listar dispositivos disponíveis
-gcloud firebase test android models list --project rpg-alpha-qa
+# Autenticação prévia
+gcloud auth login
+gcloud config set project rpg-alpha-qa
 
-# Rodar Robo test
+# Rodar Robo test (3 devices)
 gcloud firebase test android run \
   --type robo \
   --app dist-mobile/RPG-Alpha-debug.apk \
@@ -33,40 +34,115 @@ gcloud firebase test android run \
   --project rpg-alpha-qa
 ```
 
-Resultados aparecem no console Firebase:
-https://console.firebase.google.com/project/rpg-alpha-qa/testlab
+**Matrix ID:** `7715631608080826959`  
+**Console:** https://console.firebase.google.com/project/rpg-alpha-qa/testlab/histories/bh.8990f3574fc5349c/matrices/7715631608080826959  
+**Duração:** ~14 minutos  
+**Bucket resultados:** `gs://test-lab-17dxtvawpd236-yd2hh1m4a2w8c/2026-08-15_08:53:27.612330_vjZi/`
 
-## Casos de teste
+## Resultados Detalhados
 
-- Startup: instalar, abrir, sem crash, sem ANR.
-- Navegação: Robo crawls as telas automaticamente.
-- Login/cadastro: com credenciais de QA (ver `docs/MOBILE_QA_FINAL.md`).
+| Dispositivo | API | Outcome | Eventos UI | Crashes | ANRs | Screenshots | Video |
+|-------------|-----|---------|------------|---------|------|-------------|-------|
+| SmallPhone.arm | 28 | **PASSED** | 2 (launch + wait) | 0 | 0 | 0 funcionais | 876 KB |
+| MediumPhone.arm | 30 | **PASSED** | 63 | 0 | 0 | ~110 | 40 MB |
+| MediumPhone.arm | 34 | **PASSED** | 52 | 0 | 0 | ~110 | 33 MB |
 
-## Resultados
+### Análise por dispositivo
 
-| Data | Teste | Dispositivos | Status | Detalhes |
-|------|-------|--------------|--------|----------|
-| 2026-08-14 | APK existente | N/A | ✅ PRONTO | `dist-mobile/RPG-Alpha-debug.apk` (4.6 MB, v1.0) |
-| 2026-08-14 | Workflow CI configurado | N/A | ✅ CONFIGURADO | `.github/workflows/android-qa.yml` com Java 21, 1 dispositivo inicial |
-| — | Firebase Test Lab executado | — | ❌ NÃO EXECUTADO | Secret `FIREBASE_TEST_LAB_KEY` não configurado no GitHub |
+**MediumPhone.arm API 30 — PASS FUNCIONAL COMPLETO**
+- 63 eventos: taps, swipes, digitação em EditText, navegação WebView
+- Telas visitadas: menu, personagens, campanhas, Dev, jogar, história, admin
+- Zero crashes, zero ANRs
 
-**APK verificado:**
+**MediumPhone.arm API 34 — PASS FUNCIONAL COMPLETO**
+- 52 eventos: padrão similar ao API 30
+- Zero crashes, zero ANRs
+
+**SmallPhone.arm API 28 — INFRA PASS / FUNCIONAL INCONCLUSIVO**
+- Apenas 2 eventos: `launch` + `wait` (10s)
+- Robo não crawleou além da tela inicial
+- Video mostra tela estática
+- **Conclusão:** App instala e abre sem crash/ANR, mas exploração funcional não ocorreu
+
+## Artefatos Baixados
+
+Local: `/media/giovanni/HD/Projetos/RPG/test-results/firebase-testlab/results/`
+
+```
+results/
+├── SmallPhone.arm-28-pt_BR-portrait/
+│   ├── actions.json, crawlscript.json, logcat, robo_results.pb, video.mp4
+│   └── artifacts/ (vazio — sem screenshots funcionais)
+├── MediumPhone.arm-30-pt_BR-portrait/
+│   ├── actions.json, crawlscript.json, logcat, robo_results.pb, video.mp4
+│   └── artifacts/ (~110 PNGs)
+└── MediumPhone.arm-34-pt_BR-portrait/
+    ├── actions.json, crawlscript.json, logcat, robo_results.pb, video.mp4
+    └── artifacts/ (~110 PNGs)
+```
+
+**Totais:** 204 screenshots, 3 vídeos (~74 MB), 3 logcats, 3 robo_results.pb, 3 crawlscript.json
+
+## Casos de teste cobertos pelo Robo
+
+- ✅ Startup: instalar, abrir, sem crash, sem ANR (3/3 devices)
+- ✅ Navegação básica: Robo crawls telas automaticamente (2/3 devices — MediumPhone)
+- ❌ Login/cadastro: **NÃO TESTADO** (Robo não preenche forms de auth)
+- ❌ Fluxo Mestre/Jogador: **NÃO TESTADO** (requer harness LAN ou instrumentação)
+
+> Para fluxo completo (login, sessão, segredos, reconnect, combate, recompensa), ver `server/playtest-e2e.mjs` (harness LAN) e `docs/ONLINE_PLAYTEST.md` (mesa online).
+
+## APK Verificado
+
 - Package: `com.bugijo.rpgalpha`
 - Version: 1.0 (code 1)
 - Arquitetura: universal (arm64 + x86 via Gradle)
 - Permissões: `INTERNET` apenas
 - Keystore: debug (não assinado para produção)
+- Tamanho: 4.6 MB
 
-**Workflow `android-qa.yml` configurado:**
+## Workflow CI (`android-qa.yml`) — Configurado
+
 - Java 21 via `actions/setup-java` (temurin)
 - Build APK debug
 - 1 dispositivo inicial (MediumPhone.arm Android 14) para respeitar cota Spark
 - Condicional ao secret `FIREBASE_TEST_LAB_KEY`
 - Artifacts: APK, Test Lab results, screenshots
 
-**Próximo passo:** Configurar secret `FIREBASE_TEST_LAB_KEY` no GitHub → Executar workflow `android-qa.yml` → aguardar matrix FINISHED → recuperar screenshots/vídeo/logs.
+**Próximo passo para CI:** Configurar secret `FIREBASE_TEST_LAB_KEY` no GitHub → Executar workflow `android-qa.yml` → aguardar matrix FINISHED → recuperar screenshots/vídeo/logs.
 
-## Cota gratuita (Spark)
+## App Testing Agent (AI-guided / Gemini)
 
-- Virtual Device Tests: 10 testes/dia, até 60 min/dia — sem custo.
-- Physical Device Tests: 5 testes/dia, até 30 min/dia — sem custo.
+**NÃO DISPONÍVEL via gcloud CLI**
+
+- Test types suportados: `robo`, `instrumentation`, `game-loop`
+- Não existe `--type=app-testing` ou similar
+- Preview existe apenas no Firebase Console (manual)
+
+## Cota gratuita (Spark) — Consumo 2026-08-15
+
+| Recurso | Limite Diário | Usado | Restante |
+|---------|---------------|-------|----------|
+| Virtual Device Tests | 10 | 3 | 7 |
+| Tempo Virtual Device | 60 min | ~14 min | ~46 min |
+| Physical Device Tests | 5 | 0 | 5 |
+| Physical Device Tempo | 30 min | 0 | 30 min |
+
+**Nenhum billing ativado.** Projeto permanece no tier Spark.
+
+## Classificação de Severidade
+
+| Nível | Qtde | Detalhes |
+|-------|------|----------|
+| BLOCKER | 0 | — |
+| CRITICAL | 0 | — |
+| HIGH | 0 | — |
+| MEDIUM | 0 | — |
+| LOW | 1 | SmallPhone API 28 não crawleou funcionalmente |
+
+## Evidência Completa
+
+Ver `docs/MOBILE_QA_EVIDENCE.md` para:
+- Matrix ID, timestamps, localização de todos os artefatos
+- Análise honesta por dispositivo
+- Comparação com harness LAN e mesa online
