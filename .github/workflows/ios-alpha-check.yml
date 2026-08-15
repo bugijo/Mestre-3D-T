@@ -119,6 +119,11 @@ jobs:
       - name: Install app on Simulator
         run: |
           APP_BUNDLE=$(find ios/App/build/Build/Products -name "*.app" -maxdepth 2 | head -1)
+          if [ -z "$APP_BUNDLE" ]; then
+            echo "ERROR: App bundle not found"
+            find ios/App/build -name "*.app" 2>/dev/null | head -20
+            exit 1
+          fi
           echo "Installing: $APP_BUNDLE"
           xcrun simctl install "$SIMULATOR_ID" "$APP_BUNDLE"
 
