@@ -13,6 +13,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      FIREBASE_TEST_LAB_KEY: ${{ secrets.FIREBASE_TEST_LAB_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,10 +29,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: platform-36,build-tools-36.0.0
-          cmdline-tools-version: latest
-          accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: true
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          cmdline-tools-version: 'latest'
+          accept-android-sdk-licenses: 'true'
+          log-accepted-android-sdk-licenses: 'false'
 
       - name: Verify Android SDK
         run: |
@@ -38,7 +40,8 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
           ls -la "$ANDROID_HOME/platforms/" 2>/dev/null || echo "No platforms dir"
           ls -la "$ANDROID_HOME/build-tools/" 2>/dev/null || echo "No build-tools dir"
-          ./gradlew --version
+          chmod +x android/gradlew
+          ./android/gradlew --version
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -58,6 +61,7 @@ jobs:
       - name: Build debug APK
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --info
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g"
@@ -71,19 +75,19 @@ jobs:
           retention-days: 7
 
       # Firebase Test Lab steps - only run if FIREBASE_TEST_LAB_KEY secret is configured
-      - name: Setup gcloud CLI
-        if: env.FIREBASE_TEST_LAB_KEY != ''
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: rpg-alpha-qa
-          install_components: 'firebase-test-lab'
-
       - name: Authenticate to Google Cloud
         if: env.FIREBASE_TEST_LAB_KEY != ''
         uses: google-github-actions/auth@v2
         with:
           project_id: rpg-alpha-qa
           credentials_json: ${{ secrets.FIREBASE_TEST_LAB_KEY }}
+
+      - name: Setup gcloud CLI
+        if: env.FIREBASE_TEST_LAB_KEY != ''
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: rpg-alpha-qa
+          install_components: 'firebase-test-lab'
 
       - name: Run Firebase Test Lab Robo Test (single device first)
         if: env.FIREBASE_TEST_LAB_KEY != ''
