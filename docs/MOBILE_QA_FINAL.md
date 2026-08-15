@@ -14,14 +14,14 @@ Criadas exclusivamente para teste, expiram/alvo de limpeza após o ciclo QA.
 
 | Teste | Cenário | Status |
 |-------|---------|--------|
-| T1 Startup | Instalar, abrir, sem crash/ANR, tela renderizada | (Test Lab) |
-| T2 Cadastro/Login | signup + login Mestre | (Test Lab + WS) |
-| T3 Mestre | criar sessão, código 8 chars, telas, cena/NPC/mensagem/dado/combate/reward | (Test Lab + WS) |
-| T4 Jogador | join por código, aprovação, personagem, cena, mensagem, dado, reward | (Test Lab + WS) |
-| T5 Segredo | segredo só para Player A, Player B não recebe | (Test Lab + WS) |
-| T6 Reconnect | fechar/reabrir, recuperar sessão, estado preservado | (Test Lab + WS) |
-| T7 UX Mobile | teclado, inputs, scroll, modais, voltar, safe area, orientação | (Test Lab + WS) |
-| T8 Adversarial | host:create anônimo, player→master, sessão inválida, token inválido, duplicate actionId | (WS tests) |
+| T1 Startup | Instalar, abrir, sem crash/ANR, tela renderizada | ⏳ Pendente (Test Lab) |
+| T2 Cadastro/Login | signup + login Mestre | ⏳ Pendente (Test Lab + WS) |
+| T3 Mestre | criar sessão, código 8 chars, telas, cena/NPC/mensagem/dado/combate/reward | ⏳ Pendente (Test Lab + WS) |
+| T4 Jogador | join por código, aprovação, personagem, cena, mensagem, dado, reward | ⏳ Pendente (Test Lab + WS) |
+| T5 Segredo | segredo só para Player A, Player B não recebe | ⏳ Pendente (Test Lab + WS) |
+| T6 Reconnect | fechar/reabrir, recuperar sessão, estado preservado | ⏳ Pendente (Test Lab + WS) |
+| T7 UX Mobile | teclado, inputs, scroll, modais, voltar, safe area, orientação | ⏳ Pendente (Test Lab + WS) |
+| T8 Adversarial | host:create anônimo, player→master, sessão inválida, token inválido, duplicate actionId | ⏳ Pendente (WS tests) |
 
 ## Testes WebSocket (backend público)
 
@@ -68,7 +68,7 @@ Todos executados contra `wss://rpg-alpha.onrender.com/ws`:
 |------|------|-------|
 | Android Robo Test | `gh workflow run android-qa.yml` → ver logs no Actions + Firebase Console | Grátis (Spark) |
 | iOS Simulator Build | `gh workflow run ios-alpha-check.yml` → baixar artifact `.app` | Grátis (GitHub Actions) |
-| iOS Simulator executar | Requer macOS local (não disponível no CI) | — |
+| iOS Simulator executar | CI: workflow atualizado com boot/install/launch/screenshot; aguardando build PASS | Grátis (GitHub Actions) |
 | PWA iPhone | `https://rpg-alpha.onrender.com` → Compartilhar → Adicionar à Tela de Início | Grátis |
 
 ## Status final
@@ -79,4 +79,10 @@ Todos executados contra `wss://rpg-alpha.onrender.com/ws`:
 - MEDIUM: 0
 - LOW: 0
 
-✅ Alpha Mobile pronta para distribuição via PWA + Test Lab Android.
+⚠️ **Alpha Mobile NÃO validada por testes reais ainda.** 
+Próximos passos obrigatórios:
+1. Build iOS CI = PASS (workflow corrigido: `-project App.xcodeproj`)
+2. iOS Simulator boot/install/launch = PASS/FAIL (workflow atualizado)
+3. Android APK CI = PASS (Java 21 configurado)
+4. Firebase Test Lab executado = PASS/FAIL (requer secret `FIREBASE_TEST_LAB_KEY`)
+5. App Testing Agent = EXECUTADO/INDISPONÍVEL (investigar)

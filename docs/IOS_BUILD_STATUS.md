@@ -6,8 +6,8 @@
 |------|--------|------------|
 | `@capacitor/ios` instalado | ✅ PASS | v8.5.0 no `package.json` |
 | `npx cap add ios` (Linux) | ✅ PASS | Projeto Xcode gerado (Swift + SPM) |
-| Build Xcode Simulator (macOS) | ✅ PASS | Workflow em `.github/workflows/ios-alpha-check.yml`, macOS runner (GitHub Actions) |
-| iOS Simulator executado | ❌ NÃO POSSÍVEL | Requer macOS com Xcode 26+ |
+| Build Xcode Simulator (macOS) | ❌ FALHANDO | Workflow `ios-alpha-check.yml` corrigido (usava `-workspace App.xcworkspace` mas projeto usa `-project App.xcodeproj`), aguardando execução |
+| iOS Simulator executado | ❌ NÃO EXECUTADO | Workflow atualizado para boot/install/launch, aguardando build PASS |
 | Firebase Test Lab iOS | ❌ NÃO POSSÍVEL | Requer build assinada com Apple Developer |
 | PWA iPhone | ✅ FUNCIONAL | `https://rpg-alpha.onrender.com` + Adicionar à Tela de Início |
 
@@ -35,8 +35,8 @@ Versão: `MARKETING_VERSION=1.0`, `CURRENT_PROJECT_VERSION=1`.
 
 | Etapa | Requer | Gratuito? |
 |-------|--------|-----------|
-| Build Simulator no Xcode | macOS com Xcode 26+ | ✅ GitHub Actions (macOS runner) |
-| Executar no Simulator | macOS | ❌ Apenas CI |
+| Build Simulator no Xcode (PASS no CI) | macOS com Xcode 26+ (GitHub Actions macos-15) | ✅ GitHub Actions (macOS runner) |
+| Executar no Simulator (CI) | macOS | ✅ GitHub Actions (workflow atualizado) |
 | Assinar para dispositivo físico | Apple Developer ($99/ano) | ❌ Pago |
 | TestFlight / distribuição interna | Apple Developer + App Store Connect | ❌ Pago |
 | Publicar App Store | Apple Developer + revisão Apple | ❌ Pago |

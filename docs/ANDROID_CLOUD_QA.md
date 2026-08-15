@@ -47,6 +47,8 @@ https://console.firebase.google.com/project/rpg-alpha-qa/testlab
 | Data | Teste | Dispositivos | Status | Detalhes |
 |------|-------|--------------|--------|----------|
 | 2026-08-14 | APK existente | N/A | ✅ PRONTO | `dist-mobile/RPG-Alpha-debug.apk` (4.6 MB, v1.0) |
+| 2026-08-14 | Workflow CI configurado | N/A | ✅ CONFIGURADO | `.github/workflows/android-qa.yml` com Java 21, 1 dispositivo inicial |
+| — | Firebase Test Lab executado | — | ❌ NÃO EXECUTADO | Secret `FIREBASE_TEST_LAB_KEY` não configurado no GitHub |
 
 **APK verificado:**
 - Package: `com.bugijo.rpgalpha`
@@ -55,7 +57,14 @@ https://console.firebase.google.com/project/rpg-alpha-qa/testlab
 - Permissões: `INTERNET` apenas
 - Keystore: debug (não assinado para produção)
 
-**Próximo passo:** Executar workflow `android-qa.yml` no GitHub Actions (botão "Run workflow" na aba Actions).
+**Workflow `android-qa.yml` configurado:**
+- Java 21 via `actions/setup-java` (temurin)
+- Build APK debug
+- 1 dispositivo inicial (MediumPhone.arm Android 14) para respeitar cota Spark
+- Condicional ao secret `FIREBASE_TEST_LAB_KEY`
+- Artifacts: APK, Test Lab results, screenshots
+
+**Próximo passo:** Configurar secret `FIREBASE_TEST_LAB_KEY` no GitHub → Executar workflow `android-qa.yml` → aguardar matrix FINISHED → recuperar screenshots/vídeo/logs.
 
 ## Cota gratuita (Spark)
 

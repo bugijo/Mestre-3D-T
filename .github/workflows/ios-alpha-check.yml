@@ -39,7 +39,7 @@ jobs:
       - name: Build iOS for Simulator (no signing)
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace \
+          xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
@@ -65,3 +65,53 @@ jobs:
           path: ios/App/build/Build/Products/Debug-iphonesimulator/*.app
           if-no-files-found: error
           retention-days: 7
+
+      - name: List available simulators
+        run: |
+          xcrun simctl list devices available
+
+      - name: Create and boot iPhone Simulator
+        run: |
+          # Use iPhone 16 with iOS 18 (available on macos-15)
+          SIMULATOR_ID=$(xcrun simctl create "RPG-Test-iPhone" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "com.apple.CoreSimulator.SimRuntime.iOS-18-0")
+          echo "Created simulator: $SIMULATOR_ID"
+          xcrun simctl boot "$SIMULATOR_ID"
+          # Wait for boot
+          sleep 10
+          xcrun simctl bootstatus "$SIMULATOR_ID"
+
+      - name: Install app on Simulator
+        run: |
+          APP_BUNDLE=$(find ios/App/build/Build/Products -name "*.app" -maxdepth 2 | head -1)
+          echo "Installing: $APP_BUNDLE"
+          xcrun simctl install "$SIMULATOR_ID" "$APP_BUNDLE"
+
+      - name: Launch app on Simulator
+        run: |
+          xcrun simctl launch "$SIMULATOR_ID" com.bugijo.rpgalpha
+          # Wait for app to start
+          sleep 5
+
+      - name: Capture screenshot
+        run: |
+          xcrun simctl io "$SIMULATOR_ID" screenshot screenshot.png
+          ls -la screenshot.png
+
+      - name: Collect Simulator logs
+        run: |
+          xcrun simctl spawn "$SIMULATOR_ID" log collect --output logarchive --start "$(date -v-1M '+%Y-%m-%d %H:%M:%S')" || true
+          echo "Log collection completed"
+
+      - name: Upload screenshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-Simulator-screenshot
+          path: screenshot.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Shutdown simulator
+        if: always()
+        run: |
+          xcrun simctl shutdown "$SIMULATOR_ID" || true
+          xcrun simctl delete "$SIMULATOR_ID" || true
