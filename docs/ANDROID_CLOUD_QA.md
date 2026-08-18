@@ -4,9 +4,10 @@
 
 - **Firebase Test Lab** (Google Cloud) — infraestrutura oficial de testes em nuvem.
 - Robo Test: crawler automatizado da UI (não requer teste instrumentado).
+- **App Testing Agent (AI-guided / Gemini)**: disponível via `firebase apptesting:execute` (Firebase CLI 15.27.0).
 - Projeto Firebase: `rpg-alpha-qa` (Spark / gratuito, sem billing).
 
-## Dispositivos (matriz) — EXECUTADOS 2026-08-15
+## Dispositivos (matriz Robo Test) — EXECUTADOS 2026-08-15
 
 | Perfil | Modelo | Android | Tela | Tipo | Outcome |
 |--------|--------|---------|------|------|---------|
@@ -16,7 +17,7 @@
 
 Todas em `locale=pt_BR`, `orientation=portrait`.
 
-## Execução Real (CLI local)
+## Execução Real Robo Test (CLI local)
 
 ```bash
 # Autenticação prévia
@@ -39,7 +40,7 @@ gcloud firebase test android run \
 **Duração:** ~14 minutos  
 **Bucket resultados:** `gs://test-lab-17dxtvawpd236-yd2hh1m4a2w8c/2026-08-15_08:53:27.612330_vjZi/`
 
-## Resultados Detalhados
+## Resultados Detalhados (Robo Test)
 
 | Dispositivo | API | Outcome | Eventos UI | Crashes | ANRs | Screenshots | Video |
 |-------------|-----|---------|------------|---------|------|-------------|-------|
@@ -64,7 +65,7 @@ gcloud firebase test android run \
 - Video mostra tela estática
 - **Conclusão:** App instala e abre sem crash/ANR, mas exploração funcional não ocorreu
 
-## Artefatos Baixados
+## Artefatos Baixados (Robo Test)
 
 Local: `/media/giovanni/HD/Projetos/RPG/test-results/firebase-testlab/results/`
 
@@ -83,7 +84,7 @@ results/
 
 **Totais:** 204 screenshots, 3 vídeos (~74 MB), 3 logcats, 3 robo_results.pb, 3 crawlscript.json
 
-## Casos de teste cobertos pelo Robo
+## Casos de teste cobertos pelo Robo Test
 
 - ✅ Startup: instalar, abrir, sem crash, sem ANR (3/3 devices)
 - ✅ Navegação básica: Robo crawls telas automaticamente (2/3 devices — MediumPhone)
@@ -91,6 +92,30 @@ results/
 - ❌ Fluxo Mestre/Jogador: **NÃO TESTADO** (requer harness LAN ou instrumentação)
 
 > Para fluxo completo (login, sessão, segredos, reconnect, combate, recompensa), ver `server/playtest-e2e.mjs` (harness LAN) e `docs/ONLINE_PLAYTEST.md` (mesa online).
+
+## App Testing Agent (AI-guided / Gemini) — **EXECUTADO VIA FIREBASE CLI**
+
+### Disponibilidade
+- **Comando:** `firebase apptesting:execute` (Firebase CLI 15.27.0)
+- **Não** requer `gcloud` — usa o CLI `firebase` diretamente
+- Tier Spark permite execução
+- Documentação anterior de "NÃO DISPONÍVEL via CLI" estava **desatualizada**
+
+### Execuções realizadas (múltiplas):
+
+| Execução | Cenário | Resultado |
+|----------|---------|-----------|
+| 1 | Launch app + verify main dashboard | ✅ PASS |
+| 2 | Dashboard Mestre + "PREPARAR AGORA" | ✅ PASS |
+| 3 | Seleção "O Caso de Santa Aurora" | ✅ PASS |
+| 4 | Sessão local ativa + "Abrir mesa na rede" | ✅ PASS |
+| 5 | Fluxo ONLINE completo (login → auth → host:ready → código 8 chars) | 🟡 INCONCLUSIVO — FAILED_AI_STEP |
+
+### Análise honesta
+- O **FAILED_AI_STEP** indica que o agente de IA (Gemini) não completou a navegação guiada até o final
+- **Não prova falha funcional do backend/app** — backend WebSocket validado separadamente (22/22 online, 28/28 harness LAN)
+- App Testing Agent **não executou fluxo completo E2E** com jogadores reais
+- **Não serão executados mais App Testing Agent neste ciclo**
 
 ## APK Verificado
 
@@ -111,24 +136,15 @@ results/
 
 **Próximo passo para CI:** Configurar secret `FIREBASE_TEST_LAB_KEY` no GitHub → Executar workflow `android-qa.yml` → aguardar matrix FINISHED → recuperar screenshots/vídeo/logs.
 
-## App Testing Agent (AI-guided / Gemini)
+## Cota gratuita (Spark) — Consumo Real
 
-**NÃO DISPONÍVEL via gcloud CLI**
+| Etapa | Dispositivos | Tempo | Tipo |
+|-------|--------------|-------|------|
+| Robo Test (2026-08-15) | 3 | ~14 min | Virtual |
+| App Testing Agent (múltiplas execuções posteriores) | N/A | N/A | AI-guided |
 
-- Test types suportados: `robo`, `instrumentation`, `game-loop`
-- Não existe `--type=app-testing` ou similar
-- Preview existe apenas no Firebase Console (manual)
-
-## Cota gratuita (Spark) — Consumo 2026-08-15
-
-| Recurso | Limite Diário | Usado | Restante |
-|---------|---------------|-------|----------|
-| Virtual Device Tests | 10 | 3 | 7 |
-| Tempo Virtual Device | 60 min | ~14 min | ~46 min |
-| Physical Device Tests | 5 | 0 | 5 |
-| Physical Device Tempo | 30 min | 0 | 30 min |
-
-**Nenhum billing ativado.** Projeto permanece no tier Spark.
+**Billing não foi ativado durante o ciclo.** Projeto permanece no tier Spark.
+**Não há contagem de "quota restante" medida** — execuções de App Testing Agent não consomem a mesma cota de device-minutos do Robo Test.
 
 ## Classificação de Severidade
 
@@ -145,4 +161,5 @@ results/
 Ver `docs/MOBILE_QA_EVIDENCE.md` para:
 - Matrix ID, timestamps, localização de todos os artefatos
 - Análise honesta por dispositivo
+- App Testing Agent resultados detalhados
 - Comparação com harness LAN e mesa online

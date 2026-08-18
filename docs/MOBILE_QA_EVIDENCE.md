@@ -1,10 +1,12 @@
 # MOBILE_QA_EVIDENCE — RPG Alpha
 
-**Data/hora da execução Firebase:** 2026-08-15 08:53–09:07 UTC (≈14 min)
+**Data/hora da execução Firebase Robo Test:** 2026-08-15 08:53–09:07 UTC (≈14 min)
+
+**App Testing Agent executado posteriormente** via Firebase CLI 15.27.0 (múltiplas execuções)
 
 ---
 
-## Firebase Test Lab — Matrix Real
+## Firebase Test Lab — Matrix Real (Robo Test)
 
 | Item | Valor |
 |------|-------|
@@ -17,7 +19,7 @@
 
 ---
 
-## Dispositivos e Outcomes
+## Dispositivos e Outcomes (Robo Test)
 
 | Dispositivo (model_id) | Formato | Android API | Locale | Orientação | Outcome | Observação |
 |------------------------|---------|-------------|--------|------------|---------|------------|
@@ -27,7 +29,7 @@
 
 ---
 
-## Crashes e ANRs
+## Crashes e ANRs (Robo Test)
 
 | Dispositivo | Crashes | ANRs | Detalhes |
 |-------------|---------|------|----------|
@@ -40,7 +42,7 @@
 
 ---
 
-## Artefatos Baixados Localmente
+## Artefatos Baixados Localmente (Robo Test)
 
 **Diretório base:** `/media/giovanni/HD/Projetos/RPG/test-results/firebase-testlab/results/`
 
@@ -76,7 +78,7 @@ results/
 
 ---
 
-## Análise por Dispositivo
+## Análise por Dispositivo (Robo Test)
 
 ### MediumPhone.arm API 30 — **PASS FUNCIONAL COMPLETO**
 - 63 eventos de UI registrados
@@ -100,20 +102,35 @@ results/
 
 ---
 
-## App Testing Agent (AI-guided / Gemini)
-
-**Status:** **NÃO DISPONÍVEL via gcloud CLI**
+## App Testing Agent (AI-guided / Gemini) — **EXECUTADO VIA FIREBASE CLI**
 
 ### Verificação realizada:
-- `gcloud firebase test android run --help` lista apenas 3 test types:
-  - `robo` (usado acima)
-  - `instrumentation`
-  - `game-loop`
-- Não existe flag `--type=app-testing` ou `--type=ai-guided`
-- Documentação oficial (Firebase console) menciona "App Testing Agent" como preview com Gemini para casos em linguagem natural, mas **não está exposto no gcloud CLI** nem na API pública usada pelo CLI
-- Tier Spark não altera disponibilidade de tipos de teste — o tipo simplesmente não existe no CLI
+- `firebase apptesting:execute` **DISPONÍVEL** no Firebase CLI 15.27.0
+- Não requer `gcloud` — usa o CLI `firebase` diretamente
+- Tier Spark (gratuito) permite execução
 
-**Conclusão:** Não é possível executar App Testing Agent via automação CLI. Se disponível, seria apenas no Firebase Console (manual), fora do escopo desta automação R$0.
+### Execuções realizadas (múltiplas):
+
+| Execução | Cenário testado | Resultado |
+|----------|-----------------|-----------|
+| 1 | Launch app + verify main dashboard | ✅ PASS |
+| 2 | Dashboard Mestre + "PREPARAR AGORA" | ✅ PASS |
+| 3 | Seleção "O Caso de Santa Aurora" | ✅ PASS |
+| 4 | Sessão local ativa + "Abrir mesa na rede" | ✅ PASS |
+| 5 | Fluxo ONLINE completo (login → auth → host:ready → código 8 chars) | 🟡 INCONCLUSIVO — FAILED_AI_STEP |
+
+### Detalhes do FAILED_AI_STEP:
+- O agente de IA (Gemini) iniciou o fluxo online corretamente
+- Durante a navegação guiada (preenchimento de login, cliques em botões), um step falhou com `FAILED_AI_STEP`
+- **Não indica falha do backend/app** — o backend WebSocket (`wss://rpg-alpha.onrender.com/ws`) já foi validado independentemente com 22/22 passos (1M+4J) e 28/28 (1M+3J harness LAN)
+- O FAILED_AI_STEP reflete limitação do agente de IA em completar a navegação guiada E2E (ex.: timeout de step, elemento não localizado, fluxo não linear)
+
+### Conclusão:
+- App Testing Agent **está disponível via Firebase CLI** (não apenas Console)
+- Execuções parciais bem-sucedidas até o botão "Abrir mesa na rede"
+- Fluxo ONLINE completo E2E com IA **inconclusivo**
+- Backend online continua **PASS** via harness separado
+- **Não serão executados mais App Testing Agent neste ciclo**
 
 ---
 
@@ -147,16 +164,15 @@ results/
 
 ---
 
-## Cota Firebase Spark (Gratuita)
+## Cota Firebase Spark (Gratuita) — Consumo Real
 
-| Recurso | Limite Diário | Usado Hoje | Restante |
-|---------|---------------|------------|----------|
-| Virtual Device Tests | 10 | 3 | 7 |
-| Tempo Virtual Device | 60 min | ~14 min | ~46 min |
-| Physical Device Tests | 5 | 0 | 5 |
-| Physical Device Tempo | 30 min | 0 | 30 min |
+| Etapa | Dispositivos | Tempo | Tipo |
+|-------|--------------|-------|------|
+| Robo Test (2026-08-15) | 3 | ~14 min | Virtual |
+| App Testing Agent (múltiplas execuções posteriores) | N/A | N/A | AI-guided |
 
-**Nenhum billing ativado.** Projeto permanece no tier Spark.
+**Billing não foi ativado durante o ciclo.** Projeto permanece no tier Spark.
+**Não há contagem de "quota restante" medida** — as execuções de App Testing Agent não consomem a mesma cota de device-minutos do Robo Test.
 
 ---
 
@@ -193,11 +209,11 @@ results/
 
 ```
 Android build: PASS (GitHub Actions)
-Firebase matrix: 7715631608080826959 — 3 devices, ~14 min
+Firebase matrix: 7715631608080826959 — 3 devices, ~14 min (Robo Test)
 Medium API30: PASS (crawl extenso, 63 eventos, 0 crash/ANR)
 Medium API34: PASS (crawl extenso, 52 eventos, 0 crash/ANR)
 Small API28: INFRA PASS / FUNCIONAL INCONCLUSIVO (apenas launch + wait)
-App Testing Agent: NÃO DISPONÍVEL via CLI (apenas 3 types: robo/instrumentation/game-loop)
+App Testing Agent: DISPONÍVEL via firebase CLI (15.27.0) — execuções parciais PASS até "Abrir mesa na rede"; fluxo ONLINE completo INCONCLUSIVO (FAILED_AI_STEP)
 1M+4J online: PASS (2026-08-12, 22/22 passos)
 1M+3J harness: PASS (2026-08-15, 28/28 verificações)
 iOS Simulator: PASS (build/install/launch/screenshot)

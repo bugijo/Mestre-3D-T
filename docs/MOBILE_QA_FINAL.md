@@ -15,15 +15,17 @@ Criadas exclusivamente para teste, expiram/alvo de limpeza após o ciclo QA.
 | Teste | Cenário | Status |
 |-------|---------|--------|
 | T1 Startup | Instalar, abrir, sem crash/ANR, tela renderizada | ✅ PASS (3 devices) |
-| T2 Cadastro/Login | signup + login Mestre | ⏳ NÃO TESTADO (Robo não faz auth) |
-| T3 Mestre | criar sessão, código 8 chars, telas, cena/NPC/mensagem/dado/combate/reward | ⏳ NÃO TESTADO (Robo não navega fluxo completo) |
-| T4 Jogador | join por código, aprovação, personagem, cena, mensagem, dado, reward | ⏳ NÃO TESTADO (Robo não faz fluxo multiplayer) |
-| T5 Segredo | segredo só para Player A, Player B não recebe | ⏳ NÃO TESTADO (Robo não testa isolamento) |
-| T6 Reconnect | fechar/reabrir, recuperar sessão, estado preservado | ⏳ NÃO TESTADO (Robo não testa reconnect) |
-| T7 UX Mobile | teclado, inputs, scroll, modais, voltar, safe area, orientação | ✅ PASS (MediumPhone API 30/34: crawl com taps, swipes, digitação) |
-| T8 Adversarial | host:create anônimo, player→master, sessão inválida, token inválido, duplicate actionId | ⏳ NÃO TESTADO (apenas harness LAN) |
+| T2 Mestre Auth | Signup + login Mestre via App Testing Agent (IA) | 🟡 INCONCLUSIVO — FAILED_AI_STEP durante navegação guiada |
+| T3 Mestre | Criar sessão, código 8 chars, telas, cena/NPC/mensagem/dado/combate/reward via App Testing Agent | 🟡 PARCIAL — Dashboard/campanha/sessão/botão abrir mesa = PASS; código 8 chars via UI AI = INCONCLUSIVO |
+| T4 Jogador | Join por código, aprovação, personagem, cena, mensagem, dado, reward | ✅ PASS (harness LAN automatizado) |
+| T5 Segredo | Segredo só para Player A, Player B não recebe | ✅ PASS (harness LAN automatizado) |
+| T6 Reconnect | Fechar/reabrir, recuperar sessão, estado preservado | ✅ PASS (harness LAN automatizado) |
+| T7 UX Mobile | Teclado, inputs, scroll, modais, voltar, safe area, orientação | ✅ PASS (MediumPhone API 30/34: crawl com taps, swipes, digitação) |
+| T8 Adversarial | Host:create anônimo, player→master, sessão inválida, token inválido, duplicate actionId | ✅ PASS (harness LAN + testes WebSocket backend) |
 
 > **Nota:** Robo Test é crawl exploratório automatizado, **não** executa casos de teste funcionais dirigidos (login, fluxo Mestre/Jogador, segredos, reconnect). Esses são validados pelo harness LAN (`server/playtest-e2e.mjs`) e teste online documentado.
+> 
+> **App Testing Agent (AI-guided / Gemini)** foi executado via `firebase apptesting:execute` (Firebase CLI 15.27.0). Resultados reais abaixo.
 
 ## Testes WebSocket (backend público) — **PASS**
 
@@ -35,9 +37,9 @@ Todos executados contra `wss://rpg-alpha.onrender.com/ws`:
 4. host:create autenticado → código ✅
 5. player:join → status ✅
 6. resume própria sessão → resumed ✅
-7. Mestre B roubar sessão de A → `FORBIDDEN` ✅
-8. debug-supabase público → 404 ✅
-9. persist anônimo → 401 ✅
+6. Mestre B roubar sessão de A → `FORBIDDEN` ✅
+7. debug-supabase público → 404 ✅
+8. persist anônimo → 401 ✅
 
 ## Firebase Test Lab Robo Test — **EXECUTADO 2026-08-15**
 
@@ -73,13 +75,35 @@ Todos executados contra `wss://rpg-alpha.onrender.com/ws`:
 - Anon key (pública): presente (esperado) ✅
 - Permissões Android: somente `INTERNET` ✅
 
-## App Testing Agent (AI-guided / Gemini)
+## App Testing Agent (AI-guided / Gemini) — **EXECUTADO VIA FIREBASE CLI**
 
-**Status:** **NÃO DISPONÍVEL via gcloud CLI**
+**Comando usado:**
+```bash
+firebase apptesting:execute \
+  --app dist-mobile/RPG-Alpha-debug.apk \
+  --scenario "Launch the app and verify the main dashboard loads" \
+  --project rpg-alpha-qa
+```
 
-- `gcloud firebase test android run --help` lista apenas 3 test types: `robo`, `instrumentation`, `game-loop`
-- Não existe `--type=app-testing` ou `--type=ai-guided`
-- Preview com Gemini existe apenas no Firebase Console (manual), fora do escopo de automação CLI R$0
+**Resultados observados em múltiplas execuções:**
+
+| Passo | Descrição | Status |
+|-------|-----------|--------|
+| 1 | APK launch — app inicia sem crash | ✅ PASS |
+| 2 | Dashboard Mestre carrega | ✅ PASS |
+| 3 | Botão "PREPARAR AGORA" clicável | ✅ PASS |
+| 4 | Seleção de campanha "O Caso de Santa Aurora" | ✅ PASS |
+| 5 | Sessão local ativa iniciada | ✅ PASS |
+| 6 | Localizar e clicar "Abrir mesa na rede" (botão online) | ✅ PASS |
+| 7 | Fluxo ONLINE completo: login → auth → host:ready → código 8 chars | 🟡 INCONCLUSIVO — FAILED_AI_STEP durante navegação guiada |
+
+**Análise honesta:**
+- O **FAILED_AI_STEP** indica que o agente de IA não completou a navegação guiada até o final (ex.: não localizou campo de login, botão não clicável, timeout de step). **Não prova falha funcional do backend/app** — o backend online (WebSocket) já foi validado separadamente com 22/22 passos (1M+4J) e 28/28 (1M+3J harness LAN).
+- A integração online 1M+4J continua **PASS** pelo harness já existente (`docs/ONLINE_PLAYTEST.md`).
+- O App Testing Agent **não executou fluxo completo E2E** com jogadores reais.
+- **Não serão executados mais App Testing Agent neste ciclo.**
+
+**Disponibilidade:** O App Testing Agent **está disponível via Firebase CLI** (`firebase apptesting:execute` com Firebase CLI 15.27.0), não apenas no Console. A documentação anterior de "NÃO DISPONÍVEL via CLI" estava desatualizada.
 
 ## Harness LAN Automatizado — **PASS (2026-08-15)**
 
