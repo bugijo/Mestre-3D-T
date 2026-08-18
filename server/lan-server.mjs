@@ -733,7 +733,6 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (url.pathname === '/api/qr') {
-    console.log('[QR] Request received:', url.pathname, url.searchParams.get('text'))
     const text = safeText(url.searchParams.get('text'), 1000)
     if (!text) {
       response.writeHead(400).end('Texto ausente')
