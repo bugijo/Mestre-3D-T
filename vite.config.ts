@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: 'jsdom',
       setupFiles: ['src/test/setup.ts'],
-      exclude: ['.agent/**', 'node_modules/**', 'dist/**'],
+      exclude: ['.agent/**', 'node_modules/**', 'dist/**', 'tests/**/*.spec.ts'],
       maxWorkers: 2,
       minWorkers: 1,
       coverage: {

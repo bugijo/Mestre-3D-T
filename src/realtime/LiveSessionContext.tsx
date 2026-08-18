@@ -191,7 +191,11 @@ export function LiveSessionProvider({ children }: { children: React.ReactNode })
     })
 
     socket.addEventListener('error', () => {
-      setError('Servidor LAN indisponível. Inicie com npm run dev:lan.')
+      const auth = authRef.current
+      const isOnline = auth?.role === 'master' && getAuthToken()
+      setError(isOnline
+        ? 'Não foi possível conectar ao servidor online.'
+        : 'Servidor LAN indisponível. Inicie com npm run dev:lan.')
     })
   }, [code])
 

@@ -732,6 +732,19 @@ const server = http.createServer(async (request, response) => {
     return
   }
 
+  if (url.pathname === '/api/qr') {
+    console.log('[QR] Request received:', url.pathname, url.searchParams.get('text'))
+    const text = safeText(url.searchParams.get('text'), 1000)
+    if (!text) {
+      response.writeHead(400).end('Texto ausente')
+      return
+    }
+    response.setHeader('content-type', 'image/png')
+    response.setHeader('cache-control', 'no-store')
+    response.end(await QRCode.toBuffer(text, { width: 360, margin: 1, color: { dark: '#161311', light: '#eee8df' } }))
+    return
+  }
+
   // LAN info — only in LAN mode
   if (url.pathname === '/api/lan-info') {
     if (config.isOnline) {
@@ -746,19 +759,6 @@ const server = http.createServer(async (request, response) => {
     }
     response.setHeader('content-type', 'application/json')
     response.end(JSON.stringify({ host: config.host, port: config.port, addresses }))
-    return
-  }
-
-  // QR code
-  if (url.pathname === '/api/qr') {
-    const text = safeText(url.searchParams.get('text'), 1000)
-    if (!text) {
-      response.writeHead(400).end('Texto ausente')
-      return
-    }
-    response.setHeader('content-type', 'image/png')
-    response.setHeader('cache-control', 'no-store')
-    response.end(await QRCode.toBuffer(text, { width: 360, margin: 1, color: { dark: '#161311', light: '#eee8df' } }))
     return
   }
 

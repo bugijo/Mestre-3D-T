@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test'
 
+const BASE_URL = 'http://127.0.0.1:4173'
+
 test.describe('Security Tests', () => {
   test('should check security headers', async ({ page }) => {
-    const response = await page.goto('http://localhost:4175/')
+    const response = await page.goto(`${BASE_URL}/`)
     const headers = response.headers()
     console.log('CSP header:', headers['content-security-policy'])
     console.log('X-Frame-Options:', headers['x-frame-options'])
@@ -12,7 +14,7 @@ test.describe('Security Tests', () => {
   })
 
   test('should not expose sensitive data in localStorage', async ({ page }) => {
-    await page.goto('http://localhost:4175/')
+    await page.goto(`${BASE_URL}/`)
     const storage = await page.evaluate(() => {
       const items = {}
       for (let i = 0; i < localStorage.length; i++) {
@@ -25,7 +27,7 @@ test.describe('Security Tests', () => {
   })
 
   test('should sanitize QR text parameter', async ({ page }) => {
-    const response = await page.goto('http://localhost:4175/api/qr?text=<script>alert(1)</script>')
+    const response = await page.request.get(`${BASE_URL}/api/qr?text=<script>alert(1)</script>`)
     expect(response.status()).toBe(200)
     expect(response.headers()['content-type']).toBe('image/png')
   })
@@ -37,7 +39,7 @@ test.describe('Realtime/WebSocket Tests', () => {
     page.on('console', msg => {
       if (msg.type() === 'error') errors.push(msg.text())
     })
-    await page.goto('http://localhost:4175/')
+    await page.goto(`${BASE_URL}/`)
     await page.waitForTimeout(3000)
     console.log('Console errors:', errors)
   })
@@ -45,7 +47,7 @@ test.describe('Realtime/WebSocket Tests', () => {
 
 test.describe('Session Security Tests', () => {
   test('Session codes should be validated', async ({ page }) => {
-    await page.goto('http://localhost:4175/join/INVALID123')
+    await page.goto(`${BASE_URL}/join/INVALID123`)
     await page.waitForTimeout(2000)
     const text = await page.textContent('body')
     console.log('Invalid session page:', text?.substring(0, 500))

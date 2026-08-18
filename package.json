@@ -31,6 +31,7 @@
     "test:security": "node ./.tools/vitest-run.mjs src/admin/AdminAccessContext.test.tsx src/lib/adminSecurity.test.ts src/security/integrity.test.ts",
     "test:qa": "npm run test:regression && npm run test:coverage && npm run test:performance && npm run test:security",
     "qa:browser-smoke": "node ./.tools/qa-browser-smoke.mjs",
+    "test:playwright": "npx playwright test",
     "deploy:docker:build": "docker compose -f docker-compose.production.yml build",
     "deploy:docker:up": "docker compose -f docker-compose.production.yml up -d",
     "audit:prod": "npm audit --omit=dev --json",

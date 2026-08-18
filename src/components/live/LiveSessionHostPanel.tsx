@@ -5,6 +5,7 @@ import { useOptionalLiveSession } from '@/realtime/LiveSessionContext'
 import { createSessionProjection } from '@/realtime/projection'
 import { cn } from '@/lib/cn'
 import { safeClipboard } from '@/lib/clipboard'
+import { apiBaseUrl } from '@/config/env'
 
 const SYNC_DEBOUNCE_MS = 500
 
@@ -101,7 +102,9 @@ export function LiveSessionHostPanel() {
 
   if (!live) return null
 
-  const baseAddress = lanInfo?.addresses[0] || window.location.origin
+  const baseAddress = live.isAuthenticated
+    ? apiBaseUrl()
+    : (lanInfo?.addresses[0] || window.location.origin)
   const joinUrl = live.code ? `${baseAddress}/join/${live.code}` : null
   const pending = live.participants.filter((participant) => participant.status === 'pending')
   const approved = live.participants.filter((participant) => participant.status === 'approved')

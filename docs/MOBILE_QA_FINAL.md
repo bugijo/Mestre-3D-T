@@ -5,7 +5,7 @@
 Criadas exclusivamente para teste, expiram/alvo de limpeza após o ciclo QA.
 
 - Email padrão: `qa-<timestamp>@test.com` (gerado por script)
-- Senha: `test123456` (temporária, nunca versionada)
+- Senha: fornecida somente via variável de ambiente/arquivo local ignorado pelo Git
 - Contas criadas via `POST /api/auth/signup` no backend público
 
 > Regra: nenhuma senha real ou credencial de produção aparece neste documento ou no Git.
