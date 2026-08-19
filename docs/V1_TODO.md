@@ -1,7 +1,7 @@
 # V1 TODO List — Estado Atual
 
-> Atualizado: 2026-08-10 (Ciclo 3 QA)
-> Branch: `v1-presencial`
+> Atualizado: 2026-08-19 (Documentação + Playwright)
+> Branch: `mobile-alpha`
 
 ---
 
@@ -95,8 +95,8 @@
 - [ ] **Teste em rede doméstica com roteador** — latência, perda de pacote
 
 ### Prioridade Média
-- [ ] docs/V1_ARCHITECTURE.md — diagrama de camadas
-- [ ] docs/RULESET_ARCHITECTURE.md — multi-ruleset
+- [x] docs/V1_ARCHITECTURE.md — diagrama de camadas
+- [x] docs/RULESET_ARCHITECTURE.md — multi-ruleset
 - [ ] Integrar AppStore com LiveSessionContext (sync bidirecional)
 - [ ] Página de histórico do personagem (CharacterHistoryEvent)
 - [ ] Upload de imagem de personagem funcional
